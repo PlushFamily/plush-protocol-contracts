@@ -1,0 +1,28 @@
+{
+  "name": "plush-token-development",
+  "version": "1.0.0",
+  "description": "Plush Token – development",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PlushFamily/plush-token-development.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PlushFamily/plush-token-development/issues"
+  },
+  "homepage": "https://github.com/PlushFamily/plush-token-development#readme",
+  "dependencies": {
+    "-": "^0.0.1",
+    "@openzeppelin/contracts": "^4.1.0",
+    "g": "^2.0.1",
+    "solium": "^1.2.5"
+  }
+}
