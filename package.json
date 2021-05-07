@@ -20,9 +20,6 @@
   },
   "homepage": "https://github.com/PlushFamily/plush-token-development#readme",
   "dependencies": {
-    "-": "^0.0.1",
-    "@openzeppelin/contracts": "^4.1.0",
-    "g": "^2.0.1",
-    "solium": "^1.2.5"
+    "@openzeppelin/contracts": "^4.1.0"
   }
 }

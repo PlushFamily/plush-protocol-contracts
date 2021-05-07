@@ -1,6 +1,5 @@
-const PlushCoin = artifacts.require("PlushCoin");
+const Migrations = artifacts.require("Migrations");
 
-module.exports = function(deployer) {
-  deployer.link(PlushCoin);
-  deployer.deploy(PlushCoin);
+module.exports = function (deployer) {
+  deployer.deploy(Migrations);
 };
