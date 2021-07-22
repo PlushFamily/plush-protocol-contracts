@@ -1,3 +1,3 @@
-# Plush Token
+# Plush Token Crypto
 
 ## 
