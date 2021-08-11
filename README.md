@@ -1,5 +1,13 @@
-# Plush Token Crypto
+# Plush Token Development
 
+This repository contains the source code for Ethereum contracts.
+
+## Project structure
+`contracts` directory with contracts code
+
+`scripts` directory with description of the deployment process
+
+`hardhat.config.js` hardhat configuration
 
 ## Installation
 
