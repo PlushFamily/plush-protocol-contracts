@@ -5,3 +5,4 @@ bin
 .env
 artifacts
 cache
+.DS_Store
