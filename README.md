@@ -3,7 +3,9 @@
 This repository contains the source code for Ethereum contracts.
 
 ## Project structure
-`contracts` directory with contracts code
+`contracts` directory with source code of contracts
+
+`contracts/old` directory with source code of old contracts
 
 `scripts` directory with description of the deployment process
 
