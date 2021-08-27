@@ -7,11 +7,25 @@ require("@nomiclabs/hardhat-etherscan");
 const { API_URL, PRIVATE_KEY } = process.env;
 module.exports = {
   solidity: {
-    compilers: [
-      {
-        version: "0.8.6",
-      }
-    ]
+      compilers: [
+          {
+              version: "0.8.7",
+          },
+     //     {
+     //         version: "0.8.2",
+     //     }
+      ],
+      overrides: {
+          "contracts/PlushCoreToken.sol": {
+              version: "0.8.7",
+          },
+          "contracts/PlushForestToken.sol": {
+              version: "0.8.7",
+          },
+          "contracts/PlushLogo.sol": {
+              version: "0.8.7",
+          },
+      },
   },
    defaultNetwork: "rinkeby",
    networks: {
