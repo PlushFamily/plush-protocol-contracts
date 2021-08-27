@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Plush Core Token v4
+// Plush Core Token v3
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -9,21 +9,21 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract PlushCoreToken is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, AccessControl {
+contract PlushCoreTokenV3 is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, AccessControl {
     using Counters for Counters.Counter;
 
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Plush Core Token", "PLUSH") {
+    constructor() ERC721("PlushCoreToken", "PLUSH") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(PAUSER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://api.plush.dev/token/core/";
+        return "https://api.plush.dev/token/";
     }
 
     function pause() public onlyRole(PAUSER_ROLE) {

@@ -1,44 +1,71 @@
 // SPDX-License-Identifier: MIT
-// Plush Core Token v2
+// Plush Forest Token v2
 pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract PlushForestToken is ERC1155, AccessControl {
-    bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
+contract PlushForestToken is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, AccessControl {
+    using Counters for Counters.Counter;
+
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC1155("https://api.plush.dev/token/forest/{id}") {
+    constructor() ERC721("Plush Forest Token", "PLUSH") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(URI_SETTER_ROLE, msg.sender);
+        _setupRole(PAUSER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
     }
 
-    function setURI(string memory newuri) public onlyRole(URI_SETTER_ROLE) {
-        _setURI(newuri);
+    function _baseURI() internal pure override returns (string memory) {
+        return "https://api.plush.dev/token/forest/";
     }
 
-    function mint(address account, uint256 id, uint256 amount, bytes memory data)
-    public
-    onlyRole(MINTER_ROLE)
-    {
-        _mint(account, id, amount, data);
+    function pause() public onlyRole(PAUSER_ROLE) {
+        _pause();
     }
 
-    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
-    public
-    onlyRole(MINTER_ROLE)
+    function unpause() public onlyRole(PAUSER_ROLE) {
+        _unpause();
+    }
+
+    function safeMint(address to) public onlyRole(MINTER_ROLE) {
+        _safeMint(to, _tokenIdCounter.current());
+        _tokenIdCounter.increment();
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+    internal
+    whenNotPaused
+    override(ERC721, ERC721Enumerable)
     {
-        _mintBatch(to, ids, amounts, data);
+        super._beforeTokenTransfer(from, to, tokenId);
     }
 
     // The following functions are overrides required by Solidity.
 
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+
+    function tokenURI(uint256 tokenId)
+    public
+    view
+    override(ERC721, ERC721URIStorage)
+    returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
     function supportsInterface(bytes4 interfaceId)
     public
     view
-    override(ERC1155, AccessControl)
+    override(ERC721, ERC721Enumerable, AccessControl)
     returns (bool)
     {
         return super.supportsInterface(interfaceId);
