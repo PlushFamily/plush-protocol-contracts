@@ -16,7 +16,7 @@ contract PlushCoreToken is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable,
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Plush Core Token", "PLUSH") {
+    constructor() ERC721("Plush Token V2", "PLUSH") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(PAUSER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
