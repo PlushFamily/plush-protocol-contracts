@@ -6,22 +6,44 @@ import "./PlushForestToken.sol";
 
 contract PlushGetTree is Ownable {
 
-    bool public isActive = true;
-    uint256 public price = 0.001 ether;
+    PlushForestToken plushForest;
+    bool public isActive;
+    address safeAddress;
+    uint256 mintPrice;
 
-    function mint(PlushForestToken _callee, address to) public payable {
+    constructor(address _plushForestAddress, address _safeAddress)
+    {
+        isActive = true;
+        mintPrice = 0.001 ether;
+        plushForest = PlushForestToken(_plushForestAddress);
+        safeAddress = _safeAddress;
+    }
+
+    function setSafeAddress(address _address) external onlyOwner {
+        safeAddress = _address;
+    }
+
+    function getSafeAddress() external view onlyOwner returns(address) {
+        return safeAddress;
+    }
+
+    function getMintPrice() external view returns(uint) {
+        return mintPrice;
+    }
+
+    function setMintPrice(uint256 _price) external onlyOwner {
         require(isActive);
-        require(msg.value == price, "Minting fee");
-        _callee.safeMint(to);
+        require(_price > 0);
+        mintPrice = _price;
+    }
+
+    function mint(address mintAddress)public payable {
+        require(isActive);
+        require(msg.value == mintPrice, "Minting fee");
+        plushForest.safeMint(mintAddress);
     }
 
     function changeContractStatus() public onlyOwner {
         isActive = !isActive;
-    }
-
-    function changePrice(uint256 newPrice) public onlyOwner {
-        require(isActive);
-        require(newPrice > 0);
-        price = newPrice;
     }
 }

@@ -15,7 +15,10 @@ async function main() {
     //const plushLogo = await PlushLogo.deploy(); // Instance of the contract
     //console.log("Plush Logo -> deployed to address:", plushLogo.address);
 
-    const plushGetTree = await PlushGetTree.deploy(); // Instance of the contract
+    const plushGetTree = await PlushGetTree.deploy(
+        '0x831fbc2be13ce31884a59fa976f2588c08e4e23e', // Forest address
+        '0xdB38a0a93a9AE52d505bBd0E55aBB40aBdfaC8b5' // withdrawal address, need to change
+    ); // Instance of the contract
     console.log("Plush GetTree -> deployed to address:", plushGetTree.address);
  }
  
