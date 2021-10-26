@@ -11,9 +11,6 @@ module.exports = {
           {
               version: "0.8.7",
           },
-     //     {
-     //         version: "0.8.2",
-     //     }
       ],
       overrides: {
           "contracts/PlushCoreToken.sol": {
@@ -25,6 +22,9 @@ module.exports = {
           "contracts/PlushLogo.sol": {
               version: "0.8.7",
           },
+          "contracts/PlushGetTree.sol": {
+              version: "0.8.7",
+          }
       },
   },
    defaultNetwork: "rinkeby",
