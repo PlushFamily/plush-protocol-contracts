@@ -3,10 +3,13 @@ pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./PlushForestToken.sol";
+import "./Plai.sol";
 
+/// @custom:security-contact hello@plush.family
 contract PlushGetTree is Ownable {
 
     PlushForestToken plushForest;
+    Plai plai;
     bool public isActive;
     address safeAddress;
     string[] trees;
@@ -20,10 +23,11 @@ contract PlushGetTree is Ownable {
         uint256 count;
     }
 
-    constructor(address _plushForestAddress, address _safeAddress)
+    constructor(address _plushForestAddress, address _plaiAddress, address _safeAddress)
     {
         isActive = true;
         plushForest = PlushForestToken(_plushForestAddress);
+        plai = Plai(_plaiAddress);
         safeAddress = _safeAddress;
     }
 
@@ -86,12 +90,15 @@ contract PlushGetTree is Ownable {
         return safeAddress;
     }
 
-    function mint(address _mintAddress, string memory _type) public payable {
+    function mint(address _mintAddress, uint256 _amount, string memory _type) public {
         require(isActive);
         require(treeMap[_type].isValid, 'Not a valid tree type.');
-        require(uint256 (msg.value) == treeMap[_type].price, "Minting fee");
+        require(treeMap[_type].count > 0, 'The trees are over.');
+        require(uint256 (_amount) == treeMap[_type].price, "Minting fee");
         plushForest.safeMint(_mintAddress);
+
         treeMap[_type].count = treeMap[_type].count - 1;
+        plai.transferFrom(msg.sender, safeAddress, _amount);
     }
 
     function changeContractStatus() public onlyOwner {

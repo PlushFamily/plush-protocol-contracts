@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/// @custom:security-contact hello@plush.family
 contract PlushLogo is ERC721URIStorage, Ownable, Pausable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;

@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+/// @custom:security-contact hello@plush.family
 contract PlushCoreToken is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, AccessControl {
     using Counters for Counters.Counter;
 
