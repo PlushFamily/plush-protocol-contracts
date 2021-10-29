@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Plush Forest Token v2
+// Plush Forest Token v3
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -24,7 +24,7 @@ contract PlushForestToken is ERC721, ERC721Enumerable, ERC721URIStorage, Pausabl
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://api.plush.dev/token/forest/";
+        return "https://api.plush.dev/forest/tokens/token/";
     }
 
     function pause() public onlyRole(PAUSER_ROLE) {

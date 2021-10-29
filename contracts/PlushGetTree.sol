@@ -94,9 +94,9 @@ contract PlushGetTree is Ownable {
         require(isActive);
         require(treeMap[_type].isValid, 'Not a valid tree type.');
         require(treeMap[_type].count > 0, 'The trees are over.');
-        require(uint256 (_amount) == treeMap[_type].price, "Minting fee");
-        plushForest.safeMint(_mintAddress);
+        require(_amount == treeMap[_type].price, "Minting fee");
 
+        plushForest.safeMint(_mintAddress);
         treeMap[_type].count = treeMap[_type].count - 1;
         plai.transferFrom(msg.sender, safeAddress, _amount);
     }
