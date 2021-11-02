@@ -17,34 +17,13 @@ module.exports = {
         }
     },
     solidity: {
-        compilers: [
-            {
-                version: "0.8.7",
-            }
-        ],
-        overrides: {
-            "contracts/PlushCoreToken.sol": {
-                version: "0.8.7",
-            },
-            "contracts/PlushForestToken.sol": {
-                version: "0.8.7",
-            },
-            "contracts/PlushLogo.sol": {
-                version: "0.8.7",
-            },
-            "contracts/PlushGetTree.sol": {
-                version: "0.8.7",
-            },
-            "contracts/Plai.sol": {
-                version: "0.8.7",
-            }
-        },
+        version: "0.8.7",
         settings: {
             optimizer: {
                 enabled: true,
-                runs: 200
-            }
-        }
+                runs: 200,
+            },
+        },
     },
     etherscan: {
         apiKey: ETHERSCAN_API_KEY
