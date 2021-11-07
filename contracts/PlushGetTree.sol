@@ -95,10 +95,13 @@ contract PlushGetTree is Ownable {
         require(treeMap[_type].isValid, 'Not a valid tree type.');
         require(treeMap[_type].count > 0, 'The trees are over.');
         require(_amount == treeMap[_type].price, "Minting fee");
+        require(plai.balanceOf(msg.sender) >= _amount, 'Not enough balance.');
+        require(plai.allowance(msg.sender, address(this)) >= _amount, 'Not enough allowance.');
+
+        plai.transferFrom(msg.sender, safeAddress, _amount);
 
         plushForest.safeMint(_mintAddress);
         treeMap[_type].count = treeMap[_type].count - 1;
-        plai.transferFrom(msg.sender, safeAddress, _amount);
     }
 
     function changeContractStatus() public onlyOwner {
