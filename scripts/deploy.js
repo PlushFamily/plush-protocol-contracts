@@ -7,8 +7,9 @@ async function main() {
     const Plai = await ethers.getContractFactory("Plai");
 
     // Start deployment, returning a promise that resolves to a contract object
-    // const plushCoreToken = await PlushCoreToken.deploy(); // Instance of the contract
-    // console.log("Plush Core Token -> deployed to address:", plushCoreToken.address);
+
+/*    const plushCoreToken = await PlushCoreToken.deploy(); // Instance of the contract
+    console.log("Plush Core Token -> deployed to address:", plushCoreToken.address);*/
 
 /*    const plushForestToken = await PlushForestToken.deploy(); // Instance of the contract
     console.log("Plush Forest Token -> deployed to address:", plushForestToken.address);*/
