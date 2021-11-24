@@ -2,13 +2,13 @@
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./PlushForestToken.sol";
+import "./PlushForest.sol";
 import "./Plush.sol";
 
 /// @custom:security-contact hello@plush.family
 contract PlushGetTree is Ownable {
 
-    PlushForestToken plushForest;
+    PlushForest plushForest;
     PlushCoin plush;
     bool public isActive;
     address safeAddress;
@@ -26,7 +26,7 @@ contract PlushGetTree is Ownable {
     constructor(address _plushForestAddress, address _plushAddress, address _safeAddress)
     {
         isActive = true;
-        plushForest = PlushForestToken(_plushForestAddress);
+        plushForest = PlushForest(_plushForestAddress);
         plush = PlushCoin(_plushAddress);
         safeAddress = _safeAddress;
     }

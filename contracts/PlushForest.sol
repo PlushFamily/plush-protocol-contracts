@@ -10,21 +10,21 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 /// @custom:security-contact hello@plush.family
-contract PlushForestToken is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, AccessControl {
+contract PlushForest is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, AccessControl {
     using Counters for Counters.Counter;
 
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Plush Forest Token", "PLUSH") {
+    constructor() ERC721("Plush Forest", "PLUSH") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(PAUSER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://api.plush.dev/forest/tokens/token/";
+        return "https://api.plush.family/forest/tokens/token/";
     }
 
     function pause() public onlyRole(PAUSER_ROLE) {
