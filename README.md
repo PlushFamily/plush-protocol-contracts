@@ -50,7 +50,8 @@ Select the required Ethereum network:
 
 Create `.env` file:
 ```
-API_URL = "https://eth-rinkeby.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
+RINKEBY_API_URL = "https://eth-rinkeby.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
+MUMBAI_API_URL = "https://eth-mumbai.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
 PRIVATE_KEY = "ETH_PRIVATE_KEY"
 ETHERSCAN_API_KEY = "ETHERSCAN_KEY"
 ```
