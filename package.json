@@ -6,14 +6,14 @@
   "author": "Plush",
   "license": "MIT",
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@nomiclabs/hardhat-etherscan": "^2.1.7",
-    "ethers": "^5.5.1",
-    "hardhat": "^2.6.8",
+    "@nomiclabs/hardhat-ethers": "^2.0.3",
+    "@nomiclabs/hardhat-etherscan": "^2.1.8",
+    "ethers": "^5.5.2",
+    "hardhat": "^2.7.1",
     "harhat": "^1.0.1"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.3.3",
+    "@openzeppelin/contracts": "^4.4.0",
     "dotenv": "^10.0.0"
   }
 }
