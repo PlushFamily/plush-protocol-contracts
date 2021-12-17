@@ -5,7 +5,7 @@ async function main() {
   const plushCoin = await PlushCoin.deploy();
 
   await plushCoin.deployed();
-  console.log('Plush Coin -> deployed to address:', plushCoin.address);
+  console.log('PlushCoin -> deployed to address:', plushCoin.address);
 }
 main()
   .then(() => process.exit(0))

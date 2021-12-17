@@ -3,7 +3,7 @@ pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./PlushForest.sol";
-import "./Plush.sol";
+import "./PlushCoin.sol";
 
 /// @custom:security-contact hello@plush.family
 contract PlushGetTree is Ownable {
