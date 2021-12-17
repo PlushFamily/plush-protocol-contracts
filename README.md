@@ -9,7 +9,7 @@ This repository contains the source code for Ethereum contracts.
 
 `scripts` directory with description of the deployment process
 
-`hardhat.config.js` hardhat configuration
+`hardhat.config.ts` hardhat configuration
 
 ## Installation
 
@@ -24,7 +24,7 @@ Before starting the project, you need to install all project dependencies: `yarn
 
 ## Configuration
 
-Install the required version of Solidity in the file `hardhat.config.js`:
+Install the required version of Solidity in the file `hardhat.config.ts`:
 ```
   solidity: {
     compilers: [
@@ -51,6 +51,7 @@ Select the required Ethereum network:
 Create `.env` file:
 ```
 RINKEBY_API_URL = "https://eth-rinkeby.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
+GOERLI_API_URL = "https://eth-rinkeby.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
 MUMBAI_API_URL = "https://eth-mumbai.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
 PRIVATE_KEY = "ETH_PRIVATE_KEY"
 ETHERSCAN_API_KEY = "ETHERSCAN_KEY"
@@ -59,7 +60,7 @@ ETHERSCAN_API_KEY = "ETHERSCAN_KEY"
 ## Using
 
 Deploy contracts:
-`npx hardhat run scripts/deploy.js --network rinkeby`
+`npx hardhat run scripts/deploy.ts --network rinkeby`
 
 Verify contracts:
 `npx hardhat verify --network rinkeby <CONTRACT_ADDRESS>`
