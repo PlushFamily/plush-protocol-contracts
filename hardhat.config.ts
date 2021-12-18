@@ -3,6 +3,7 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 
 const {
+  NETWORK,
   RINKEBY_API_URL,
   MUMBAI_API_URL,
   GOERLI_API_URL,
@@ -12,6 +13,7 @@ const {
 } = process.env;
 
 if (
+  !NETWORK ||
   !RINKEBY_API_URL ||
   !MUMBAI_API_URL ||
   !GOERLI_API_URL ||
@@ -20,6 +22,20 @@ if (
   !POLYGONSCAN_API_KEY
 ) {
   throw new Error('Not all variables are specified in the env file!');
+}
+
+if (!['local', 'rinkeby', 'goerli', 'mumbai'].includes(NETWORK)) {
+  throw new Error('Network not supported!');
+}
+
+let API_KEY = '';
+
+if (['rinkeby', 'goerli'].includes(NETWORK)) {
+  API_KEY = ETHERSCAN_API_KEY;
+}
+
+if (['mumbai'].includes(NETWORK)) {
+  API_KEY = POLYGONSCAN_API_KEY;
 }
 
 export default {
@@ -48,9 +64,9 @@ export default {
       },
     },
   },
+  defaultNetwork: NETWORK,
   networks: {
-    hardhat: {},
-    development: {
+    local: {
       url: 'http://127.0.0.1:7545',
     },
     rinkeby: {
@@ -67,6 +83,6 @@ export default {
     },
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY,
+    apiKey: API_KEY,
   },
 };

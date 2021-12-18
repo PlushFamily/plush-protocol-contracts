@@ -24,43 +24,18 @@ Before starting the project, you need to install all project dependencies: `yarn
 
 ## Configuration
 
-Install the required version of Solidity in the file `hardhat.config.ts`:
-```
-  solidity: {
-    compilers: [
-      {
-        version: "0.8.2", // Solidity version
-      }
-    ]
-  },
-```
-
-Select the required Ethereum network:
-```
-   defaultNetwork: "rinkeby", // network
-   networks: {
-      hardhat: {},
-      rinkeby: { // network configuration description
-         url: API_URL,
-         accounts: [`0x${PRIVATE_KEY}`]
-      }
-   },
-```
-
-
 Create `.env` file:
 ```
+NETWORK = rinkeby # or goerli, mumbai
 RINKEBY_API_URL = "https://eth-rinkeby.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
 GOERLI_API_URL = "https://eth-rinkeby.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
 MUMBAI_API_URL = "https://eth-mumbai.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T"
 PRIVATE_KEY = "ETH_PRIVATE_KEY"
 ETHERSCAN_API_KEY = "ETHERSCAN_KEY"
+POLYGONSCAN_API_KEY = "ETHERSCAN_KEY"
 ```
 
 ## Using
 
 Deploy contracts:
-`npx hardhat run scripts/deploy.ts --network rinkeby`
-
-Verify contracts:
-`npx hardhat verify --network rinkeby <CONTRACT_ADDRESS>`
+`npx hardhat run scripts/deploy/{ScriptName}`
