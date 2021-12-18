@@ -12,7 +12,28 @@ const {
 } = process.env;
 
 module.exports = {
-  defaultNetwork: 'rinkeby',
+  solidity: {
+    compilers: [
+      {
+        version: '0.8.2',
+      },
+      {
+        version: '0.6.0',
+      },
+      {
+        version: '0.6.2',
+      },
+      {
+        version: '0.6.6',
+      },
+    ],
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   networks: {
     hardhat: {},
     development: {
@@ -31,16 +52,7 @@ module.exports = {
       accounts: [`0x${PRIVATE_KEY}`],
     },
   },
-  solidity: {
-    version: '0.8.2',
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
-    },
-  },
   etherscan: {
-    apiKey: POLYGONSCAN_API_KEY,
+    apiKey: ETHERSCAN_API_KEY,
   },
 };
