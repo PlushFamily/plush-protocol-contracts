@@ -8,11 +8,10 @@ async function main() {
   console.log('PlushCoin -> deployed to address:', plushCoin.address);
 
   if (process.env.NETWORK != 'local') {
-    const delay = (ms: number | undefined) =>
-      new Promise((res) => setTimeout(res, ms));
-
-    console.log('Waiting 30s before verify contract\n');
-    await delay(30000);
+    console.log('Waiting 1m before verify contract\n');
+    await new Promise(function (resolve) {
+      setTimeout(resolve, 60000);
+    });
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {

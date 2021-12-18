@@ -37,5 +37,5 @@ POLYGONSCAN_API_KEY = "ETHERSCAN_KEY"
 
 ## Using
 
-Deploy contracts:
+Deploy contract:
 `npx hardhat run scripts/deploy/{ScriptName}`

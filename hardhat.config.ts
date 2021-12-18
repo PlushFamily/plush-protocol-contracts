@@ -42,7 +42,7 @@ export default {
   solidity: {
     compilers: [
       {
-        version: '0.8.7',
+        version: '0.8.10',
       },
       {
         version: '0.8.2',
@@ -57,6 +57,20 @@ export default {
         version: '0.6.0',
       },
     ],
+    overrides: {
+      'contracts/PlushCoin.sol': {
+        version: '0.8.10',
+      },
+      'contracts/PlushCoreToken.sol': {
+        version: '0.8.10',
+      },
+      'contracts/PlushForest.sol': {
+        version: '0.8.10',
+      },
+      'contracts/PlushGetTree.sol': {
+        version: '0.8.10',
+      },
+    },
     settings: {
       optimizer: {
         enabled: true,

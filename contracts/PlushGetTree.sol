@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./PlushForest.sol";
 import "./PlushCoin.sol";
 
-/// @custom:security-contact hello@plush.family
+/// @custom:security-contact security@plush.family
 contract PlushGetTree is Ownable {
 
     PlushForest plushForest;
