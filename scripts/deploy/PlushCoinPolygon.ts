@@ -1,14 +1,8 @@
 import hre from 'hardhat';
-import * as args from '../../arguments/plushCoinPolygon';
 
 async function main() {
-  const PlushCoinPolygon = await hre.ethers.getContractFactory('ChildERC20');
-  const plushCoinPolygon = await PlushCoinPolygon.deploy(
-    args.default[0],
-    args.default[1],
-    args.default[2],
-    args.default[3],
-  );
+  const PlushCoinPolygon = await hre.ethers.getContractFactory('UChildERC20');
+  const plushCoinPolygon = await PlushCoinPolygon.deploy();
 
   await plushCoinPolygon.deployed();
   console.log(
@@ -25,12 +19,6 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushCoinPolygon.address,
-      constructorArguments: [
-        args.default[0],
-        args.default[1],
-        args.default[2],
-        args.default[3],
-      ],
     });
   }
 }

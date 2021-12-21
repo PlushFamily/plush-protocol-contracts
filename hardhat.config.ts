@@ -81,6 +81,9 @@ export default {
       'contracts/PlushCoinPolygon.sol': {
         version: '0.6.6',
       },
+      'contracts/PlushCoinPolygonProxy.sol': {
+        version: '0.6.6',
+      },
     },
     settings: {
       optimizer: {

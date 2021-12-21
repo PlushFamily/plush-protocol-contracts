@@ -412,18 +412,26 @@ library Address {
     }
 }
 
-// File: @openzeppelin/contracts/token/ERC20/ERC20.sol
+// File: contracts/child/ChildToken/UpgradeableChildERC20/ERC20.sol
 
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.0;
+pragma solidity 0.6.6;
 
 
 
 
 
 /**
- * @dev Implementation of the {IERC20} interface.
+ * Modified openzeppelin implemtation to add setters for name, symbol and decimals.
+ * This was needed because the variables cannot be set in constructor as the contract is upgradeable.
+ */
+
+/**
+ * @dev openzeppelin Implementation of the {IERC20} interface.
+ *
+ * Modified to add setters for name, symbol and decimals. This was needed
+ * because
  *
  * This implementation is agnostic to the way tokens are created. This means
  * that a supply mechanism has to be added in a derived contract using {_mint}.
@@ -482,12 +490,20 @@ contract ERC20 is Context, IERC20 {
         return _name;
     }
 
+    function setName(string memory newName) internal {
+        _name = newName;
+    }
+
     /**
      * @dev Returns the symbol of the token, usually a shorter version of the
      * name.
      */
     function symbol() public view returns (string memory) {
         return _symbol;
+    }
+
+    function setSymbol(string memory newSymbol) internal {
+        _symbol = newSymbol;
     }
 
     /**
@@ -505,6 +521,10 @@ contract ERC20 is Context, IERC20 {
      */
     function decimals() public view returns (uint8) {
         return _decimals;
+    }
+
+    function setDecimals(uint8 newDecimals) internal {
+        _decimals = newDecimals;
     }
 
     /**
@@ -1241,6 +1261,8 @@ contract EIP712Base is Initializable {
         bytes32 salt;
     }
 
+    string constant public ERC712_VERSION = "1";
+
     bytes32 internal constant EIP712_DOMAIN_TYPEHASH = keccak256(
         bytes(
             "EIP712Domain(string name,string version,address verifyingContract,bytes32 salt)"
@@ -1252,21 +1274,20 @@ contract EIP712Base is Initializable {
     // one of the contractsa that inherits this contract follows proxy pattern
     // so it is not possible to do this in a constructor
     function _initializeEIP712(
-        string memory name,
-        string memory version
+        string memory name
     )
     internal
     initializer
     {
-        _setDomainSeperator(name, version);
+        _setDomainSeperator(name);
     }
 
-    function _setDomainSeperator(string memory name, string memory version) internal {
+    function _setDomainSeperator(string memory name) internal {
         domainSeperator = keccak256(
             abi.encode(
                 EIP712_DOMAIN_TYPEHASH,
                 keccak256(bytes(name)),
-                keccak256(bytes(version)),
+                keccak256(bytes(ERC712_VERSION)),
                 address(this),
                 bytes32(getChainId())
             )
@@ -1410,20 +1431,6 @@ contract NativeMetaTransaction is EIP712Base {
     }
 }
 
-// File: contracts/ChainConstants.sol
-
-pragma solidity 0.6.6;
-
-contract ChainConstants {
-    string constant public ERC712_VERSION = "1";
-
-    uint256 constant public ROOT_CHAIN_ID = 1;
-    bytes constant public ROOT_CHAIN_ID_BYTES = hex"01";
-
-    uint256 constant public CHILD_CHAIN_ID = 137;
-    bytes constant public CHILD_CHAIN_ID_BYTES = hex"89";
-}
-
 // File: contracts/common/ContextMixin.sol
 
 pragma solidity 0.6.6;
@@ -1451,7 +1458,7 @@ abstract contract ContextMixin {
     }
 }
 
-// File: contracts/child/ChildToken/ChildERC20.sol
+// File: contracts/child/ChildToken/UpgradeableChildERC20/UChildERC20.sol
 
 pragma solidity 0.6.6;
 
@@ -1461,30 +1468,41 @@ pragma solidity 0.6.6;
 
 
 
-
-contract ChildERC20 is
+contract UChildERC20 is
 ERC20,
 IChildToken,
 AccessControlMixin,
 NativeMetaTransaction,
-ChainConstants,
 ContextMixin
 {
     bytes32 public constant DEPOSITOR_ROLE = keccak256("DEPOSITOR_ROLE");
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
+    constructor() public ERC20("", "") {}
+
+    /**
+     * @notice Initialize the contract after it has been proxified
+     * @dev meant to be called once immediately after deployment
+     */
+    function initialize(
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
         address childChainManager
-    ) public ERC20(name_, symbol_) {
-        _setupContractId("ChildERC20");
-        _setupDecimals(decimals_);
+    )
+    external
+    initializer
+    {
+        setName(name_);
+        setSymbol(symbol_);
+        setDecimals(decimals_);
+        _setupContractId(string(abi.encodePacked("Child", symbol_)));
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(DEPOSITOR_ROLE, childChainManager);
-        _initializeEIP712(name_, ERC712_VERSION);
+        _initializeEIP712(name_);
     }
 
+    // This is to support Native meta transactions
+    // never use msg.sender directly, use _msgSender() instead
     function _msgSender()
     internal
     override
@@ -1492,6 +1510,11 @@ ContextMixin
     returns (address payable sender)
     {
         return ContextMixin.msgSender();
+    }
+
+    function changeName(string calldata name_) external only(DEFAULT_ADMIN_ROLE) {
+        setName(name_);
+        _setDomainSeperator(name_);
     }
 
     /**
