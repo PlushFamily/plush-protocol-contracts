@@ -29,14 +29,23 @@ Before starting the project, you need to install all project dependencies: `yarn
 
 Create `.env` file:
 ```
-NETWORK = rinkeby # or goerli, mumbai
+NETWORK = rinkeby # or goerli, mumbai, mainnet, polygon
 RINKEBY_API_URL = "https://eth-rinkeby.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T" # EXAMPLE
 GOERLI_API_URL = "https://eth-rinkeby.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T" # EXAMPLE
 MUMBAI_API_URL = "https://eth-mumbai.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T" # EXAMPLE
+MAINNET_API_URL = "https://eth-mainnet.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T" # EXAMPLE
+POLYGON_API_URL = "https://eth-polygon.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4YD4sDxe5T" # EXAMPLE
 PRIVATE_KEY = "ETH_PRIVATE_KEY"
 ETHERSCAN_API_KEY = "ETHERSCAN_KEY"
 POLYGONSCAN_API_KEY = "POLYGONSCAN_KEY"
 ```
+
+Support networks:
+1. Goerli (`goerli`)
+2. Mumbai (`mumbai`)
+3. Mainnet ETH (`mainnet`)
+4. Polygon mainnet (`polygon`)
+5. Local (`local`) # for Ganache
 
 ## Using
 
