@@ -1462,7 +1462,7 @@ pragma solidity 0.6.6;
 
 
 
-contract PlushCoinChild is
+contract ChildERC20 is
 ERC20,
 IChildToken,
 AccessControlMixin,
@@ -1478,7 +1478,7 @@ ContextMixin
         uint8 decimals_,
         address childChainManager
     ) public ERC20(name_, symbol_) {
-        _setupContractId("PlushCoinChild");
+        _setupContractId("ChildERC20");
         _setupDecimals(decimals_);
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(DEPOSITOR_ROLE, childChainManager);
