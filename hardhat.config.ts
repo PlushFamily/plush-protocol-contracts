@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
+import '@openzeppelin/hardhat-upgrades';
 
 const {
   NETWORK,
