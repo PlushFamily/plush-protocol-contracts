@@ -18,9 +18,9 @@ contract PlushFaucet {
 
     constructor (address _smtAddress)
     {
-        faucetTime = 24 hours;
-        faucetDripAmount = 1;
         token = IERC20(_smtAddress);
+        faucetTime = 24 hours;
+        faucetDripAmount = 1 * 10 ** token.decimals();
         owner = msg.sender;
     }
 
@@ -30,15 +30,15 @@ contract PlushFaucet {
         _;
     }
 
-    function send(address _sender) external
+    function send(address _receiver) external
     {
-        require(token.balanceOf(address(this)) >= 1, "FaucetError: Empty");
-        require(nextRequestAt[_sender] < block.timestamp, "FaucetError: Try again later");
+        require(token.balanceOf(address(this)) > 1, "FaucetError: Empty");
+        require(nextRequestAt[_receiver] < block.timestamp, "FaucetError: Try again later");
 
         // Next request from the address can be made only after faucetTime
-        nextRequestAt[_sender] = block.timestamp + faucetTime;
+        nextRequestAt[_receiver] = block.timestamp + faucetTime;
 
-        token.transfer(_sender, faucetDripAmount * 10 ** token.decimals());
+        token.transfer(_receiver, faucetDripAmount);
     }
 
     function setTokenAddress(address _tokenAddr) external onlyOwner
@@ -58,7 +58,7 @@ contract PlushFaucet {
 
     function withdrawTokens(address _receiver, uint256 _amount) external onlyOwner
     {
-        require(token.balanceOf(address(this)) >= _amount * 10 ** token.decimals(), "FaucetError: Insufficient funds");
-        token.transfer(_receiver, _amount * 10 ** token.decimals());
+        require(token.balanceOf(address(this)) >= _amount, "FaucetError: Insufficient funds");
+        token.transfer(_receiver, _amount);
     }
 }

@@ -3,13 +3,13 @@ import hre from 'hardhat';
 import * as args from '../../arguments/plushFaucetArgs';
 
 async function main() {
-  const PlushCoin = await hre.ethers.getContractFactory('PlushFaucet');
-  const plushCoin = await PlushCoin.deploy(
+  const PlushFaucet = await hre.ethers.getContractFactory('PlushFaucet');
+  const plushFaucet = await PlushFaucet.deploy(
       args.default[0]
   );
 
-  await plushCoin.deployed();
-  console.log('PlushFaucet -> deployed to address:', plushCoin.address);
+  await plushFaucet.deployed();
+  console.log('PlushFaucet -> deployed to address:', plushFaucet.address);
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
@@ -19,7 +19,7 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushCoin.address,
+      address: plushFaucet.address,
       constructorArguments: [args.default[0]]
     });
   }
