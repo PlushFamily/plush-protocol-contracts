@@ -53,3 +53,13 @@ Support networks:
 2. It is necessary to set a working network in `.env` file in the variable `NETWORK`
 3. Change the values in the contract call arguments
 4. To deploy contract use: `npx hardhat run scripts/deploy/{ScriptName}`
+
+
+## Deployment contracts priority
+
+1. PlushCoin on ETH network
+2. PlushCoinPolygon on Polygon network
+3. PlushCoinPolygonProxy on Polygon network (with contract address args from step 2)
+4. PlushCoreToken on Polygon network
+5. PlushForest on Polygon network
+6. PlushGetTree on Polygon network (with contract address args from step 2,5)
