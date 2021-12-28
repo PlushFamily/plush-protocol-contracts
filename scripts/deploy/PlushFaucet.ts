@@ -5,7 +5,8 @@ import * as args from '../../arguments/plushFaucetArgs';
 async function main() {
   const PlushFaucet = await hre.ethers.getContractFactory('PlushFaucet');
   const plushFaucet = await PlushFaucet.deploy(
-      args.default[0]
+      args.default[0],
+      args.default[1]
   );
 
   await plushFaucet.deployed();
@@ -20,7 +21,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushFaucet.address,
-      constructorArguments: [args.default[0]]
+      constructorArguments: [args.default[0], args.default[1]]
     });
   }
 }
