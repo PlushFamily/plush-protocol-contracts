@@ -1,11 +1,11 @@
 import hre from 'hardhat';
 
 async function main() {
-  const PlushCoin = await hre.ethers.getContractFactory('PlushCoin');
-  const plushCoin = await PlushCoin.deploy();
+  const Plush = await hre.ethers.getContractFactory('Plush');
+  const plush = await Plush.deploy();
 
-  await plushCoin.deployed();
-  console.log('PlushCoin -> deployed to address:', plushCoin.address);
+  await plush.deployed();
+  console.log('PlushCoin -> deployed to address:', plush.address);
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
@@ -15,8 +15,8 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushCoin.address,
-      contract: 'contracts/PlushCoin.sol:PlushCoin',
+      address: plush.address,
+      contract: 'contracts/Plush.sol:Plush',
     });
   }
 }

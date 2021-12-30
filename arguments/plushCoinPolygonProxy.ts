@@ -1,3 +1,3 @@
 export default [
-  '0xc7D24A967E71eCc5b92a09E718e5E1f2d745fFA7', // PlushCoin Polygon address
+  '0x26a22c97Dd308657adA714D9ee0C08233b05fD48', // PlushCoin Polygon address
 ];

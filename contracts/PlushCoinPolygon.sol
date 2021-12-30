@@ -1,4 +1,3 @@
-
 // File: @openzeppelin/contracts/GSN/Context.sol
 
 // SPDX-License-Identifier: MIT
@@ -416,7 +415,7 @@ library Address {
 
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.6;
+pragma solidity ^0.6.0;
 
 
 
@@ -1261,8 +1260,6 @@ contract EIP712Base is Initializable {
         bytes32 salt;
     }
 
-    string constant public ERC712_VERSION = "1";
-
     bytes32 internal constant EIP712_DOMAIN_TYPEHASH = keccak256(
         bytes(
             "EIP712Domain(string name,string version,address verifyingContract,bytes32 salt)"
@@ -1274,20 +1271,21 @@ contract EIP712Base is Initializable {
     // one of the contractsa that inherits this contract follows proxy pattern
     // so it is not possible to do this in a constructor
     function _initializeEIP712(
-        string memory name
+        string memory name,
+        string memory version
     )
     internal
     initializer
     {
-        _setDomainSeperator(name);
+        _setDomainSeperator(name, version);
     }
 
-    function _setDomainSeperator(string memory name) internal {
+    function _setDomainSeperator(string memory name, string memory version) internal {
         domainSeperator = keccak256(
             abi.encode(
                 EIP712_DOMAIN_TYPEHASH,
                 keccak256(bytes(name)),
-                keccak256(bytes(ERC712_VERSION)),
+                keccak256(bytes(version)),
                 address(this),
                 bytes32(getChainId())
             )
@@ -1431,6 +1429,20 @@ contract NativeMetaTransaction is EIP712Base {
     }
 }
 
+// File: contracts/ChainConstants.sol
+
+pragma solidity 0.6.6;
+
+contract ChainConstants {
+    string constant public ERC712_VERSION = "1";
+
+    uint256 constant public ROOT_CHAIN_ID = 1;
+    bytes constant public ROOT_CHAIN_ID_BYTES = hex"01";
+
+    uint256 constant public CHILD_CHAIN_ID = 137;
+    bytes constant public CHILD_CHAIN_ID_BYTES = hex"89";
+}
+
 // File: contracts/common/ContextMixin.sol
 
 pragma solidity 0.6.6;
@@ -1468,11 +1480,13 @@ pragma solidity 0.6.6;
 
 
 
+
 contract UChildERC20 is
 ERC20,
 IChildToken,
 AccessControlMixin,
 NativeMetaTransaction,
+ChainConstants,
 ContextMixin
 {
     bytes32 public constant DEPOSITOR_ROLE = keccak256("DEPOSITOR_ROLE");
@@ -1498,7 +1512,7 @@ ContextMixin
         _setupContractId(string(abi.encodePacked("Child", symbol_)));
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(DEPOSITOR_ROLE, childChainManager);
-        _initializeEIP712(name_);
+        _initializeEIP712(name_, ERC712_VERSION);
     }
 
     // This is to support Native meta transactions
@@ -1510,11 +1524,6 @@ ContextMixin
     returns (address payable sender)
     {
         return ContextMixin.msgSender();
-    }
-
-    function changeName(string calldata name_) external only(DEFAULT_ADMIN_ROLE) {
-        setName(name_);
-        _setDomainSeperator(name_);
     }
 
     /**
