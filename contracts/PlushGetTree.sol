@@ -12,7 +12,6 @@ contract PlushGetTree is Ownable {
     Plush plush;
     bool public isActive;
     address safeAddress;
-    string[] trees;
 
     mapping(string => Tree) treeMap;
 
@@ -34,29 +33,12 @@ contract PlushGetTree is Ownable {
     function addTreeType(string memory _type, uint256 _price, uint256 _count) external onlyOwner {
         require(!treeMap[_type].isValid, 'This type of tree already exists');
 
-        trees.push(_type);
         treeMap[_type] = Tree(true, _type, _price, _count);
     }
 
     function removeTreeType(string memory _type) external onlyOwner {
         require(treeMap[_type].isValid, 'Not a valid tree type.');
-
-        uint256 index;
-
-        for (uint256 i = 0; i < trees.length; i++) {
-            if (keccak256(abi.encodePacked(trees[i])) == keccak256(abi.encodePacked(_type))) {
-                index = i;
-            }
-        }
-
-        trees[index] = trees[trees.length - 1];
-
-        trees.pop();
         delete treeMap[_type];
-    }
-
-    function getTreeTypes() external view returns(string[] memory) {
-        return trees;
     }
 
     function getTreeTypeCount(string memory _type) external view returns(uint256) {

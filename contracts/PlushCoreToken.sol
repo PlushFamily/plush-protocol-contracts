@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// Plush Token v4
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -17,7 +16,7 @@ contract PlushCoreToken is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable,
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Plush Token V4", "PLUSH") {
+    constructor() ERC721("Plush Token", "PLUSH") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(PAUSER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
