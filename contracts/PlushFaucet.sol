@@ -50,7 +50,7 @@ contract PlushFaucet {
         require(generalAmount[_receiver] < threshold, "FaucetError: You have exceeded the maximum number of coins");
 
         if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_receiver) > 0, "FaucetError: You don't have NTF(Plush Core Token) to get reward");
+            require(plushCoreToken.balanceOf(_receiver) > 0, "FaucetError: You don't have NFT(Plush Core Token) to get reward");
         }
 
         // Next request from the address can be made only after faucetTime
@@ -143,7 +143,7 @@ contract PlushFaucet {
         require(generalAmount[_receiver] < threshold, "You have exceeded the maximum number of tokens");
 
         if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_receiver) > 0, "FaucetError: You don't have NTF(Plush Core Token) to get reward");
+            require(plushCoreToken.balanceOf(_receiver) > 0, "FaucetError: You don't have NFT(Plush Core Token) to get reward");
         }
 
         return true;

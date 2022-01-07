@@ -1,4 +1,4 @@
 export default [
-  '0xE50865b4aa2fFe57a0cf4ADb64802Ea28426bc72', // Plush Coin address
-  '0x1c6f67D808Bf60EF0a8C8E8A6972f664cEDb85D6' // Plush Core Token address
+  '0x33044d2c29686795228B89b11D2d34727b8dF9bc', // Plush Coin address
+  '0x9B9372B987a317C4bcEf26919AC20713CE33330c', // Plush Core Token address
 ];
