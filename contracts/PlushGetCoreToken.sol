@@ -9,6 +9,11 @@ import "./PlushCoreToken.sol";
 
 contract PlushGetCoreToken is Ownable {
 
+    event coreTokenChecked(
+        address _holder,
+        uint _bal,
+        bool _result);
+
     PlushCoreToken plushCoreToken;
     address  payable safeAddress;
     uint256 mintPrice;
@@ -22,6 +27,17 @@ contract PlushGetCoreToken is Ownable {
         mintPrice = 0.001 ether;
         tokenNFTCheck = true;
         isActive = true;
+    }
+
+    function checkToken(address _address) private returns (bool){
+        bool result;
+        if (plushCoreToken.balanceOf(_address) > 0) {
+            result = true;
+        } else {
+            result = false;
+        }
+        emit coreTokenChecked(_address, plushCoreToken.balanceOf(_address), result);
+        return result;
     }
 
     function pause() public onlyOwner {
@@ -38,7 +54,7 @@ contract PlushGetCoreToken is Ownable {
         mintPrice = _price;
     }
 
-    function getMintPrice() external view returns(uint256) {
+    function getMintPrice() external view returns (uint256) {
         return mintPrice;
     }
 
@@ -50,20 +66,20 @@ contract PlushGetCoreToken is Ownable {
         plushCoreToken = PlushCoreToken(_address);
     }
 
-    function getSafeAddress() external view onlyOwner returns(address) {
+    function getSafeAddress() external view onlyOwner returns (address) {
         return safeAddress;
     }
 
-    function getCoreTokenAddress() external view onlyOwner returns(address) {
+    function getCoreTokenAddress() external view onlyOwner returns (address) {
         return address(plushCoreToken);
     }
 
-    function mint(address _mintAddress) public payable{
+    function mint(address _mintAddress) public payable {
         require(isActive, "Contract is not active");
         require(uint256(msg.value) == mintPrice, "Incorrect amount");
 
-        if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_mintAddress) == 0, "You already have a Core token");
+        if (tokenNFTCheck) {
+            require(checkToken(_mintAddress) == false, "You already have a Core token");
         }
 
         safeAddress.transfer(msg.value);
