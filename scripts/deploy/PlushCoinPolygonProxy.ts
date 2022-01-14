@@ -1,5 +1,5 @@
 import hre from 'hardhat';
-import * as args from '../../arguments/plushCoinPolygonProxy';
+import * as args from '../../arguments/plushCoinPolygonProxyArgs';
 
 async function main() {
   const PlushCoinPolygonProxy = await hre.ethers.getContractFactory(
