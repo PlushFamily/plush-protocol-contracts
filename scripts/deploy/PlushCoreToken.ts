@@ -1,8 +1,10 @@
-import hre from 'hardhat';
+import { ethers, upgrades, run } from 'hardhat';
 
 async function main() {
-  const PlushCoreToken = await hre.ethers.getContractFactory('PlushCoreToken');
-  const plushCoreToken = await PlushCoreToken.deploy();
+  const PlushCoreToken = await ethers.getContractFactory('PlushCoreToken');
+  const plushCoreToken = await upgrades.deployProxy(PlushCoreToken, {
+    kind: 'uups',
+  });
 
   await plushCoreToken.deployed();
   console.log('PlushCoreToken -> deployed to address:', plushCoreToken.address);
@@ -14,7 +16,7 @@ async function main() {
     });
     console.log('Verifying...\n');
 
-    await hre.run('verify:verify', {
+    await run('verify:verify', {
       address: plushCoreToken.address,
     });
   }

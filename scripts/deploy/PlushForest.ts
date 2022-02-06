@@ -1,8 +1,10 @@
-import hre from 'hardhat';
+import { ethers, upgrades, run } from 'hardhat';
 
 async function main() {
-  const PlushForest = await hre.ethers.getContractFactory('PlushForest');
-  const plushForest = await PlushForest.deploy();
+  const PlushForest = await ethers.getContractFactory('PlushForest');
+  const plushForest = await upgrades.deployProxy(PlushForest, {
+    kind: 'uups',
+  });
 
   await plushForest.deployed();
   console.log('PlushForest -> deployed to address:', plushForest.address);
@@ -14,7 +16,7 @@ async function main() {
     });
     console.log('Verifying...\n');
 
-    await hre.run('verify:verify', {
+    await run('verify:verify', {
       address: plushForest.address,
     });
   }
