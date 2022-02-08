@@ -8,8 +8,6 @@ This repository contains the source code for Ethereum contracts.
 
 `contracts` directory with source code of contracts
 
-`contracts/old` directory with source code of old contracts
-
 `scripts/deploy` directory with scripts for deploying contracts
 
 `hardhat.config.ts` hardhat configuration
@@ -38,6 +36,8 @@ POLYGON_API_URL = "https://eth-polygon.alchemyapi.io/v2/x-L3PRORMY7KyYFFMH9Gny4Y
 PRIVATE_KEY = "ETH_PRIVATE_KEY"
 ETHERSCAN_API_KEY = "ETHERSCAN_KEY"
 POLYGONSCAN_API_KEY = "POLYGONSCAN_KEY"
+DEFENDER_TEAM_API_KEY = "DEFENDER_TEAM_API_KEY"
+DEFENDER_TEAM_API_SECRET_KEY = "DEFENDER_TEAM_API_SECRET_KEY"
 ```
 
 Support networks:
