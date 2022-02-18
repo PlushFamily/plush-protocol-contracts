@@ -4,14 +4,16 @@ pragma solidity ^0.8.2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./PlushForest.sol";
 import "./Plush.sol";
+import "./PlushCoinWallets.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetTree is Ownable {
 
     PlushForest plushForest;
     Plush plush;
+    PlushCoinWallets plushCoinWallets;
+
     bool public isActive;
-    address safeAddress;
 
     mapping(string => Tree) treeMap;
 
@@ -22,12 +24,12 @@ contract PlushGetTree is Ownable {
         uint256 count;
     }
 
-    constructor(address _plushForestAddress, address _plushAddress, address _safeAddress)
+    constructor(address _plushForestAddress, address _plushAddress, address _plushCoinWalletsAddress)
     {
         isActive = true;
         plushForest = PlushForest(_plushForestAddress);
         plush = Plush(_plushAddress);
-        safeAddress = _safeAddress;
+        plushCoinWallets = PlushCoinWallets(_plushCoinWalletsAddress);
     }
 
     function addTreeType(string memory _type, uint256 _price, uint256 _count) external onlyOwner {
@@ -64,24 +66,14 @@ contract PlushGetTree is Ownable {
         treeMap[_type].count = _count;
     }
 
-    function setSafeAddress(address _address) external onlyOwner {
-        safeAddress = _address;
-    }
-
-    function getSafeAddress() external view onlyOwner returns(address) {
-        return safeAddress;
-    }
-
     function mint(address _mintAddress, uint256 _amount, string memory _type) public {
         require(isActive);
         require(treeMap[_type].isValid, "Not a valid tree type.");
         require(treeMap[_type].count > 0, "The trees are over.");
         require(_amount == treeMap[_type].price, "Minting fee");
-        require(plush.balanceOf(msg.sender) >= _amount, "Not enough balance.");
-        require(plush.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance.");
+        require(plushCoinWallets.getWalletAmount(msg.sender) >= _amount, 'Not enough balance.');
 
-        plush.transferFrom(msg.sender, safeAddress, _amount);
-
+        plushCoinWallets.decreaseWalletAmount(msg.sender, _amount);
         plushForest.safeMint(_mintAddress);
         treeMap[_type].count = treeMap[_type].count - 1;
     }
