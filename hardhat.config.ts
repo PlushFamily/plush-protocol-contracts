@@ -51,7 +51,7 @@ export default {
   solidity: {
     compilers: [
       {
-        version: '0.8.10',
+        version: '0.8.9',
       },
       {
         version: '0.8.2',
@@ -68,19 +68,19 @@ export default {
     ],
     overrides: {
       'contracts/PlushCoin.sol': {
-        version: '0.8.10',
+        version: '0.8.9',
       },
       'contracts/PlushCoreToken.sol': {
-        version: '0.8.10',
+        version: '0.8.9',
       },
       'contracts/PlushForest.sol': {
-        version: '0.8.10',
+        version: '0.8.9',
       },
       'contracts/PlushGetTree.sol': {
-        version: '0.8.10',
+        version: '0.8.9',
       },
       'contracts/PlushGetCoreToken.sol': {
-        version: '0.8.10',
+        version: '0.8.9',
       },
       'contracts/PlushCoinPolygon.sol': {
         version: '0.6.6',
