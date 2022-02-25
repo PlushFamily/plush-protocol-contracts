@@ -7,16 +7,16 @@ async function main() {
   );
 
   const plushCoinWallets = await PlushCoinWallets.deploy(
-      args.default[0],
-      args.default[1],
-      args.default[2],
+    args.default[0],
+    args.default[1],
+    args.default[2],
   );
 
   await plushCoinWallets.deployed();
 
   console.log(
-      'PlushCoinWallets -> deployed to address:',
-      plushCoinWallets.address,
+    'PlushCoinWallets -> deployed to address:',
+    plushCoinWallets.address,
   );
 
   if (process.env.NETWORK != 'local') {
@@ -33,8 +33,8 @@ async function main() {
   }
 }
 main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error(error);
-      process.exit(1);
-    });
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
