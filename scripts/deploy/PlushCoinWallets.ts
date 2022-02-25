@@ -3,7 +3,7 @@ import * as args from '../../arguments/plushCoinWalletsArgs';
 
 async function main() {
   const PlushCoinWallets = await hre.ethers.getContractFactory(
-      'PlushCoinWallets'
+    'PlushCoinWallets'
   );
 
   const plushCoinWallets = await PlushCoinWallets.deploy(

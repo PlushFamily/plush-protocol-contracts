@@ -3,20 +3,27 @@ import hre from 'hardhat';
 import * as args from '../../arguments/plushController';
 
 async function main() {
-  const PlushController = await hre.ethers.getContractFactory('PlushController');
+  const PlushController = await hre.ethers.getContractFactory(
+    'PlushController'
+  );
+
   const plushController = await PlushController.deploy(
-      args.default[0],
-      args.default[1],
+    args.default[0],
+    args.default[1],
   );
 
   await plushController.deployed();
-  console.log('PlushController -> deployed to address:', plushController.address);
+
+  console.log('PlushController -> deployed to address:',
+    plushController.address,
+  );
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
     await new Promise(function (resolve) {
       setTimeout(resolve, 60000);
     });
+
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
