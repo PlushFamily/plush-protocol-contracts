@@ -71,7 +71,7 @@ contract PlushGetTree is Ownable {
         require(treeMap[_type].isValid, "Not a valid tree type.");
         require(treeMap[_type].count > 0, "The trees are over.");
         require(_amount == treeMap[_type].price, "Minting fee");
-        require(plushCoinWallets.getWalletAmount(msg.sender) >= _amount, 'Not enough balance.');
+        require(plushCoinWallets.getWalletAmount(msg.sender) >= _amount, "Not enough balance.");
 
         plushCoinWallets.decreaseWalletAmount(msg.sender, _amount);
         plushForest.safeMint(_mintAddress);

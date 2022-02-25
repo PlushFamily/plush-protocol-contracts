@@ -21,7 +21,7 @@ contract PlushController is Ownable {
 
     function addNewWithdrawalAddress(address _withdrawalAddress) external onlyOwner
     {
-        require(!withdrawalAddressExist(_withdrawalAddress), 'This address already exists.');
+        require(!withdrawalAddressExist(_withdrawalAddress), "This address already exists.");
 
         index[_withdrawalAddress] = withdrawalAddresses.length + 1;
         withdrawalAddresses.push(_withdrawalAddress);
@@ -29,7 +29,7 @@ contract PlushController is Ownable {
 
     function deleteWithdrawalAddress(address _address) external onlyOwner
     {
-        require(withdrawalAddressExist(_address), 'There is no such address.');
+        require(withdrawalAddressExist(_address), "There is no such address.");
 
         delete withdrawalAddresses[index[_address] - 1];
         delete index[_address];
@@ -51,8 +51,8 @@ contract PlushController is Ownable {
 
     function withdraw(uint256 _amount) external
     {
-        require(withdrawalAddressExist(msg.sender), 'Withdrawal is not available for this address.');
-        require(getAvailableBalanceForWithdrawal() >= _amount, 'Not enough balance.');
+        require(withdrawalAddressExist(msg.sender), "Withdrawal is not available.");
+        require(getAvailableBalanceForWithdrawal() >= _amount, "Not enough balance.");
 
         plushCoinWallets.withdrawByController(_amount, msg.sender);
     }
