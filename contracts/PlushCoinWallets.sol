@@ -65,7 +65,7 @@ contract PlushCoinWallets is Ownable {
         require(walletInfo[_wallet].balance >= _amount, "Not enough balance.");
         require(plushApps.getIsAddressActive(msg.sender) == true, "You have no rights.");
 
-        uint256 percent = _amount * (plushApps.getFeeApp(msg.sender) / 1000) / 100;
+        uint256 percent = _amount * plushApps.getFeeApp(msg.sender) / 100000;
 
         walletInfo[_wallet].balance -= _amount;
         walletInfo[plushApps.getControllerAddress(msg.sender)].balance += _amount - percent;
