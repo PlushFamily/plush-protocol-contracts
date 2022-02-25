@@ -30,8 +30,8 @@ contract PlushCoinWallets is Ownable {
 
     function deposit(uint256 _amount) public
     {
-        require(plush.balanceOf(msg.sender) >= _amount, 'Not enough balance.');
-        require(plush.allowance(msg.sender, address(this)) >= _amount, 'Not enough allowance.');
+        require(plush.balanceOf(msg.sender) >= _amount, "Not enough balance.");
+        require(plush.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance.");
 
         increaseWalletAmount(msg.sender, _amount);
         plush.transferFrom(msg.sender, address(this), _amount);
@@ -39,7 +39,7 @@ contract PlushCoinWallets is Ownable {
 
     function withdraw(uint256 _amount) external
     {
-        require(walletInfo[msg.sender].balance >= _amount, 'Not enough balance.');
+        require(walletInfo[msg.sender].balance >= _amount, "Not enough balance.");
 
         walletInfo[msg.sender].balance -= _amount;
         plush.transfer(msg.sender, _amount);
@@ -47,7 +47,7 @@ contract PlushCoinWallets is Ownable {
 
     function withdrawByController(uint256 _amount, address _address) external
     {
-        require(walletInfo[msg.sender].balance >= _amount, 'Not enough balance.');
+        require(walletInfo[msg.sender].balance >= _amount, "Not enough balance.");
 
         walletInfo[msg.sender].balance -= _amount;
         plush.transfer(_address, _amount);
@@ -55,15 +55,15 @@ contract PlushCoinWallets is Ownable {
 
     function increaseWalletAmount(address _wallet, uint256 _amount) private
     {
-        require(_amount >= minimumBet, 'Less than the minimum bet.');
+        require(_amount >= minimumBet, "Less than minimum deposit.");
 
         walletInfo[_wallet].balance += _amount;
     }
 
     function decreaseWalletAmount(address _wallet, uint256 _amount) public
     {
-        require(walletInfo[_wallet].balance >= _amount, 'Not enough balance.');
-        require(plushApps.getIsAddressActive(msg.sender) == true, 'You have no rights.');
+        require(walletInfo[_wallet].balance >= _amount, "Not enough balance.");
+        require(plushApps.getIsAddressActive(msg.sender) == true, "You have no rights.");
 
         uint256 percent = _amount * (plushApps.getFeeApp(msg.sender) / 1000) / 100;
 
