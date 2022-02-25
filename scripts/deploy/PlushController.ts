@@ -4,7 +4,7 @@ import * as args from '../../arguments/plushController';
 
 async function main() {
   const PlushController = await hre.ethers.getContractFactory(
-    'PlushController'
+    'PlushController',
   );
 
   const plushController = await PlushController.deploy(
@@ -14,7 +14,8 @@ async function main() {
 
   await plushController.deployed();
 
-  console.log('PlushController -> deployed to address:',
+  console.log(
+    'PlushController -> deployed to address:',
     plushController.address,
   );
 
