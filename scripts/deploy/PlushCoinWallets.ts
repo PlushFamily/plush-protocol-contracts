@@ -2,15 +2,22 @@ import hre from 'hardhat';
 import * as args from '../../arguments/plushCoinWalletsArgs';
 
 async function main() {
-  const PlushCoinWallets = await hre.ethers.getContractFactory('PlushCoinWallets');
+  const PlushCoinWallets = await hre.ethers.getContractFactory(
+      'PlushCoinWallets'
+  );
+
   const plushCoinWallets = await PlushCoinWallets.deploy(
       args.default[0],
       args.default[1],
-      args.default[2]
+      args.default[2],
   );
 
   await plushCoinWallets.deployed();
-  console.log('PlushCoinWallets -> deployed to address:', plushCoinWallets.address);
+
+  console.log(
+      'PlushCoinWallets -> deployed to address:',
+      plushCoinWallets.address,
+  );
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
