@@ -10,8 +10,11 @@ contract PlushController is Ownable {
     Plush plush;
     PlushCoinWallets plushCoinWallets;
 
-    mapping (address => uint) index;
+    mapping (address => uint) indexWithdrawal;
     address[] withdrawalAddresses;
+
+    mapping (address => uint) indexApps;
+    address[] appAddresses;
 
     constructor(address _plushAddress, address _plushCoinWalletsAddress)
     {
@@ -23,21 +26,46 @@ contract PlushController is Ownable {
     {
         require(!withdrawalAddressExist(_withdrawalAddress), "This address already exists.");
 
-        index[_withdrawalAddress] = withdrawalAddresses.length + 1;
+        indexWithdrawal[_withdrawalAddress] = withdrawalAddresses.length + 1;
         withdrawalAddresses.push(_withdrawalAddress);
     }
 
-    function deleteWithdrawalAddress(address _address) external onlyOwner
+    function deleteWithdrawalAddress(address _withdrawalAddress) external onlyOwner
     {
-        require(withdrawalAddressExist(_address), "There is no such address.");
+        require(withdrawalAddressExist(_withdrawalAddress), "There is no such address.");
 
-        delete withdrawalAddresses[index[_address] - 1];
-        delete index[_address];
+        delete withdrawalAddresses[indexWithdrawal[_withdrawalAddress] - 1];
+        delete indexWithdrawal[_withdrawalAddress];
+    }
+
+    function addNewAppAddress(address _appAddress) external onlyOwner
+    {
+        require(!appAddressExist(_appAddress), "This app already exists.");
+
+        indexApps[_appAddress] = appAddresses.length + 1;
+        appAddresses.push(_appAddress);
+    }
+
+    function deleteAppAddress(address _appAddress) external onlyOwner
+    {
+        require(appAddressExist(_appAddress), "There is no such app.");
+
+        delete appAddresses[indexApps[_appAddress] - 1];
+        delete indexApps[_appAddress];
     }
 
     function withdrawalAddressExist(address _address) public view returns (bool)
     {
-        if (index[_address] > 0) {
+        if (indexWithdrawal[_address] > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function appAddressExist(address _address) public view returns (bool)
+    {
+        if (indexApps[_address] > 0) {
             return true;
         }
 
@@ -55,5 +83,20 @@ contract PlushController is Ownable {
         require(getAvailableBalanceForWithdrawal() >= _amount, "Not enough balance.");
 
         plushCoinWallets.withdrawByController(_amount, msg.sender);
+    }
+
+    function getAllWithdrawalAddresses() public view returns (address[] memory)
+    {
+        return withdrawalAddresses;
+    }
+
+    function getAllAppAddresses() public view returns (address[] memory)
+    {
+        return appAddresses;
+    }
+
+    function decreaseWalletAmountTrans(address _address, uint256 _amount) external
+    {
+        plushCoinWallets.decreaseWalletAmount(_address, _amount);
     }
 }

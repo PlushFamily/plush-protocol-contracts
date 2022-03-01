@@ -68,7 +68,7 @@ contract PlushCoinWallets is Ownable {
         uint256 percent = _amount * plushApps.getFeeApp(msg.sender) / 100000;
 
         walletInfo[_wallet].balance -= _amount;
-        walletInfo[plushApps.getControllerAddress(msg.sender)].balance += _amount - percent;
+        walletInfo[msg.sender].balance += _amount - percent;
         walletInfo[plushFeeWallet].balance += percent;
     }
 

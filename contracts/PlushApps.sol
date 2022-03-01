@@ -9,71 +9,70 @@ contract PlushApps is Ownable {
     {
         string name;
         bool active;
-        address controllerAddress;
         bool created;
         uint256 fee;
     }
 
     mapping(address => Apps) public appsInfo;
 
-    function deleteApp(address _appAddress) external onlyOwner
+    function deleteApp(address _controllerAddress) public onlyOwner
     {
-        require(isInStruct(_appAddress), "There is no such application.");
+        require(isInStruct(_controllerAddress), "There is no such application.");
 
-        delete appsInfo[_appAddress];
+        delete appsInfo[_controllerAddress];
     }
 
-    function addNewApp(string memory _name, address _appAddress, address _controllerAddress, uint256 _fee) external onlyOwner
+    function addNewApp(string memory _name, address _controllerAddress, uint256 _fee) external onlyOwner
     {
-        require(isInStruct(_appAddress) == false, "Application already exists.");
+        require(isInStruct(_controllerAddress) == false, "Application already exists.");
 
-        appsInfo[_appAddress].name = _name;
-        appsInfo[_appAddress].active = true;
-        appsInfo[_appAddress].created = true;
-        appsInfo[_appAddress].controllerAddress = _controllerAddress;
-        appsInfo[_appAddress].fee = _fee;
+        appsInfo[_controllerAddress].name = _name;
+        appsInfo[_controllerAddress].active = true;
+        appsInfo[_controllerAddress].created = true;
+        appsInfo[_controllerAddress].fee = _fee;
     }
 
-    function getFeeApp(address _appAddress) public view returns(uint256)
+    function getFeeApp(address _controllerAddress) public view returns(uint256)
     {
-        require(isInStruct(_appAddress), "There is no such application.");
+        require(isInStruct(_controllerAddress), "There is no such application.");
 
-        return appsInfo[_appAddress].fee;
+        return appsInfo[_controllerAddress].fee;
     }
 
-    function setFeeApp(address _appAddress, uint256 _fee) external onlyOwner
+    function setFeeApp(address _controllerAddress, uint256 _fee) external onlyOwner
     {
-        require(isInStruct(_appAddress), "There is no such application.");
-        appsInfo[_appAddress].fee = _fee;
+        require(isInStruct(_controllerAddress), "There is no such application.");
+        appsInfo[_controllerAddress].fee = _fee;
     }
 
-    function setIsActive(bool _isActive, address _appAddress ) external onlyOwner
+    function setIsActive(bool _isActive, address _controllerAddress ) external onlyOwner
     {
-        require(isInStruct(_appAddress), "There is no such application.");
+        require(isInStruct(_controllerAddress), "There is no such application.");
 
-        appsInfo[_appAddress].active = _isActive;
+        appsInfo[_controllerAddress].active = _isActive;
     }
 
-    function isInStruct(address _appAddress) private view returns(bool)
+    function setNewController(address _oldControllerAddress, address _newControllerAddress) external onlyOwner
     {
-        if(appsInfo[_appAddress].created){
+        require(isInStruct(_oldControllerAddress), "There is no such application.");
+
+        appsInfo[_newControllerAddress] = appsInfo[_oldControllerAddress];
+        deleteApp(_oldControllerAddress);
+    }
+
+    function isInStruct(address _controllerAddress) private view returns(bool)
+    {
+        if(appsInfo[_controllerAddress].created){
             return true;
         }
 
         return false;
     }
 
-    function getIsAddressActive(address _appAddress) public view returns(bool)
+    function getIsAddressActive(address _controllerAddress) public view returns(bool)
     {
-        require(isInStruct(_appAddress), "There is no such application.");
+        require(isInStruct(_controllerAddress), "There is no such application.");
 
-        return appsInfo[_appAddress].active;
-    }
-
-    function getControllerAddress(address _appAddress) public view returns(address)
-    {
-        require(isInStruct(_appAddress), "There is no such application.");
-
-        return appsInfo[_appAddress].controllerAddress;
+        return appsInfo[_controllerAddress].active;
     }
 }

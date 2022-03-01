@@ -4,14 +4,14 @@ pragma solidity ^0.8.2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./PlushForest.sol";
 import "./Plush.sol";
-import "./PlushCoinWallets.sol";
+import "./PlushController.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetTree is Ownable {
 
     PlushForest plushForest;
     Plush plush;
-    PlushCoinWallets plushCoinWallets;
+    PlushController plushController;
 
     bool public isActive;
 
@@ -24,12 +24,12 @@ contract PlushGetTree is Ownable {
         uint256 count;
     }
 
-    constructor(address _plushForestAddress, address _plushAddress, address _plushCoinWalletsAddress)
+    constructor(address _plushForestAddress, address _plushAddress, address _plushControllerAddress)
     {
         isActive = true;
         plushForest = PlushForest(_plushForestAddress);
         plush = Plush(_plushAddress);
-        plushCoinWallets = PlushCoinWallets(_plushCoinWalletsAddress);
+        plushController = PlushController(_plushControllerAddress);
     }
 
     function addTreeType(string memory _type, uint256 _price, uint256 _count) external onlyOwner {
@@ -71,9 +71,8 @@ contract PlushGetTree is Ownable {
         require(treeMap[_type].isValid, "Not a valid tree type.");
         require(treeMap[_type].count > 0, "The trees are over.");
         require(_amount == treeMap[_type].price, "Minting fee");
-        require(plushCoinWallets.getWalletAmount(msg.sender) >= _amount, "Not enough balance.");
 
-        plushCoinWallets.decreaseWalletAmount(msg.sender, _amount);
+        plushController.decreaseWalletAmountTrans(msg.sender, _amount);
         plushForest.safeMint(_mintAddress);
         treeMap[_type].count = treeMap[_type].count - 1;
     }
