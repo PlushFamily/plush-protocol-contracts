@@ -1,5 +1,5 @@
 export default [
-  '0xA91Df8C75674Ab1111D13dDd708347d0D0F0ACF4', // Forest address
-  '0x33044d2c29686795228B89b11D2d34727b8dF9bc', // Plush Coin address
-  '0xcfD6924CB8F8cdd10535fc0B5104B41572D62D0d', // withdrawal address
+  '0x9Be9B2ef6d852Df3CaaE612DA00Ec417b1F5962F', // Forest address
+  '0xF8923D6214150A71d9EDA0946e5ae1086Ba3f141', // Plush Coin address
+  '0x84fBcB2EbcC30590C69D1ae094f66F2EAe74C51c', // Plush Coin Forest Controller
 ];

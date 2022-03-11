@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: UNLISCENSED
-
 pragma solidity ^0.8.2;
 
 import "./PlushCoreToken.sol";
