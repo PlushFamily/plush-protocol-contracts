@@ -1,7 +1,7 @@
-require('hardhat-contract-sizer');
-
+import 'hardhat-contract-sizer';
 import 'dotenv/config';
-import '@nomiclabs/hardhat-waffle';
+import '@nomiclabs/hardhat-ethers';
+import '@nomiclabs/hardhat-etherscan';
 import '@openzeppelin/hardhat-upgrades';
 
 const {
