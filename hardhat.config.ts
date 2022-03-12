@@ -1,6 +1,7 @@
+require('hardhat-contract-sizer');
+
 import 'dotenv/config';
-import '@nomiclabs/hardhat-ethers';
-import '@nomiclabs/hardhat-etherscan';
+import '@nomiclabs/hardhat-waffle';
 import '@openzeppelin/hardhat-upgrades';
 
 const {
@@ -52,48 +53,137 @@ export default {
     compilers: [
       {
         version: '0.8.9',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
+        version: '0.8.4',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       {
         version: '0.8.2',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       {
         version: '0.6.6',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       {
         version: '0.6.2',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       {
         version: '0.6.0',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
     ],
     overrides: {
       'contracts/PlushCoin.sol': {
         version: '0.8.9',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       'contracts/PlushCoreToken.sol': {
         version: '0.8.9',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       'contracts/PlushForest.sol': {
         version: '0.8.9',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       'contracts/PlushGetTree.sol': {
         version: '0.8.9',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       'contracts/PlushGetCoreToken.sol': {
         version: '0.8.9',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      'contracts/PlushOperationsDAO.sol': {
+        version: '0.8.4',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       'contracts/PlushCoinPolygon.sol': {
         version: '0.6.6',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       'contracts/PlushCoinPolygonProxy.sol': {
         version: '0.6.6',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
     },
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
+    contractSizer: {
+      alphaSort: true,
+      runOnCompile: true,
+      disambiguatePaths: false,
     },
   },
   defaultNetwork: NETWORK,
