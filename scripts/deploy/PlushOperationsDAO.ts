@@ -2,15 +2,15 @@ import hre from 'hardhat';
 
 async function main() {
   const PlushOperationsDAO = await hre.ethers.getContractFactory(
-      'PlushOperationsDAO',
+    'PlushOperationsDAO',
   );
 
   const plushOperationsDAO = await PlushOperationsDAO.deploy();
   await plushOperationsDAO.deployed();
 
   console.log(
-      'PlushOperationsDAO -> deployed to address:',
-      plushOperationsDAO.address
+    'PlushOperationsDAO -> deployed to address:',
+    plushOperationsDAO.address,
   );
 
   if (process.env.NETWORK != 'local') {
