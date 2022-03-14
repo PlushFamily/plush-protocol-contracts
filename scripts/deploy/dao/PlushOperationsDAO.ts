@@ -14,16 +14,15 @@ async function main() {
   );
 
   if (process.env.NETWORK != 'local') {
-    console.log('Waiting 30s before verify contract\n');
+    console.log('Waiting 1m before verify contract\n');
 
     await new Promise(function (resolve) {
-      setTimeout(resolve, 30000);
+      setTimeout(resolve, 60000);
     });
 
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      contract: 'contracts/dao/PlushOperationsDAO.sol',
       address: plushOperationsDAO.address,
     });
   }

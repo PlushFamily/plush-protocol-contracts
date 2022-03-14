@@ -10,9 +10,9 @@ async function main() {
   console.log('PlushCoreToken -> deployed to address:', plushCoreToken.address);
 
   if (process.env.NETWORK != 'local') {
-    console.log('Waiting 30s before verify contract\n');
+    console.log('Waiting 1m before verify contract\n');
     await new Promise(function (resolve) {
-      setTimeout(resolve, 30000);
+      setTimeout(resolve, 60000);
     });
     console.log('Verifying...\n');
 
@@ -20,7 +20,6 @@ async function main() {
       address: await upgrades.erc1967.getImplementationAddress(
         plushCoreToken.address,
       ),
-      contract: 'contracts/protocol/PlushCoreToken.sol',
     });
   }
 }

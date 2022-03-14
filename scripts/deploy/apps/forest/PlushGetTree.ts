@@ -14,15 +14,15 @@ async function main() {
   console.log('PlushGetTree -> deployed to address:', plushGetTree.address);
 
   if (process.env.NETWORK != 'local') {
-    console.log('Waiting 30s before verify contract\n');
+    console.log('Waiting 1m before verify contract\n');
     await new Promise(function (resolve) {
-      setTimeout(resolve, 30000);
+      setTimeout(resolve, 60000);
     });
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
       address: plushGetTree.address,
-      contract: 'contracts/apps/forest/PlushGetTree.sol',
+      contract: 'contracts/apps/forest/PlushGetTree.sol:PlushGetTree',
       constructorArguments: [args.default[0], args.default[1], args.default[2]],
     });
   }
