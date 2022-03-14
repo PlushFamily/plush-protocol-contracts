@@ -20,6 +20,7 @@ async function main() {
       address: await upgrades.erc1967.getImplementationAddress(
         plushCoreToken.address,
       ),
+      contract: 'contracts/protocol/PlushCoreToken.sol',
     });
   }
 }

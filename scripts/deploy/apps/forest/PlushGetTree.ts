@@ -1,5 +1,5 @@
 import hre from 'hardhat';
-import * as args from '../../arguments/plushGetTreeArgs';
+import * as args from '../../../../arguments/plushGetTreeArgs';
 
 async function main() {
   const PlushGetTree = await hre.ethers.getContractFactory('PlushGetTree');
@@ -14,14 +14,15 @@ async function main() {
   console.log('PlushGetTree -> deployed to address:', plushGetTree.address);
 
   if (process.env.NETWORK != 'local') {
-    console.log('Waiting 1m before verify contract\n');
+    console.log('Waiting 30s before verify contract\n');
     await new Promise(function (resolve) {
-      setTimeout(resolve, 60000);
+      setTimeout(resolve, 30000);
     });
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
       address: plushGetTree.address,
+      contract: 'contracts/apps/forest/PlushGetTree.sol',
       constructorArguments: [args.default[0], args.default[1], args.default[2]],
     });
   }

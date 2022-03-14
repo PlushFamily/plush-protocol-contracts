@@ -2,7 +2,8 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./PlushCoreToken.sol";
+
+import "./protocol/PlushCoreToken.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetCoreToken is Ownable {

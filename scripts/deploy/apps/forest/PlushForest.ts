@@ -20,6 +20,7 @@ async function main() {
       address: await upgrades.erc1967.getImplementationAddress(
         plushForest.address,
       ),
+      contract: 'contracts/apps/forest/PlushForest.sol',
     });
   }
 }
