@@ -16,15 +16,17 @@ contract PlushGetCoreToken is Ownable {
     );
 
     PlushCoreToken plushCoreToken;
-    address  payable safeAddress;
-    uint256 mintPrice;
+    address  payable private safeAddress;
+    uint256 public mintPrice;
     bool public tokenNFTCheck;
     bool public isActive;
 
-    constructor(address _plushCoreAddress, address _safeAddress)
+    event TokenMinted(address indexed purchaser, address indexed beneficiary, uint256 amount);
+
+    constructor(address _plushCoreAddress, address payable _safeAddress)
     {
         plushCoreToken = PlushCoreToken(_plushCoreAddress);
-        safeAddress = payable(_safeAddress);
+        safeAddress = _safeAddress;
         mintPrice = 0.001 ether;
         tokenNFTCheck = true;
         isActive = true;
@@ -77,7 +79,7 @@ contract PlushGetCoreToken is Ownable {
         plushCoreToken = PlushCoreToken(_address);
     }
 
-    function getSafeAddress() external view onlyOwner returns (address)
+    function getSafeAddress() public view returns (address payable)
     {
         return safeAddress;
     }
@@ -87,17 +89,25 @@ contract PlushGetCoreToken is Ownable {
         return address(plushCoreToken);
     }
 
-    function mint(address _mintAddress) public payable
+    function mint(address _mintAddress) payable public
     {
         require(isActive, "Contract is not active");
-        require(uint256(msg.value) == mintPrice, "Incorrect amount");
+        require(msg.value == mintPrice, "Incorrect amount");
 
         if (tokenNFTCheck) {
             require(checkUserCoreToken(_mintAddress) == false, "You already have a Core token");
         }
 
-        safeAddress.transfer(msg.value);
         plushCoreToken.safeMint(_mintAddress);
+
+        emit TokenMinted(_msgSender(), _mintAddress, msg.value);
+
+        _forwardFunds();
+    }
+
+    function _forwardFunds() internal {
+        (bool success, ) = safeAddress.call{value: msg.value}("");
+        require(success, "Transfer failed.");
     }
 
 }
