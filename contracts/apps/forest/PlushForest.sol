@@ -78,4 +78,8 @@ contract PlushForest is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrad
     {
         return super.supportsInterface(interfaceId);
     }
+
+    function version() external pure returns (uint256) {
+        return 2;
+    }
 }

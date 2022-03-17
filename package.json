@@ -1,9 +1,9 @@
 {
-  "name": "plush-token-development",
-  "version": "2.2.0",
+  "name": "plush-protocol-contracts",
+  "version": "2.3.0",
   "repository": {
     "type": "git",
-    "url": "git@github.com:PlushFamily/plush-token-development.git"
+    "url": "git@github.com:PlushFamily/plush-protocol-contracts.git"
   },
   "author": "PlushFamily",
   "license": "MIT",
@@ -31,6 +31,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",
     "@openzeppelin/contracts-upgradeable": "^4.5.2",
+    "@openzeppelin/hardhat-defender": "^1.6.0",
     "dotenv": "^16.0.0",
     "hardhat-contract-sizer": "^2.5.0"
   },
