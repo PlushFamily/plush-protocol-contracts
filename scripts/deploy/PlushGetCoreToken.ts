@@ -26,6 +26,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushGetCoreToken.address,
+      contract: 'contracts/PlushGetCoreToken.sol:PlushGetCoreToken',
       constructorArguments: [args.default[0], args.default[1]],
     });
   }

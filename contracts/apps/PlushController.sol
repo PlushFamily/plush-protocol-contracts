@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: UNLISCENSED
 pragma solidity ^0.8.2;
 
-import "./Plush.sol";
-import "./PlushCoinWallets.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+
+import "../protocol/Plush.sol";
+import "../protocol/PlushCoinWallets.sol";
 
 contract PlushController is Ownable {
 

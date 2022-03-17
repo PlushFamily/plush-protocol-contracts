@@ -1,17 +1,23 @@
 import hre from 'hardhat';
-import * as args from '../../arguments/plushGetTreeArgs';
+import * as args from '../../../arguments/plushCoinWalletsArgs';
 
 async function main() {
-  const PlushGetTree = await hre.ethers.getContractFactory('PlushGetTree');
+  const PlushCoinWallets = await hre.ethers.getContractFactory(
+    'PlushCoinWallets',
+  );
 
-  const plushGetTree = await PlushGetTree.deploy(
+  const plushCoinWallets = await PlushCoinWallets.deploy(
     args.default[0],
     args.default[1],
     args.default[2],
   );
 
-  await plushGetTree.deployed();
-  console.log('PlushGetTree -> deployed to address:', plushGetTree.address);
+  await plushCoinWallets.deployed();
+
+  console.log(
+    'PlushCoinWallets -> deployed to address:',
+    plushCoinWallets.address,
+  );
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
@@ -21,7 +27,8 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushGetTree.address,
+      address: plushCoinWallets.address,
+      contract: 'contracts/protocol/PlushCoinWallets.sol:PlushCoinWallets',
       constructorArguments: [args.default[0], args.default[1], args.default[2]],
     });
   }

@@ -21,6 +21,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushFaucet.address,
+      contract: 'contracts/PlushFaucet.sol:PlushFaucet',
       constructorArguments: [args.default[0], args.default[1]],
     });
   }
