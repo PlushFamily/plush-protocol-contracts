@@ -1,5 +1,5 @@
 import hre from 'hardhat';
-import * as args from '../../../arguments/plushCoinPolygonProxyArgs';
+import * as args from '../../../../../arguments/plushCoinPolygonProxyArgs';
 
 async function main() {
   const PlushCoinPolygonProxy = await hre.ethers.getContractFactory(
@@ -24,7 +24,8 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushCoinPolygonProxy.address,
-      contract: 'contracts/protocol/PlushCoinPolygonProxy.sol:UChildERC20Proxy',
+      contract:
+        'contracts/token/ERC20/child/PlushCoinPolygonProxy.sol:UChildERC20Proxy',
       constructorArguments: [args.default[0]],
     });
   }

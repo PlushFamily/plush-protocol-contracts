@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: UNLISCENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
 
-import "./protocol/PlushCoreToken.sol";
+import "../token/ERC721/PlushCoreToken.sol";
 
 interface IERC20
 {

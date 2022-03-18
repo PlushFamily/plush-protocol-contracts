@@ -1,5 +1,5 @@
 import hre from 'hardhat';
-import * as args from '../../arguments/plushGetCoreTokenArgs';
+import * as args from '../../../arguments/plushGetCoreTokenArgs';
 
 async function main() {
   const PlushGetCoreToken = await hre.ethers.getContractFactory(
@@ -26,7 +26,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushGetCoreToken.address,
-      contract: 'contracts/PlushGetCoreToken.sol:PlushGetCoreToken',
+      contract: 'contracts/finance/PlushGetCoreToken.sol:PlushGetCoreToken',
       constructorArguments: [args.default[0], args.default[1]],
     });
   }

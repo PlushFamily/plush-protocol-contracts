@@ -1,6 +1,6 @@
 import hre from 'hardhat';
 
-import * as args from '../../../arguments/plushController';
+import * as args from '../../../../arguments/plushController';
 
 async function main() {
   const PlushController = await hre.ethers.getContractFactory(
@@ -29,7 +29,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushController.address,
-      contract: 'contracts/apps/PlushController.sol:PlushController',
+      contract: 'contracts/templates/apps/PlushController.sol:PlushController',
       constructorArguments: [args.default[0], args.default[1]],
     });
   }
