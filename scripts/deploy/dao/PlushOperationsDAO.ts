@@ -14,9 +14,7 @@ const TIMELOCK_ADMIN_ROLE = ethers.utils.keccak256(
 async function main() {
   const [unlockOwner] = await ethers.getSigners();
 
-  const PlushTimeLock = await hre.ethers.getContractFactory(
-    'PlushTimeLock',
-  );
+  const PlushTimeLock = await hre.ethers.getContractFactory('PlushTimeLock');
 
   const plushTimeLock = await upgrades.deployProxy(PlushTimeLock, [
     MINDELAY,
@@ -26,34 +24,28 @@ async function main() {
 
   await plushTimeLock.deployed();
 
-  console.log(
-      '> PlushTimeLock -> deployed to address:', plushTimeLock.address,
-  );
+  console.log('> PlushTimeLock -> deployed to address:', plushTimeLock.address);
 
-  const PlushOperationsDAO = await hre.ethers.getContractFactory(
-      'PlushOperationsDAO',
-  );
+  const PlushOperationsDAO = await hre.ethers.getContractFactory('PlushOperationsDAO');
 
   // deploy plushOperationsDAO proxy
-  const plushOperationsDAO = await upgrades.deployProxy(PlushOperationsDAO, [
-    args.default[0],
-    plushTimeLock.address,
-  ], {
-    kind: 'uups',
-  });
+  const plushOperationsDAO = await upgrades.deployProxy(
+    PlushOperationsDAO,
+    [ args.default[0], plushTimeLock.address ],
+    { kind: 'uups' }
+  );
 
   await plushOperationsDAO.deployed();
 
-  console.log(
-      '> PlushOperationsDAO -> deployed to address:',
-      plushOperationsDAO.address,
-  );
+  console.log('> PlushOperationsDAO -> deployed to address:', plushOperationsDAO.address);
 
   // plushOperationsDAO should be the only proposer
   await plushTimeLock.grantRole(PROPOSER_ROLE, plushOperationsDAO.address);
+
   await new Promise(function (resolve) {
     setTimeout(resolve, 10000);
   });
+
   console.log(
       '> PlushOperationsDAO added to Timelock as sole proposer. ',
       `${plushOperationsDAO.address} is Proposer: ${await plushTimeLock.hasRole(
@@ -64,9 +56,11 @@ async function main() {
 
   // deployer should renounced the Admin role after setup (leaving only Timelock as Admin)
   await plushTimeLock.renounceRole(TIMELOCK_ADMIN_ROLE, unlockOwner.address);
+
   await new Promise(function (resolve) {
     setTimeout(resolve, 10000);
   });
+
   console.log(
       '> Plush Owner recounced Admin Role. ',
       `${unlockOwner.address} isAdmin: ${await plushTimeLock.hasRole(
