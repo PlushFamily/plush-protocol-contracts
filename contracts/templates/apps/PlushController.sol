@@ -9,6 +9,7 @@ import "../../finance/PlushCoinWallets.sol";
 
 contract PlushController is Ownable {
 
+    uint256 version = 1;
     Plush plush;
     PlushCoinWallets plushCoinWallets;
 
@@ -104,6 +105,6 @@ contract PlushController is Ownable {
 
     function version() external pure returns (uint256)
     {
-        return 1;
+        return version;
     }
 }
