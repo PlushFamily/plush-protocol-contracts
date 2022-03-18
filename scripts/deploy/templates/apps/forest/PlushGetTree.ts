@@ -1,5 +1,5 @@
 import hre from 'hardhat';
-import * as args from '../../../../arguments/plushGetTreeArgs';
+import * as args from '../../../../../arguments/plushGetTreeArgs';
 
 async function main() {
   const PlushGetTree = await hre.ethers.getContractFactory('PlushGetTree');
@@ -22,7 +22,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushGetTree.address,
-      contract: 'contracts/apps/forest/PlushGetTree.sol:PlushGetTree',
+      contract: 'contracts/templates/apps/forest/PlushGetTree.sol:PlushGetTree',
       constructorArguments: [args.default[0], args.default[1], args.default[2]],
     });
   }

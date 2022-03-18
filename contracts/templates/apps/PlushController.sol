@@ -1,13 +1,15 @@
-// SPDX-License-Identifier: UNLISCENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "../protocol/Plush.sol";
-import "../protocol/PlushCoinWallets.sol";
+import "../../token/ERC20/Plush.sol";
+import "../../finance/PlushCoinWallets.sol";
+
 
 contract PlushController is Ownable {
 
+    uint256 version = 1;
     Plush plush;
     PlushCoinWallets plushCoinWallets;
 
@@ -99,5 +101,10 @@ contract PlushController is Ownable {
     function decreaseWalletAmountTrans(address _address, uint256 _amount) external
     {
         plushCoinWallets.decreaseWalletAmount(_address, _amount);
+    }
+
+    function version() external pure returns (uint256)
+    {
+        return version;
     }
 }
