@@ -2,7 +2,7 @@ import hre, { upgrades, ethers } from 'hardhat';
 import web3 from 'web3';
 import * as args from '../../../arguments/plushOperationsDAO';
 
-const MINDELAY = 60 * 60 * 24 * 7;
+const MINDELAY = 60 * 60 * 24 * 3;
 const ZERO_ADDRESS = web3.utils.padLeft(0, 40);
 const PROPOSER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('PROPOSER_ROLE'),
