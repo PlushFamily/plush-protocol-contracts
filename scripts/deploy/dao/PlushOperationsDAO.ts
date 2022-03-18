@@ -26,18 +26,23 @@ async function main() {
 
   console.log('> PlushTimeLock -> deployed to address:', plushTimeLock.address);
 
-  const PlushOperationsDAO = await hre.ethers.getContractFactory('PlushOperationsDAO');
+  const PlushOperationsDAO = await hre.ethers.getContractFactory(
+    'PlushOperationsDAO',
+  );
 
   // deploy plushOperationsDAO proxy
   const plushOperationsDAO = await upgrades.deployProxy(
     PlushOperationsDAO,
-    [ args.default[0], plushTimeLock.address ],
-    { kind: 'uups' }
+    [args.default[0], plushTimeLock.address],
+    { kind: 'uups' },
   );
 
   await plushOperationsDAO.deployed();
 
-  console.log('> PlushOperationsDAO -> deployed to address:', plushOperationsDAO.address);
+  console.log(
+    '> PlushOperationsDAO -> deployed to address:',
+    plushOperationsDAO.address,
+  );
 
   // plushOperationsDAO should be the only proposer
   await plushTimeLock.grantRole(PROPOSER_ROLE, plushOperationsDAO.address);
@@ -47,11 +52,11 @@ async function main() {
   });
 
   console.log(
-      '> PlushOperationsDAO added to Timelock as sole proposer. ',
-      `${plushOperationsDAO.address} is Proposer: ${await plushTimeLock.hasRole(
-          PROPOSER_ROLE,
-          plushOperationsDAO.address
-      )} `
+    '> PlushOperationsDAO added to Timelock as sole proposer. ',
+    `${plushOperationsDAO.address} is Proposer: ${await plushTimeLock.hasRole(
+      PROPOSER_ROLE,
+      plushOperationsDAO.address
+    )} `,
   );
 
   // deployer should renounced the Admin role after setup (leaving only Timelock as Admin)
@@ -62,31 +67,35 @@ async function main() {
   });
 
   console.log(
-      '> Plush Owner recounced Admin Role. ',
-      `${unlockOwner.address} isAdmin: ${await plushTimeLock.hasRole(
-          TIMELOCK_ADMIN_ROLE,
-          unlockOwner.address
-      )} `
+    '> Plush Owner recounced Admin Role. ',
+    `${unlockOwner.address} isAdmin: ${await plushTimeLock.hasRole(
+      TIMELOCK_ADMIN_ROLE,
+      unlockOwner.address
+    )} `,
   );
 
   if (process.env.NETWORK != 'local') {
-    console.log('> Waiting 1m before verify contracts\n');
+    console.log(
+      '> Waiting 1m before verify contracts\n',
+    );
 
     await new Promise(function (resolve) {
       setTimeout(resolve, 60000);
     });
 
-    console.log('> Verifying...\n');
+    console.log(
+      '> Verifying...\n',
+    );
 
     await hre.run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-          plushTimeLock.address,
+        plushTimeLock.address,
       ),
     });
 
     await hre.run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-          plushOperationsDAO.address,
+        plushOperationsDAO.address,
       ),
     });
   }
