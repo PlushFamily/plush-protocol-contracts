@@ -1,6 +1,7 @@
 {
   "name": "plush-protocol-contracts",
-  "version": "2.3.0",
+  "version": "2.3.1",
+  "description": "The project contains the development environment and the source code of the Plush protocol",
   "repository": {
     "type": "git",
     "url": "git@github.com:PlushFamily/plush-protocol-contracts.git"
