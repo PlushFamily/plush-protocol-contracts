@@ -1,6 +1,6 @@
 {
   "name": "@plushfamily/plush-protocol-contracts",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "The project contains the development environment and the source code of the Plush protocol",
   "repository": {
     "type": "git",
@@ -34,8 +34,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.5.2",
     "@openzeppelin/hardhat-defender": "^1.6.0",
     "dotenv": "^16.0.0",
-    "hardhat-contract-sizer": "^2.5.0",
-    "web3": "^1.7.1"
+    "hardhat-contract-sizer": "^2.5.0"
   },
   "scripts": {
     "lint:js": "eslint .",
