@@ -28,7 +28,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushCoinWallets.address,
-      contract: 'contracts/protocol/PlushCoinWallets.sol:PlushCoinWallets',
+      contract: 'contracts/finance/PlushCoinWallets.sol:PlushCoinWallets',
       constructorArguments: [args.default[0], args.default[1], args.default[2]],
     });
   }

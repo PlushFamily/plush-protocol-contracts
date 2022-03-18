@@ -1,6 +1,6 @@
 import hre from 'hardhat';
 
-import * as args from '../../arguments/plushFaucetArgs';
+import * as args from '../../../arguments/plushFaucetArgs';
 
 async function main() {
   const PlushFaucet = await hre.ethers.getContractFactory('PlushFaucet');
@@ -21,7 +21,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plushFaucet.address,
-      contract: 'contracts/PlushFaucet.sol:PlushFaucet',
+      contract: 'contracts/finance/PlushFaucet.sol:PlushFaucet',
       constructorArguments: [args.default[0], args.default[1]],
     });
   }

@@ -3,8 +3,8 @@ pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./Plush.sol";
 import "./PlushApps.sol";
+import "../token/ERC20/Plush.sol";
 
 contract PlushCoinWallets is Ownable {
 
