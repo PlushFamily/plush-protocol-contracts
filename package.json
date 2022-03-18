@@ -1,5 +1,5 @@
 {
-  "name": "plush-protocol-contracts",
+  "name": "@plushfamily/plush-protocol-contracts",
   "version": "2.3.1",
   "description": "The project contains the development environment and the source code of the Plush protocol",
   "repository": {
