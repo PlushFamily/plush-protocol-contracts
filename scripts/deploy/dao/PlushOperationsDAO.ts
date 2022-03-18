@@ -55,7 +55,7 @@ async function main() {
     '> PlushOperationsDAO added to Timelock as sole proposer. ',
     `${plushOperationsDAO.address} is Proposer: ${await plushTimeLock.hasRole(
       PROPOSER_ROLE,
-      plushOperationsDAO.address
+      plushOperationsDAO.address,
     )} `,
   );
 
@@ -70,22 +70,18 @@ async function main() {
     '> Plush Owner recounced Admin Role. ',
     `${unlockOwner.address} isAdmin: ${await plushTimeLock.hasRole(
       TIMELOCK_ADMIN_ROLE,
-      unlockOwner.address
+      unlockOwner.address,
     )} `,
   );
 
   if (process.env.NETWORK != 'local') {
-    console.log(
-      '> Waiting 1m before verify contracts\n',
-    );
+    console.log('> Waiting 1m before verify contracts\n');
 
     await new Promise(function (resolve) {
       setTimeout(resolve, 60000);
     });
 
-    console.log(
-      '> Verifying...\n',
-    );
+    console.log('> Verifying...\n');
 
     await hre.run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
