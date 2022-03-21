@@ -124,24 +124,6 @@ export default {
           },
         },
       },
-      'contracts/PlushForest.sol': {
-        version: '0.8.9',
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
-      },
-      'contracts/PlushGetTree.sol': {
-        version: '0.8.9',
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
-      },
       'contracts/PlushGetCoreToken.sol': {
         version: '0.8.9',
         settings: {
