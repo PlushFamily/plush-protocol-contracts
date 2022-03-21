@@ -19,10 +19,10 @@ contract PlushController is Ownable {
     mapping (address => uint) indexApps;
     address[] appAddresses;
 
-    constructor(string memory _plushAddress, string memory _plushCoinWalletsAddress)
+    constructor(address _plushAddress, address _plushCoinWalletsAddress)
     {
-        plush = Plush(address(_plushAddress));
-        plushCoinWallets = PlushCoinWallets(address(_plushCoinWalletsAddress));
+        plush = Plush(_plushAddress);
+        plushCoinWallets = PlushCoinWallets(_plushCoinWalletsAddress);
     }
 
     function addNewWithdrawalAddress(address _withdrawalAddress) external onlyOwner
@@ -103,7 +103,7 @@ contract PlushController is Ownable {
         plushCoinWallets.decreaseWalletAmount(_address, _amount);
     }
 
-    function version() external pure returns (uint256)
+    function getVersion() external view returns (uint256)
     {
         return version;
     }
