@@ -7,6 +7,7 @@ async function main() {
   const plushFaucet = await PlushFaucet.deploy(
     args.default[0],
     args.default[1],
+    args.default[2],
   );
 
   await plushFaucet.deployed();
@@ -22,7 +23,7 @@ async function main() {
     await hre.run('verify:verify', {
       address: plushFaucet.address,
       contract: 'contracts/finance/PlushFaucet.sol:PlushFaucet',
-      constructorArguments: [args.default[0], args.default[1]],
+      constructorArguments: [args.default[0], args.default[1], args.default[2]],
     });
   }
 }

@@ -103,6 +103,11 @@ contract PlushController is Ownable {
         plushCoinWallets.decreaseWalletAmount(_address, _amount);
     }
 
+    function increaseWalletAmountTrans(address _address, uint256 _amount) external
+    {
+        plushCoinWallets.increaseInsideTransaction(_address, _amount);
+    }
+
     function getVersion() external view returns (uint256)
     {
         return version;

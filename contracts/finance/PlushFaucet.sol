@@ -1,18 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
 
+import "../token/ERC20/Plush.sol";
 import "../token/ERC721/PlushCoreToken.sol";
+import "./PlushCoinWallets.sol";
 
-interface IERC20
-{
-    function balanceOf(address account) external view returns (uint256);
-    function decimals() external view returns (uint8);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-}
 
 contract PlushFaucet {
-    IERC20 token;
+    Plush token;
     PlushCoreToken plushCoreToken;
+    PlushCoinWallets plushCoinWallets;
 
     address owner;
     mapping(address=>uint256) nextRequestAt;
@@ -23,10 +20,11 @@ contract PlushFaucet {
     bool isActive;
     bool tokenNFTCheck;
 
-    constructor (address _smtAddress, address _plushCoreToken)
+    constructor (address _plushCoin, address _plushCoreToken, address _plushCoinWallets)
     {
-        token = IERC20(_smtAddress);
+        token = Plush(_plushCoin);
         plushCoreToken = PlushCoreToken(_plushCoreToken);
+        plushCoinWallets = PlushCoinWallets(_plushCoinWallets);
         faucetTime = 24 hours;
         faucetDripAmount = 1 * 10 ** token.decimals();
         threshold = 100 * 10 ** token.decimals();
@@ -56,12 +54,13 @@ contract PlushFaucet {
         nextRequestAt[_receiver] = block.timestamp + faucetTime;
         generalAmount[_receiver] += faucetDripAmount;
 
-        token.transfer(_receiver, faucetDripAmount);
+        token.approve(address(plushCoinWallets), faucetDripAmount);
+        plushCoinWallets.depositAnotherAddress(_receiver, faucetDripAmount);
     }
 
     function setTokenAddress(address _tokenAddr) external onlyOwner
     {
-        token = IERC20(_tokenAddr);
+        token = Plush(_tokenAddr);
     }
 
     function setFaucetDripAmount(uint256 _amount) external onlyOwner
