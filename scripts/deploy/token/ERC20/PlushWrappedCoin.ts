@@ -1,11 +1,9 @@
 import hre from 'hardhat';
-import * as args from "../../../../arguments/plushCoinWrapped";
+import * as args from '../../../../arguments/plushCoinWrapped';
 
 async function main() {
   const PlushWrapped = await hre.ethers.getContractFactory('PlushWrapped');
-  const plushWrapped = await PlushWrapped.deploy(
-      args.default[0],
-  );
+  const plushWrapped = await PlushWrapped.deploy(args.default[0]);
 
   await plushWrapped.deployed();
   console.log('PlushWrappedCoin -> deployed to address:', plushWrapped.address);
