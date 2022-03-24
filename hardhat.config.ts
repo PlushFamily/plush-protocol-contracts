@@ -51,6 +51,15 @@ export default {
   solidity: {
     compilers: [
       {
+        version: '0.8.13',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
         version: '0.8.9',
         settings: {
           optimizer: {
@@ -106,7 +115,7 @@ export default {
       },
     ],
     overrides: {
-      'contracts/PlushCoin.sol': {
+      'contracts/token/ERC20/Plush.sol': {
         version: '0.8.9',
         settings: {
           optimizer: {
@@ -115,7 +124,7 @@ export default {
           },
         },
       },
-      'contracts/PlushCoreToken.sol': {
+      'contracts/token/ERC721/PlushCoreToken.sol': {
         version: '0.8.9',
         settings: {
           optimizer: {
@@ -124,8 +133,8 @@ export default {
           },
         },
       },
-      'contracts/PlushGetCoreToken.sol': {
-        version: '0.8.9',
+      'contracts/finance/PlushGetCoreToken.sol': {
+        version: '0.8.13',
         settings: {
           optimizer: {
             enabled: true,
@@ -133,7 +142,16 @@ export default {
           },
         },
       },
-      'contracts/PlushOperationsDAO.sol': {
+      'contracts/finance/PlushFaucet.sol': {
+        version: '0.8.13',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      'contracts/governance/PlushOperationsDAO.sol': {
         version: '0.8.4',
         settings: {
           optimizer: {
@@ -142,7 +160,7 @@ export default {
           },
         },
       },
-      'contracts/PlushCoinPolygon.sol': {
+      'contracts/token/ERC20/child/PlushCoinPolygon.sol': {
         version: '0.6.6',
         settings: {
           optimizer: {
@@ -151,7 +169,7 @@ export default {
           },
         },
       },
-      'contracts/PlushCoinPolygonProxy.sol': {
+      'contracts/token/ERC20/child/PlushCoinPolygonProxy.sol': {
         version: '0.6.6',
         settings: {
           optimizer: {
