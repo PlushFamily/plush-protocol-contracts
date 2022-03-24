@@ -29,16 +29,7 @@ contract PlushCoinWallets is Ownable {
         plushFeeWallet = _plushFeeAddress;
     }
 
-    function deposit(uint256 _amount) public
-    {
-        require(plush.balanceOf(msg.sender) >= _amount, "Not enough balance.");
-        require(plush.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance.");
-
-        plush.transferFrom(msg.sender, address(this), _amount);
-        increaseWalletAmount(msg.sender, _amount);
-    }
-
-    function depositAnotherAddress(address _wallet, uint256 _amount) public
+    function deposit(address _wallet, uint256 _amount) public
     {
         require(plush.balanceOf(msg.sender) >= _amount, "Not enough balance.");
         require(plush.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance.");
@@ -70,7 +61,7 @@ contract PlushCoinWallets is Ownable {
         walletInfo[_wallet].balance += _amount;
     }
 
-    function increaseInsideTransaction(address _wallet, uint256 _amount) public
+    function internalTransfer(address _wallet, uint256 _amount) public
     {
         require(walletInfo[msg.sender].balance >= _amount, "Not enough balance(Sender).");
 
