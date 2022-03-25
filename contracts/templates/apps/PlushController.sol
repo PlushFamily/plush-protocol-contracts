@@ -129,6 +129,11 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         plushCoinWallets.decreaseWalletAmount(_address, _amount);
     }
 
+    function increaseWalletAmountTrans(address _address, uint256 _amount) external
+    {
+        plushCoinWallets.internalTransfer(_address, _amount);
+    }
+
     function getVersion() public pure returns (uint256)
     {
         return version;
