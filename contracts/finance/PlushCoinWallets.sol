@@ -142,4 +142,14 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     onlyRole(UPGRADER_ROLE)
     override
     {}
+
+    function symbolToken() public view returns (string memory)
+    {
+        return plush.symbol();
+    }
+
+    function nameToken() public view returns (string memory)
+    {
+        return plush.name();
+    }
 }
