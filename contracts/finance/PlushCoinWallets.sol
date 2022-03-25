@@ -1,12 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.2;
+pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../PlushApps.sol";
 import "../token/ERC20/Plush.sol";
 
-contract PlushCoinWallets is Ownable {
+contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     Plush plush;
     PlushApps plushApps;
@@ -21,12 +28,31 @@ contract PlushCoinWallets is Ownable {
 
     mapping(address => Wallet) public walletInfo;
 
-    constructor(address _plushAddress, address _plushAppsAddress, address _plushFeeAddress)
-    {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {}
+
+    function initialize(address _plushAddress, address _plushAppsAddress, address _plushFeeAddress) initializer public {
         plushApps = PlushApps(_plushAppsAddress);
         plush = Plush(_plushAddress);
         minimumBet = 1 * 10 ** plush.decimals();
         plushFeeWallet = _plushFeeAddress;
+
+        __Pausable_init();
+        __AccessControl_init();
+        __UUPSUpgradeable_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(OPERATOR_ROLE, msg.sender);
+        _grantRole(UPGRADER_ROLE, msg.sender);
+    }
+
+    function pause() public onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    function unpause() public onlyRole(PAUSER_ROLE) {
+        _unpause();
     }
 
     function deposit(address _wallet, uint256 _amount) public
@@ -81,7 +107,7 @@ contract PlushCoinWallets is Ownable {
         walletInfo[plushFeeWallet].balance += percent;
     }
 
-    function getPlushFeeWalletAmount() external onlyOwner view returns(uint256)
+    function getPlushFeeWalletAmount() external onlyRole(OPERATOR_ROLE) view returns(uint256)
     {
         return walletInfo[plushFeeWallet].balance;
     }
@@ -91,7 +117,7 @@ contract PlushCoinWallets is Ownable {
         return walletInfo[_wallet].balance;
     }
 
-    function setMinimumAmount(uint256 _amount) external onlyOwner
+    function setMinimumAmount(uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
         minimumBet = _amount;
     }
@@ -101,13 +127,19 @@ contract PlushCoinWallets is Ownable {
         return minimumBet;
     }
 
-    function setPlushFeeAddress(address _address) external onlyOwner
+    function setPlushFeeAddress(address _address) external onlyRole(OPERATOR_ROLE)
     {
         plushFeeWallet = _address;
     }
 
-    function getPlushFeeAddress() external onlyOwner view returns(address)
+    function getPlushFeeAddress() external onlyRole(OPERATOR_ROLE) view returns(address)
     {
         return plushFeeWallet;
     }
+
+    function _authorizeUpgrade(address newImplementation)
+    internal
+    onlyRole(UPGRADER_ROLE)
+    override
+    {}
 }

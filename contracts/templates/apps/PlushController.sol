@@ -1,15 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.2;
+pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../../token/ERC20/Plush.sol";
 import "../../finance/PlushCoinWallets.sol";
 
 
-contract PlushController is Ownable {
+contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
 
-    uint256 version = 1;
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+
+    uint256 constant version = 2;
     Plush plush;
     PlushCoinWallets plushCoinWallets;
 
@@ -19,13 +26,32 @@ contract PlushController is Ownable {
     mapping (address => uint) indexApps;
     address[] appAddresses;
 
-    constructor(address _plushAddress, address _plushCoinWalletsAddress)
-    {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {}
+
+    function initialize(address _plushAddress, address _plushCoinWalletsAddress) initializer public {
         plush = Plush(_plushAddress);
         plushCoinWallets = PlushCoinWallets(_plushCoinWalletsAddress);
+
+        __Pausable_init();
+        __AccessControl_init();
+        __UUPSUpgradeable_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(OPERATOR_ROLE, msg.sender);
+        _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function addNewWithdrawalAddress(address _withdrawalAddress) external onlyOwner
+    function pause() public onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    function unpause() public onlyRole(PAUSER_ROLE) {
+        _unpause();
+    }
+
+    function addNewWithdrawalAddress(address _withdrawalAddress) external onlyRole(OPERATOR_ROLE)
     {
         require(!withdrawalAddressExist(_withdrawalAddress), "This address already exists.");
 
@@ -33,7 +59,7 @@ contract PlushController is Ownable {
         withdrawalAddresses.push(_withdrawalAddress);
     }
 
-    function deleteWithdrawalAddress(address _withdrawalAddress) external onlyOwner
+    function deleteWithdrawalAddress(address _withdrawalAddress) external onlyRole(OPERATOR_ROLE)
     {
         require(withdrawalAddressExist(_withdrawalAddress), "There is no such address.");
 
@@ -41,7 +67,7 @@ contract PlushController is Ownable {
         delete indexWithdrawal[_withdrawalAddress];
     }
 
-    function addNewAppAddress(address _appAddress) external onlyOwner
+    function addNewAppAddress(address _appAddress) external onlyRole(OPERATOR_ROLE)
     {
         require(!appAddressExist(_appAddress), "This app already exists.");
 
@@ -49,7 +75,7 @@ contract PlushController is Ownable {
         appAddresses.push(_appAddress);
     }
 
-    function deleteAppAddress(address _appAddress) external onlyOwner
+    function deleteAppAddress(address _appAddress) external onlyRole(OPERATOR_ROLE)
     {
         require(appAddressExist(_appAddress), "There is no such app.");
 
@@ -108,8 +134,14 @@ contract PlushController is Ownable {
         plushCoinWallets.internalTransfer(_address, _amount);
     }
 
-    function getVersion() external view returns (uint256)
+    function getVersion() public pure returns (uint256)
     {
         return version;
     }
+
+    function _authorizeUpgrade(address newImplementation)
+    internal
+    onlyRole(UPGRADER_ROLE)
+    override
+    {}
 }

@@ -1,4 +1,4 @@
-import hre from 'hardhat';
+import hre, { upgrades } from 'hardhat';
 
 import * as args from '../../../../arguments/plushController';
 
@@ -7,9 +7,12 @@ async function main() {
     'PlushController',
   );
 
-  const plushController = await PlushController.deploy(
-    args.default[0],
-    args.default[1],
+  const plushController = await upgrades.deployProxy(
+    PlushController,
+    [args.default[0], args.default[1]],
+    {
+      kind: 'uups',
+    },
   );
 
   await plushController.deployed();
@@ -28,9 +31,9 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushController.address,
-      contract: 'contracts/templates/apps/PlushController.sol:PlushController',
-      constructorArguments: [args.default[0], args.default[1]],
+      address: await upgrades.erc1967.getImplementationAddress(
+        plushController.address,
+      ),
     });
   }
 }

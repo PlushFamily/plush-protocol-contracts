@@ -1,4 +1,5 @@
-import hre from 'hardhat';
+import hre, { upgrades } from 'hardhat';
+
 import * as args from '../../../arguments/plushGetCoreTokenArgs';
 
 async function main() {
@@ -6,9 +7,12 @@ async function main() {
     'PlushGetCoreToken',
   );
 
-  const plushGetCoreToken = await PlushGetCoreToken.deploy(
-    args.default[0],
-    args.default[1],
+  const plushGetCoreToken = await upgrades.deployProxy(
+    PlushGetCoreToken,
+    [args.default[0], args.default[1]],
+    {
+      kind: 'uups',
+    },
   );
 
   await plushGetCoreToken.deployed();
@@ -25,9 +29,9 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushGetCoreToken.address,
-      contract: 'contracts/finance/PlushGetCoreToken.sol:PlushGetCoreToken',
-      constructorArguments: [args.default[0], args.default[1]],
+      address: await upgrades.erc1967.getImplementationAddress(
+        plushGetCoreToken.address,
+      ),
     });
   }
 }

@@ -1,10 +1,11 @@
-import hre from 'hardhat';
+import hre, { upgrades } from 'hardhat';
 
 async function main() {
   const PlushApps = await hre.ethers.getContractFactory('PlushApps');
-  const plushApps = await PlushApps.deploy();
-
-  await plushApps.deployed();
+  const plushApps = await upgrades.deployProxy(PlushApps, {
+    kind: 'uups',
+  });
+  await PlushApps.deploy();
   console.log('PlushApps -> deployed to address:', plushApps.address);
 
   if (process.env.NETWORK != 'local') {
@@ -15,8 +16,9 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushApps.address,
-      contract: 'contracts/PlushApps.sol:PlushApps',
+      address: await upgrades.erc1967.getImplementationAddress(
+        plushApps.address,
+      ),
     });
   }
 }
