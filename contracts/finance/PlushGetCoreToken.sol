@@ -129,5 +129,4 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
     onlyRole(UPGRADER_ROLE)
     override
     {}
-
 }

@@ -1,4 +1,5 @@
-import hre from 'hardhat';
+import hre, { upgrades } from 'hardhat';
+
 import * as args from '../../../arguments/plushCoinWalletsArgs';
 
 async function main() {
@@ -6,10 +7,12 @@ async function main() {
     'PlushCoinWallets',
   );
 
-  const plushCoinWallets = await PlushCoinWallets.deploy(
-    args.default[0],
-    args.default[1],
-    args.default[2],
+  const plushCoinWallets = await upgrades.deployProxy(
+    PlushCoinWallets,
+    [args.default[0], args.default[1], args.default[2]],
+    {
+      kind: 'uups',
+    },
   );
 
   await plushCoinWallets.deployed();
@@ -27,9 +30,9 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushCoinWallets.address,
-      contract: 'contracts/finance/PlushCoinWallets.sol:PlushCoinWallets',
-      constructorArguments: [args.default[0], args.default[1], args.default[2]],
+      address: await upgrades.erc1967.getImplementationAddress(
+        plushCoinWallets.address,
+      ),
     });
   }
 }

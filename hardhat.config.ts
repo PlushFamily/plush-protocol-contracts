@@ -133,6 +133,15 @@ export default {
           },
         },
       },
+      'contracts/finance/PlushCoinWallets.sol': {
+        version: '0.8.13',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
       'contracts/finance/PlushGetCoreToken.sol': {
         version: '0.8.13',
         settings: {
@@ -143,6 +152,24 @@ export default {
         },
       },
       'contracts/finance/PlushFaucet.sol': {
+        version: '0.8.13',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      'contracts/PlushApps.sol': {
+        version: '0.8.13',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      'contracts/templates/apps/PlushController.sol': {
         version: '0.8.13',
         settings: {
           optimizer: {
