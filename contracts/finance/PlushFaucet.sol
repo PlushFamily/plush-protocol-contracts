@@ -55,7 +55,7 @@ contract PlushFaucet {
         generalAmount[_receiver] += faucetDripAmount;
 
         token.approve(address(plushCoinWallets), faucetDripAmount);
-        plushCoinWallets.depositAnotherAddress(_receiver, faucetDripAmount);
+        plushCoinWallets.deposit(_receiver, faucetDripAmount);
     }
 
     function setTokenAddress(address _tokenAddr) external onlyOwner
