@@ -1,5 +1,5 @@
 export default [
-  '0xEaCb79ef70A5FFD4698Aa5603054e8a914cFcf12', // Plush Coin address
-  '0xDa0D644E704617eD8366c3178e293549302c0bB4', // Plush Apps address
-  '0x07E2383EF2eB15C3C3c6C2b29121FCCcA2AFcb48', // Plush Fee address
+  '0x6FB60c408363636dAC206AA98EE429d79923DD33', // Plush Coin address
+  '0xF17503B5014F16BDBDA36Fd618D3ef02cd0caf46', // Plush Apps address
+  '0x108dEc7b37C526B2e2DBf8447573dDCB9265C884', // Plush Fee address
 ];
