@@ -10,13 +10,16 @@ import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelo
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "../token/ERC721/PlushCoreToken.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushOperationsDAO is Initializable, GovernorUpgradeable, GovernorSettingsUpgradeable, GovernorCountingSimpleUpgradeable, GovernorVotesUpgradeable, GovernorVotesQuorumFractionUpgradeable, GovernorTimelockControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+  PlushCoreToken public plushCoreToken;
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() initializer {}
 
-  function initialize(IVotesUpgradeable _token, TimelockControllerUpgradeable _timelock) initializer public
+  function initialize(IVotesUpgradeable _token, PlushCoreToken _tokenCore, TimelockControllerUpgradeable _timelock) initializer public
   {
     __Governor_init("PlushOperationsDAO");
     __GovernorSettings_init(1 /* 1 block */, 19636 /* 3 days */, 1e18);
@@ -26,6 +29,7 @@ contract PlushOperationsDAO is Initializable, GovernorUpgradeable, GovernorSetti
     __GovernorTimelockControl_init(_timelock);
     __Ownable_init();
     __UUPSUpgradeable_init();
+    plushCoreToken = _tokenCore;
   }
 
   function _authorizeUpgrade(address newImplementation) internal onlyOwner override
@@ -50,7 +54,11 @@ contract PlushOperationsDAO is Initializable, GovernorUpgradeable, GovernorSetti
 
   function getVotes(address account, uint256 blockNumber) public view override(IGovernorUpgradeable, GovernorVotesUpgradeable) returns (uint256)
   {
-    return super.getVotes(account, blockNumber);
+    if(plushCoreToken.balanceOf(account) > 0){
+      return super.getVotes(account, blockNumber);
+    }
+
+    return 0;
   }
 
   function state(uint256 proposalId) public view override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (ProposalState)

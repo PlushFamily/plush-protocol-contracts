@@ -32,7 +32,7 @@ async function main() {
   // deploy plushOperationsDAO proxy
   const plushOperationsDAO = await upgrades.deployProxy(
     PlushOperationsDAO,
-    [args.default[0], plushTimeLock.address],
+    [args.default[0], args.default[1], plushTimeLock.address],
     { kind: 'uups' },
   );
 
