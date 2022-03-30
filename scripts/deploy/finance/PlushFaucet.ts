@@ -1,13 +1,16 @@
-import hre from 'hardhat';
+import hre, { upgrades } from 'hardhat';
 
 import * as args from '../../../arguments/plushFaucetArgs';
 
 async function main() {
   const PlushFaucet = await hre.ethers.getContractFactory('PlushFaucet');
-  const plushFaucet = await PlushFaucet.deploy(
-    args.default[0],
-    args.default[1],
-    args.default[2],
+
+  const plushFaucet = await upgrades.deployProxy(
+    PlushFaucet,
+    [args.default[0], args.default[1], args.default[2]],
+    {
+      kind: 'uups',
+    },
   );
 
   await plushFaucet.deployed();
@@ -21,9 +24,9 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushFaucet.address,
-      contract: 'contracts/finance/PlushFaucet.sol:PlushFaucet',
-      constructorArguments: [args.default[0], args.default[1], args.default[2]],
+      address: await upgrades.erc1967.getImplementationAddress(
+        plushFaucet.address,
+      ),
     });
   }
 }
