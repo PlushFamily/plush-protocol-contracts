@@ -21,7 +21,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     PlushCoreToken plushCoreToken;
     PlushCoinWallets plushCoinWallets;
 
-    address owner;
+    address public owner;
     mapping(address=>uint256) nextRequestAt;
     mapping(address=>uint256) generalAmount;
     uint256 faucetDripAmount;
@@ -32,10 +32,10 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(address _plushCoin, address _plushCoreToken, address _plushCoinWallets) initializer public {
-        token = Plush(_plushCoin);
-        plushCoreToken = PlushCoreToken(_plushCoreToken);
-        plushCoinWallets = PlushCoinWallets(_plushCoinWallets);
+    function initialize(Plush _plushCoin, PlushCoreToken _plushCoreToken, PlushCoinWallets _plushCoinWallets) initializer public {
+        token = _plushCoin;
+        plushCoreToken = _plushCoreToken;
+        plushCoinWallets = _plushCoinWallets;
         faucetTime = 24 hours;
         faucetDripAmount = 1 * 10 ** token.decimals();
         threshold = 100 * 10 ** token.decimals();
