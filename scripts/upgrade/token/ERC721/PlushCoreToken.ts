@@ -10,7 +10,7 @@ async function main() {
     'PlushCoreToken',
   );
 
-  // await upgrades.forceImport(proxyAddress, plushForestNEW); // uncommit if there is no file in the local cache
+  await upgrades.forceImport(proxyAddress, plushCoreTokenNewContract); // uncommit if there is no file in the local cache
 
   console.log('Preparing proposal...');
 
