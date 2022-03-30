@@ -11,7 +11,7 @@ contract PlushFaucet {
     PlushCoreToken plushCoreToken;
     PlushCoinWallets plushCoinWallets;
 
-    address owner;
+    address public owner;
     mapping(address=>uint256) nextRequestAt;
     mapping(address=>uint256) generalAmount;
     uint256 faucetDripAmount;
@@ -20,11 +20,11 @@ contract PlushFaucet {
     bool isActive;
     bool tokenNFTCheck;
 
-    constructor (address _plushCoin, address _plushCoreToken, address _plushCoinWallets)
+    constructor (Plush _plushCoin, PlushCoreToken _plushCoreToken, PlushCoinWallets _plushCoinWallets)
     {
-        token = Plush(_plushCoin);
-        plushCoreToken = PlushCoreToken(_plushCoreToken);
-        plushCoinWallets = PlushCoinWallets(_plushCoinWallets);
+        token = _plushCoin;
+        plushCoreToken = _plushCoreToken;
+        plushCoinWallets = _plushCoinWallets;
         faucetTime = 24 hours;
         faucetDripAmount = 1 * 10 ** token.decimals();
         threshold = 100 * 10 ** token.decimals();

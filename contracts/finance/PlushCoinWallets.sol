@@ -31,9 +31,9 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(address _plushAddress, address _plushAppsAddress, address _plushFeeAddress) initializer public {
-        plushApps = PlushApps(_plushAppsAddress);
-        plush = Plush(_plushAddress);
+    function initialize(Plush _plushAddress, PlushApps _plushAppsAddress, address _plushFeeAddress) initializer public {
+        plushApps = _plushAppsAddress;
+        plush = _plushAddress;
         minimumBet = 1 * 10 ** plush.decimals();
         plushFeeWallet = _plushFeeAddress;
 

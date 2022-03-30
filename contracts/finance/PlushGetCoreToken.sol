@@ -32,8 +32,8 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(address _plushCoreAddress, address payable _safeAddress) initializer public {
-        plushCoreToken = PlushCoreToken(_plushCoreAddress);
+    function initialize(PlushCoreToken _plushCoreAddress, address payable _safeAddress) initializer public {
+        plushCoreToken = _plushCoreAddress;
         safeAddress = _safeAddress;
         mintPrice = 0.001 ether;
         tokenNFTCheck = true;
