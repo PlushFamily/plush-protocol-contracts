@@ -1,12 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.2;
+pragma solidity ^0.8.4;
+
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../token/ERC20/Plush.sol";
 import "../token/ERC721/PlushCoreToken.sol";
 import "./PlushCoinWallets.sol";
 
 
-contract PlushFaucet {
+contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+
     Plush token;
     PlushCoreToken plushCoreToken;
     PlushCoinWallets plushCoinWallets;
@@ -17,31 +27,40 @@ contract PlushFaucet {
     uint256 faucetDripAmount;
     uint256 faucetTime;
     uint256 threshold;
-    bool isActive;
     bool tokenNFTCheck;
 
-    constructor (address _plushCoin, address _plushCoreToken, address _plushCoinWallets)
-    {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {}
+
+    function initialize(address _plushCoin, address _plushCoreToken, address _plushCoinWallets) initializer public {
         token = Plush(_plushCoin);
         plushCoreToken = PlushCoreToken(_plushCoreToken);
         plushCoinWallets = PlushCoinWallets(_plushCoinWallets);
         faucetTime = 24 hours;
         faucetDripAmount = 1 * 10 ** token.decimals();
         threshold = 100 * 10 ** token.decimals();
-        owner = msg.sender;
-        isActive = true;
         tokenNFTCheck = true;
+
+        __Pausable_init();
+        __AccessControl_init();
+        __UUPSUpgradeable_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(OPERATOR_ROLE, msg.sender);
+        _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    modifier onlyOwner
-    {
-        require(msg.sender == owner, "FaucetError: Caller not owner");
-        _;
+    function pause() public onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    function unpause() public onlyRole(PAUSER_ROLE) {
+        _unpause();
     }
 
     function send(address _receiver) external
     {
-        require(isActive == true, "FaucetError: Faucet is not active");
         require(token.balanceOf(address(this)) >= faucetDripAmount, "FaucetError: Empty");
         require(nextRequestAt[_receiver] < block.timestamp, "FaucetError: Try again later");
         require(generalAmount[_receiver] < threshold, "FaucetError: You have exceeded the maximum number of coins");
@@ -58,37 +77,32 @@ contract PlushFaucet {
         plushCoinWallets.deposit(_receiver, faucetDripAmount);
     }
 
-    function setTokenAddress(address _tokenAddr) external onlyOwner
+    function setTokenAddress(address _tokenAddr) external onlyRole(OPERATOR_ROLE)
     {
         token = Plush(_tokenAddr);
     }
 
-    function setFaucetDripAmount(uint256 _amount) external onlyOwner
+    function setFaucetDripAmount(uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
         faucetDripAmount = _amount;
     }
 
-    function setThreshold(uint256 _amount) external onlyOwner
+    function setThreshold(uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
         threshold = _amount;
     }
 
-    function setFaucetTime(uint256 _time) external onlyOwner
+    function setFaucetTime(uint256 _time) external onlyRole(OPERATOR_ROLE)
     {
         faucetTime = _time;
     }
 
-    function setFaucetActive(bool _isActive) external onlyOwner
-    {
-        isActive = _isActive;
-    }
-
-    function setTokenNFTCheck(bool _isCheck) external onlyOwner
+    function setTokenNFTCheck(bool _isCheck) external onlyRole(OPERATOR_ROLE)
     {
         tokenNFTCheck = _isCheck;
     }
 
-    function withdrawTokens(address _receiver, uint256 _amount) external onlyOwner
+    function withdrawTokens(address _receiver, uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
         require(token.balanceOf(address(this)) >= _amount, "FaucetError: Insufficient funds");
         token.transfer(_receiver, _amount);
@@ -114,11 +128,6 @@ contract PlushFaucet {
         return faucetTime;
     }
 
-    function getIsFaucetActive() external view returns(bool)
-    {
-        return isActive;
-    }
-
     function getIsTokenNFTCheck() external view returns(bool)
     {
         return tokenNFTCheck;
@@ -135,7 +144,6 @@ contract PlushFaucet {
 
     function getCanTheAddressReceiveReward(address _receiver) external view returns(bool)
     {
-        require(isActive == true, "Faucet is not active");
         require(token.balanceOf(address(this)) >= faucetDripAmount, "Faucet is empty");
         require(nextRequestAt[_receiver] < block.timestamp, "You received recently, try again later");
         require(generalAmount[_receiver] < threshold, "You have exceeded the maximum number of tokens");
@@ -146,4 +154,10 @@ contract PlushFaucet {
 
         return true;
     }
+
+    function _authorizeUpgrade(address newImplementation)
+    internal
+    onlyRole(UPGRADER_ROLE)
+    override
+    {}
 }
