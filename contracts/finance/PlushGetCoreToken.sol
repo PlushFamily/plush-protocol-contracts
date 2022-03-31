@@ -106,7 +106,7 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         return address(plushCoreToken);
     }
 
-    function mint(address _mintAddress) payable public
+    function mint(address _mintAddress) public payable
     {
         require(msg.value == mintPrice, "Incorrect amount");
 
@@ -123,7 +123,7 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
 
     function _forwardFunds() internal
     {
-        (bool success, ) = safeAddress.call{value: msg.value}("");
+        (bool success) = safeAddress.call{value: msg.value}("");
         require(success, "Transfer failed.");
     }
 
