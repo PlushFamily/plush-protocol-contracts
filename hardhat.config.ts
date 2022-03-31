@@ -124,6 +124,15 @@ export default {
           },
         },
       },
+      'contracts/token/ERC20/WrappedPlush.sol': {
+        version: '0.8.13',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
       'contracts/token/ERC721/PlushCoreToken.sol': {
         version: '0.8.9',
         settings: {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.2;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 
 /// @custom:security-contact security@plush.family
-contract PlushWrapped is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper, ERC20Burnable {
+contract WrappedPlush is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper, ERC20Burnable {
     constructor(IERC20 wrappedToken)
     ERC20("WPlush", "wPLSH")
     ERC20Permit("WPlush")
