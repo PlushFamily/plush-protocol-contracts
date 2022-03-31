@@ -22,7 +22,8 @@ contract PlushCoreToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpg
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize() initializer public {
+    function initialize() initializer public
+    {
         __ERC721_init("PlushCoreToken", "PLUSH");
         __ERC721Enumerable_init();
         __Pausable_init();
@@ -36,19 +37,23 @@ contract PlushCoreToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpg
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function _baseURI() internal pure override returns (string memory) {
+    function _baseURI() internal pure override returns (string memory)
+    {
         return "https://api.plush.family/user/tokens/token/";
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyRole(PAUSER_ROLE)
+    {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyRole(PAUSER_ROLE)
+    {
         _unpause();
     }
 
-    function safeMint(address to) public onlyRole(MINTER_ROLE) {
+    function safeMint(address to) public onlyRole(MINTER_ROLE)
+    {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);

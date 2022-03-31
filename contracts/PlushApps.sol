@@ -8,7 +8,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
@@ -26,7 +25,8 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize() initializer public {
+    function initialize() initializer public
+    {
         __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -37,11 +37,13 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyRole(PAUSER_ROLE)
+    {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyRole(PAUSER_ROLE)
+    {
         _unpause();
     }
 

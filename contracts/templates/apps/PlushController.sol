@@ -11,25 +11,25 @@ import "../../finance/PlushCoinWallets.sol";
 
 
 contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    uint256 constant version = 2;
-    Plush plush;
-    PlushCoinWallets plushCoinWallets;
+    uint256 public constant version = 2;
+    Plush public plush;
+    PlushCoinWallets public plushCoinWallets;
 
-    mapping (address => uint) indexWithdrawal;
-    address[] withdrawalAddresses;
+    mapping (address => uint) public indexWithdrawal;
+    address[] public withdrawalAddresses;
 
-    mapping (address => uint) indexApps;
-    address[] appAddresses;
+    mapping (address => uint) public indexApps;
+    address[] public appAddresses;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plush, PlushCoinWallets _plushCoinWallets) initializer public {
+    function initialize(Plush _plush, PlushCoinWallets _plushCoinWallets) initializer public
+    {
         plush = _plush;
         plushCoinWallets = _plushCoinWallets;
 
@@ -43,11 +43,13 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyRole(PAUSER_ROLE)
+    {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyRole(PAUSER_ROLE)
+    {
         _unpause();
     }
 

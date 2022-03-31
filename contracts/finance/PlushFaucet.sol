@@ -12,27 +12,27 @@ import "./PlushCoinWallets.sol";
 
 
 contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    Plush token;
-    PlushCoreToken plushCoreToken;
-    PlushCoinWallets plushCoinWallets;
+    Plush public token;
+    PlushCoreToken public plushCoreToken;
+    PlushCoinWallets public plushCoinWallets;
 
     address public owner;
-    mapping(address=>uint256) nextRequestAt;
-    mapping(address=>uint256) generalAmount;
-    uint256 faucetDripAmount;
-    uint256 faucetTime;
-    uint256 threshold;
-    bool tokenNFTCheck;
+    mapping(address=>uint256) private nextRequestAt;
+    mapping(address=>uint256) private generalAmount;
+    uint256 public faucetDripAmount;
+    uint256 public faucetTime;
+    uint256 private threshold;
+    bool private tokenNFTCheck;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plushCoin, PlushCoreToken _plushCoreToken, PlushCoinWallets _plushCoinWallets) initializer public {
+    function initialize(Plush _plushCoin, PlushCoreToken _plushCoreToken, PlushCoinWallets _plushCoinWallets) initializer public
+    {
         token = _plushCoin;
         plushCoreToken = _plushCoreToken;
         plushCoinWallets = _plushCoinWallets;
@@ -51,11 +51,13 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyRole(PAUSER_ROLE)
+    {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyRole(PAUSER_ROLE)
+    {
         _unpause();
     }
 

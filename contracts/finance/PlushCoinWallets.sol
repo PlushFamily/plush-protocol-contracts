@@ -10,16 +10,15 @@ import "../PlushApps.sol";
 import "../token/ERC20/Plush.sol";
 
 contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    Plush plush;
-    PlushApps plushApps;
+    Plush public plush;
+    PlushApps public plushApps;
 
-    uint256 minimumBet;
-    address plushFeeWallet;
+    uint256 public minimumBet;
+    address private plushFeeWallet;
 
     struct Wallet
     {
@@ -31,7 +30,8 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plush, PlushApps _plushApps, address _plushFeeAddress) initializer public {
+    function initialize(Plush _plush, PlushApps _plushApps, address _plushFeeAddress) initializer public
+    {
         plushApps = _plushApps;
         plush = _plush;
         minimumBet = 1 * 10 ** plush.decimals();
@@ -47,11 +47,13 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyRole(PAUSER_ROLE)
+    {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyRole(PAUSER_ROLE)
+    {
         _unpause();
     }
 
