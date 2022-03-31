@@ -63,12 +63,12 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
 
     function send(address _receiver) external
     {
-        require(token.balanceOf(address(this)) >= faucetDripAmount, "FaucetError: Empty");
-        require(nextRequestAt[_receiver] < block.timestamp, "FaucetError: Try again later");
-        require(generalAmount[_receiver] < threshold, "FaucetError: You have exceeded the maximum number of coins");
+        require(token.balanceOf(address(this)) >= faucetDripAmount, "Empty");
+        require(nextRequestAt[_receiver] < block.timestamp, "Time limit");
+        require(generalAmount[_receiver] < threshold, "Quantity limit");
 
         if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_receiver) > 0, "FaucetError: You don't have NFT(Plush Core Token) to get reward");
+            require(plushCoreToken.balanceOf(_receiver) > 0, "You don't have Core Token");
         }
 
         // Next request from the address can be made only after faucetTime
@@ -147,11 +147,11 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     function getCanTheAddressReceiveReward(address _receiver) external view returns(bool)
     {
         require(token.balanceOf(address(this)) >= faucetDripAmount, "Faucet is empty");
-        require(nextRequestAt[_receiver] < block.timestamp, "You received recently, try again later");
-        require(generalAmount[_receiver] < threshold, "You have exceeded the maximum number of tokens");
+        require(nextRequestAt[_receiver] < block.timestamp, "Time limit");
+        require(generalAmount[_receiver] < threshold, "Quantity limit");
 
         if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_receiver) > 0, "FaucetError: You don't have NFT(Plush Core Token) to get reward");
+            require(plushCoreToken.balanceOf(_receiver) > 0, "You don't have Core Token");
         }
 
         return true;
