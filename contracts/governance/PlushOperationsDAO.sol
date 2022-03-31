@@ -19,7 +19,7 @@ contract PlushOperationsDAO is Initializable, GovernorUpgradeable, GovernorSetti
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() initializer {}
 
-  function initialize(IVotesUpgradeable _token, PlushCoreToken _tokenCore, TimelockControllerUpgradeable _timelock) initializer public
+  function initialize(IVotesUpgradeable _token, PlushCoreToken _tokenCore, TimelockControllerUpgradeable _timelock) public initializer
   {
     __Governor_init("PlushOperationsDAO");
     __GovernorSettings_init(1 /* 1 block */, 19636 /* 3 days */, 1e18);

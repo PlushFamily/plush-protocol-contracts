@@ -22,7 +22,7 @@ contract PlushCoreToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpg
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize() initializer public
+    function initialize() public initializer
     {
         __ERC721_init("PlushCoreToken", "PLUSH");
         __ERC721Enumerable_init();
