@@ -1,12 +1,12 @@
 import hre from 'hardhat';
-import * as args from '../../../../arguments/plushCoinWrapped';
+import * as args from '../../../../arguments/WrappedPlush';
 
 async function main() {
-  const PlushWrapped = await hre.ethers.getContractFactory('PlushWrapped');
-  const plushWrapped = await PlushWrapped.deploy(args.default[0]);
+  const WrappedPlush = await hre.ethers.getContractFactory('WrappedPlush');
+  const wrappedPlush = await WrappedPlush.deploy(args.default[0]);
 
-  await plushWrapped.deployed();
-  console.log('PlushWrappedCoin -> deployed to address:', plushWrapped.address);
+  await wrappedPlush.deployed();
+  console.log('WrappedPlush -> deployed to address:', wrappedPlush.address);
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
@@ -16,8 +16,8 @@ async function main() {
     console.log('Verifying...\n');
 
     await hre.run('verify:verify', {
-      address: plushWrapped.address,
-      contract: 'contracts/token/ERC20/PlushWrapped.sol:PlushWrapped',
+      address: wrappedPlush.address,
+      contract: 'contracts/token/ERC20/WrappedPlush.sol:WrappedPlush',
       constructorArguments: [args.default[0]],
     });
   }
