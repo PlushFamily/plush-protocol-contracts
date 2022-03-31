@@ -28,7 +28,7 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     mapping(address => Wallet) public walletInfo;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    constructor() public initializer {}
 
     function initialize(Plush _plush, PlushApps _plushApps, address _plushFeeAddress) public initializer
     {

@@ -29,7 +29,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     bool private tokenNFTCheck;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    constructor() public initializer {}
 
     function initialize(Plush _plushCoin, PlushCoreToken _plushCoreToken, PlushCoinWallets _plushCoinWallets) public initializer
     {

@@ -17,7 +17,7 @@ contract PlushOperationsDAO is Initializable, GovernorUpgradeable, GovernorSetti
   PlushCoreToken public plushCoreToken;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
-  constructor() initializer {}
+  constructor() public initializer {}
 
   function initialize(IVotesUpgradeable _token, PlushCoreToken _tokenCore, TimelockControllerUpgradeable _timelock) public initializer
   {
