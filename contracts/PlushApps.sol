@@ -23,9 +23,9 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
     mapping(address => Apps) public appsInfo;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() public initializer {}
+    constructor() initializer {}
 
-    function initialize() public initializer
+    function initialize() initializer public
     {
         __Pausable_init();
         __AccessControl_init();

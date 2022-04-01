@@ -20,9 +20,9 @@ contract PlushCoreToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpg
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() public initializer {}
+    constructor() initializer {}
 
-    function initialize() public initializer
+    function initialize() initializer public
     {
         __ERC721_init("PlushCoreToken", "PLUSH");
         __ERC721Enumerable_init();

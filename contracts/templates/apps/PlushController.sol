@@ -26,9 +26,9 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     address[] public appAddresses;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() public initializer {}
+    constructor() initializer {}
 
-    function initialize(Plush _plush, PlushCoinWallets _plushCoinWallets) public initializer
+    function initialize(Plush _plush, PlushCoinWallets _plushCoinWallets) initializer public
     {
         plush = _plush;
         plushCoinWallets = _plushCoinWallets;

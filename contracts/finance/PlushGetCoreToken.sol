@@ -29,9 +29,9 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
     event TokenMinted(address indexed purchaser, address indexed beneficiary, uint256 amount);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() public initializer {}
+    constructor() initializer {}
 
-    function initialize(PlushCoreToken _plushCore, address payable _safeAddress) public initializer
+    function initialize(PlushCoreToken _plushCore, address payable _safeAddress) initializer public
     {
         plushCoreToken = _plushCore;
         safeAddress = _safeAddress;
