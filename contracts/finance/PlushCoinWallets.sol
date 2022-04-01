@@ -119,12 +119,12 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
         return walletInfo[_wallet].balance;
     }
 
-    function setMinimumAmount(uint256 _amount) external onlyRole(OPERATOR_ROLE)
+    function setMinimumDeposit(uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
         minimumDeposit = _amount;
     }
 
-    function getMinimumAmount() external view returns(uint256)
+    function getMinimumDeposit() external view returns(uint256)
     {
         return minimumDeposit;
     }
