@@ -17,7 +17,7 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     Plush public plush;
     PlushApps public plushApps;
 
-    uint256 public minimumBet;
+    uint256 public minimumDeposit;
     address private plushFeeWallet;
 
     struct Wallet
@@ -34,7 +34,7 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     {
         plushApps = _plushApps;
         plush = _plush;
-        minimumBet = 1 * 10 ** plush.decimals();
+        minimumDeposit = 1 * 10 ** plush.decimals();
         plushFeeWallet = _plushFeeAddress;
 
         __Pausable_init();
@@ -84,7 +84,7 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
 
     function increaseWalletAmount(address _wallet, uint256 _amount) private
     {
-        require(_amount >= minimumBet, "Less than minimum deposit.");
+        require(_amount >= minimumDeposit, "Less than minimum deposit.");
 
         walletInfo[_wallet].balance += _amount;
     }
@@ -121,12 +121,12 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
 
     function setMinimumAmount(uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
-        minimumBet = _amount;
+        minimumDeposit = _amount;
     }
 
     function getMinimumAmount() external view returns(uint256)
     {
-        return minimumBet;
+        return minimumDeposit;
     }
 
     function setPlushFeeAddress(address _address) external onlyRole(OPERATOR_ROLE)
