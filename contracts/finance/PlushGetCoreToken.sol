@@ -10,7 +10,6 @@ import "../token/ERC721/PlushCoreToken.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
@@ -22,7 +21,7 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         bool _result
     );
 
-    PlushCoreToken plushCoreToken;
+    PlushCoreToken public plushCoreToken;
     address payable private safeAddress;
     uint256 public mintPrice;
     bool public tokenNFTCheck;
@@ -32,7 +31,8 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(PlushCoreToken _plushCore, address payable _safeAddress) initializer public {
+    function initialize(PlushCoreToken _plushCore, address payable _safeAddress) initializer public
+    {
         plushCoreToken = _plushCore;
         safeAddress = _safeAddress;
         mintPrice = 0.001 ether;
@@ -48,11 +48,13 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyRole(PAUSER_ROLE)
+    {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyRole(PAUSER_ROLE)
+    {
         _unpause();
     }
 
@@ -104,7 +106,7 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         return address(plushCoreToken);
     }
 
-    function mint(address _mintAddress) payable public
+    function mint(address _mintAddress) public payable
     {
         require(msg.value == mintPrice, "Incorrect amount");
 
@@ -115,12 +117,11 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         plushCoreToken.safeMint(_mintAddress);
 
         emit TokenMinted(_msgSender(), _mintAddress, msg.value);
-
-        _forwardFunds();
     }
 
-    function _forwardFunds() internal {
-        (bool success, ) = safeAddress.call{value: msg.value}("");
+    function withdraw(uint256 _amount) external onlyRole(OPERATOR_ROLE)
+    {
+        (bool success, ) = safeAddress.call{value: _amount}("");
         require(success, "Transfer failed.");
     }
 

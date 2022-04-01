@@ -10,16 +10,15 @@ import "../PlushApps.sol";
 import "../token/ERC20/Plush.sol";
 
 contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    Plush plush;
-    PlushApps plushApps;
+    Plush public plush;
+    PlushApps public plushApps;
 
-    uint256 minimumBet;
-    address plushFeeWallet;
+    uint256 public minimumDeposit;
+    address private plushFeeWallet;
 
     struct Wallet
     {
@@ -31,10 +30,11 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plush, PlushApps _plushApps, address _plushFeeAddress) initializer public {
+    function initialize(Plush _plush, PlushApps _plushApps, address _plushFeeAddress) initializer public
+    {
         plushApps = _plushApps;
         plush = _plush;
-        minimumBet = 1 * 10 ** plush.decimals();
+        minimumDeposit = 1 * 10 ** plush.decimals();
         plushFeeWallet = _plushFeeAddress;
 
         __Pausable_init();
@@ -47,11 +47,13 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyRole(PAUSER_ROLE)
+    {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyRole(PAUSER_ROLE)
+    {
         _unpause();
     }
 
@@ -59,30 +61,30 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     {
         require(plush.balanceOf(msg.sender) >= _amount, "Not enough balance.");
         require(plush.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance.");
+        require(plush.transferFrom(msg.sender, address(this), _amount), "Transaction error.");
 
-        plush.transferFrom(msg.sender, address(this), _amount);
         increaseWalletAmount(_wallet, _amount);
     }
 
     function withdraw(uint256 _amount) external
     {
         require(walletInfo[msg.sender].balance >= _amount, "Not enough balance.");
+        require(plush.transfer(msg.sender, _amount), "Transaction error.");
 
         walletInfo[msg.sender].balance -= _amount;
-        plush.transfer(msg.sender, _amount);
     }
 
     function withdrawByController(uint256 _amount, address _address) external
     {
         require(walletInfo[msg.sender].balance >= _amount, "Not enough balance.");
+        require(plush.transfer(_address, _amount), "Transaction error.");
 
         walletInfo[msg.sender].balance -= _amount;
-        plush.transfer(_address, _amount);
     }
 
     function increaseWalletAmount(address _wallet, uint256 _amount) private
     {
-        require(_amount >= minimumBet, "Less than minimum deposit.");
+        require(_amount >= minimumDeposit, "Less than minimum deposit.");
 
         walletInfo[_wallet].balance += _amount;
     }
@@ -117,14 +119,14 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
         return walletInfo[_wallet].balance;
     }
 
-    function setMinimumAmount(uint256 _amount) external onlyRole(OPERATOR_ROLE)
+    function setMinimumDeposit(uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
-        minimumBet = _amount;
+        minimumDeposit = _amount;
     }
 
-    function getMinimumAmount() external view returns(uint256)
+    function getMinimumDeposit() external view returns(uint256)
     {
-        return minimumBet;
+        return minimumDeposit;
     }
 
     function setPlushFeeAddress(address _address) external onlyRole(OPERATOR_ROLE)

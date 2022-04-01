@@ -12,27 +12,27 @@ import "./PlushCoinWallets.sol";
 
 
 contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    Plush token;
-    PlushCoreToken plushCoreToken;
-    PlushCoinWallets plushCoinWallets;
+    Plush public token;
+    PlushCoreToken public plushCoreToken;
+    PlushCoinWallets public plushCoinWallets;
 
     address public owner;
-    mapping(address=>uint256) nextRequestAt;
-    mapping(address=>uint256) generalAmount;
-    uint256 faucetDripAmount;
-    uint256 faucetTime;
-    uint256 threshold;
-    bool tokenNFTCheck;
+    mapping(address=>uint256) private nextRequestAt;
+    mapping(address=>uint256) private generalAmount;
+    uint256 public faucetDripAmount;
+    uint256 public faucetTime;
+    uint256 private threshold;
+    bool private tokenNFTCheck;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plushCoin, PlushCoreToken _plushCoreToken, PlushCoinWallets _plushCoinWallets) initializer public {
+    function initialize(Plush _plushCoin, PlushCoreToken _plushCoreToken, PlushCoinWallets _plushCoinWallets) initializer public
+    {
         token = _plushCoin;
         plushCoreToken = _plushCoreToken;
         plushCoinWallets = _plushCoinWallets;
@@ -51,22 +51,24 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() public onlyRole(PAUSER_ROLE)
+    {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() public onlyRole(PAUSER_ROLE)
+    {
         _unpause();
     }
 
     function send(address _receiver) external
     {
-        require(token.balanceOf(address(this)) >= faucetDripAmount, "FaucetError: Empty");
-        require(nextRequestAt[_receiver] < block.timestamp, "FaucetError: Try again later");
-        require(generalAmount[_receiver] < threshold, "FaucetError: You have exceeded the maximum number of coins");
+        require(token.balanceOf(address(this)) >= faucetDripAmount, "Empty");
+        require(nextRequestAt[_receiver] < block.timestamp, "Time limit");
+        require(generalAmount[_receiver] < threshold, "Quantity limit");
 
         if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_receiver) > 0, "FaucetError: You don't have NFT(Plush Core Token) to get reward");
+            require(plushCoreToken.balanceOf(_receiver) > 0, "You don't have Core Token");
         }
 
         // Next request from the address can be made only after faucetTime
@@ -105,7 +107,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     function withdrawTokens(address _receiver, uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
         require(token.balanceOf(address(this)) >= _amount, "FaucetError: Insufficient funds");
-        token.transfer(_receiver, _amount);
+        require(token.transfer(_receiver, _amount), "Transaction error.");
     }
 
     function getThreshold() external view returns(uint256)
@@ -145,11 +147,11 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     function getCanTheAddressReceiveReward(address _receiver) external view returns(bool)
     {
         require(token.balanceOf(address(this)) >= faucetDripAmount, "Faucet is empty");
-        require(nextRequestAt[_receiver] < block.timestamp, "You received recently, try again later");
-        require(generalAmount[_receiver] < threshold, "You have exceeded the maximum number of tokens");
+        require(nextRequestAt[_receiver] < block.timestamp, "Time limit");
+        require(generalAmount[_receiver] < threshold, "Quantity limit");
 
         if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_receiver) > 0, "FaucetError: You don't have NFT(Plush Core Token) to get reward");
+            require(plushCoreToken.balanceOf(_receiver) > 0, "You don't have Core Token");
         }
 
         return true;
