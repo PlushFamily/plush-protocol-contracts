@@ -121,7 +121,7 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
 
     function withdraw(uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
-        (bool success, ) = safeAddress.call{value: amount}("");
+        (bool success, ) = safeAddress.call{value: _amount}("");
         require(success, "Transfer failed.");
     }
 
