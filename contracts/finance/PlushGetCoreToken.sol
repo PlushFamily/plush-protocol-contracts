@@ -117,13 +117,11 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         plushCoreToken.safeMint(_mintAddress);
 
         emit TokenMinted(_msgSender(), _mintAddress, msg.value);
-
-        _forwardFunds();
     }
 
-    function _forwardFunds() internal
+    function forwardFunds(uint256 amount) external onlyRole(OPERATOR_ROLE)
     {
-        (bool success) = safeAddress.call{value: msg.value}("");
+        (bool success, ) = safeAddress.call{value: amount}("");
         require(success, "Transfer failed.");
     }
 

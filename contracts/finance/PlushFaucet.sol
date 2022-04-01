@@ -107,7 +107,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     function withdrawTokens(address _receiver, uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
         require(token.balanceOf(address(this)) >= _amount, "FaucetError: Insufficient funds");
-        token.transfer(_receiver, _amount);
+        require(token.transfer(_receiver, _amount), "Transaction error.");
     }
 
     function getThreshold() external view returns(uint256)

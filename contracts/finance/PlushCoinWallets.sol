@@ -61,25 +61,25 @@ contract PlushCoinWallets is Initializable, PausableUpgradeable, AccessControlUp
     {
         require(plush.balanceOf(msg.sender) >= _amount, "Not enough balance.");
         require(plush.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance.");
+        require(plush.transferFrom(msg.sender, address(this), _amount), "Transaction error.");
 
-        plush.transferFrom(msg.sender, address(this), _amount);
         increaseWalletAmount(_wallet, _amount);
     }
 
     function withdraw(uint256 _amount) external
     {
         require(walletInfo[msg.sender].balance >= _amount, "Not enough balance.");
+        require(plush.transfer(msg.sender, _amount), "Transaction error.");
 
         walletInfo[msg.sender].balance -= _amount;
-        plush.transfer(msg.sender, _amount);
     }
 
     function withdrawByController(uint256 _amount, address _address) external
     {
         require(walletInfo[msg.sender].balance >= _amount, "Not enough balance.");
+        require(plush.transfer(_address, _amount), "Transaction error.");
 
         walletInfo[msg.sender].balance -= _amount;
-        plush.transfer(_address, _amount);
     }
 
     function increaseWalletAmount(address _wallet, uint256 _amount) private
