@@ -1,8 +1,10 @@
 import { defender, ethers, upgrades } from 'hardhat';
 
+import { DevContractsAddresses } from '../../../../arguments/development/consts';
+
 async function main() {
-  const proxyAddress = '0x8b25Bff08FDF1e1dCBA755C7BeECA6Ff233D5998'; // address with contract proxy
-  const multisig = '0xBB8Fe52cAA5F35Ec1475ac2ac6f1A273D67E2a10'; // Gnosis safe address
+  const proxyAddress = DevContractsAddresses.PLUSH_CORE_TOKEN_ADDRESS; // address with contract proxy
+  const multisig = DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS; // Gnosis safe address
   const title = 'Upgrade to new version'; // defender update title
   const description = 'Update baseURI link'; // defender update description
 

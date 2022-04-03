@@ -1,5 +1,6 @@
 import hre, { upgrades, ethers } from 'hardhat';
-import * as args from '../../../arguments/plushOperationsDAO';
+
+import { DevContractsAddresses } from '../../../arguments/development/consts';
 
 const MINDELAY = 60 * 60 * 24 * 3;
 const ZERO_ADDRESS = ethers.constants.AddressZero;
@@ -32,7 +33,11 @@ async function main() {
   // deploy plushOperationsDAO proxy
   const plushOperationsDAO = await upgrades.deployProxy(
     PlushOperationsDAO,
-    [args.default[0], args.default[1], plushTimeLock.address],
+    [
+      DevContractsAddresses.WRAPPED_PLUSH_COIN_ADDRESS,
+      DevContractsAddresses.PLUSH_CORE_TOKEN_ADDRESS,
+      plushTimeLock.address,
+    ],
     { kind: 'uups' },
   );
 
