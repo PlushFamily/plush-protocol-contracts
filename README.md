@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://avatars.githubusercontent.com/u/74625046?s=200&v=4" width="120" alt="Plush Logo" />
+<a href="https://github.com/PlushFamily/plush-protocol-contracts" target="blank"><img src="https://avatars.githubusercontent.com/u/74625046?s=200&v=4" width="120" alt="Plush Logo" /></a>
 </p>
 
 <p align="center">Plush Protocol is the core of the Plush ecosystem.</p>
