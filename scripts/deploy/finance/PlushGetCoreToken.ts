@@ -1,6 +1,6 @@
 import hre, { upgrades } from 'hardhat';
 
-import * as args from '../../../arguments/plushGetCoreTokenArgs';
+import { DevContractsAddresses } from '../../../arguments/development/consts';
 
 async function main() {
   const PlushGetCoreToken = await hre.ethers.getContractFactory(
@@ -9,7 +9,10 @@ async function main() {
 
   const plushGetCoreToken = await upgrades.deployProxy(
     PlushGetCoreToken,
-    [args.default[0], args.default[1]],
+    [
+      DevContractsAddresses.PLUSH_CORE_TOKEN_ADDRESS,
+      DevContractsAddresses.PLUSH_FEE_COLLECTOR_ADDRESS,
+    ],
     {
       kind: 'uups',
     },

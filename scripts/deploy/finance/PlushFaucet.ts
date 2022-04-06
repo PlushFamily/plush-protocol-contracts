@@ -1,13 +1,17 @@
 import hre, { upgrades } from 'hardhat';
 
-import * as args from '../../../arguments/plushFaucetArgs';
+import { DevContractsAddresses } from '../../../arguments/development/consts';
 
 async function main() {
   const PlushFaucet = await hre.ethers.getContractFactory('PlushFaucet');
 
   const plushFaucet = await upgrades.deployProxy(
     PlushFaucet,
-    [args.default[0], args.default[1], args.default[2]],
+    [
+      DevContractsAddresses.PLUSH_COIN_ADDRESS,
+      DevContractsAddresses.PLUSH_CORE_TOKEN_ADDRESS,
+      DevContractsAddresses.PLUSH_COIN_WALLETS_ADDRESS,
+    ],
     {
       kind: 'uups',
     },

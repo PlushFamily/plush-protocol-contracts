@@ -1,9 +1,12 @@
 import hre from 'hardhat';
-import * as args from '../../../../arguments/WrappedPlush';
+
+import { DevContractsAddresses } from '../../../../arguments/development/consts';
 
 async function main() {
   const WrappedPlush = await hre.ethers.getContractFactory('WrappedPlush');
-  const wrappedPlush = await WrappedPlush.deploy(args.default[0]);
+  const wrappedPlush = await WrappedPlush.deploy(
+    DevContractsAddresses.PLUSH_COIN_ADDRESS,
+  );
 
   await wrappedPlush.deployed();
   console.log('WrappedPlush -> deployed to address:', wrappedPlush.address);
@@ -18,7 +21,7 @@ async function main() {
     await hre.run('verify:verify', {
       address: wrappedPlush.address,
       contract: 'contracts/token/ERC20/WrappedPlush.sol:WrappedPlush',
-      constructorArguments: [args.default[0]],
+      constructorArguments: [DevContractsAddresses.PLUSH_COIN_ADDRESS],
     });
   }
 }
