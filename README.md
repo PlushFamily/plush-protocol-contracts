@@ -20,7 +20,7 @@ Import this library to connect your contracts to the Plush ecosystem.
 ### Installation
 
 ```console
-$ npm install @plushfamily/plush-protocol-contracts
+npm install @plushfamily/plush-protocol-contracts
 ```
 
 ### Description of protocol contracts
