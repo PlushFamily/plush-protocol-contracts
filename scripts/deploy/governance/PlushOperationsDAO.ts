@@ -16,11 +16,11 @@ async function main() {
 
   const PlushTimeLock = await hre.ethers.getContractFactory('PlushTimeLock');
 
-  const plushTimeLock = await upgrades.deployProxy(PlushTimeLock, [
-    MINDELAY,
-    [], // proposers list is empty at deployment
-    [ZERO_ADDRESS], // allow any address to execute a proposal once the timelock has expired
-  ]);
+  const plushTimeLock = await upgrades.deployProxy(
+    PlushTimeLock,
+    [MINDELAY, [], [ZERO_ADDRESS]],
+    { kind: 'uups' },
+  );
 
   await plushTimeLock.deployed();
 
