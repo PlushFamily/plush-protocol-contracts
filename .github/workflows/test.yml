@@ -16,6 +16,21 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install Dependencies
         run: yarn
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_DEBUG: false
+          envkey_NETWORK: "mumbai"
+          envkey_GOERLI_API_URL: "test"
+          envkey_MUMBAI_API_URL: "mumbai"
+          envkey_MAINNET_API_URL: "mumbai"
+          envkey_POLYGON_API_URL: "mumbai"
+          envkey_PRIVATE_KEY: "mumbai"
+          envkey_ETHERSCAN_API_KEY: "mumbai"
+          envkey_POLYGONSCAN_API_KEY: "mumbai"
+          envkey_DEFENDER_TEAM_API_KEY: "mumbai"
+          envkey_DEFENDER_TEAM_API_SECRET_KEY: "mumbai"
+          file_name: .env
       - name: Create env file
         env:
           QA_ENV_FILE: ${{ secrets.QA_ENV_FILE }}
