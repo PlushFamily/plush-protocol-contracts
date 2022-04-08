@@ -21,3 +21,5 @@ types
 .openzeppelin
 ProtocolAddresses.md
 dist/hardhat.config.*
+dist/arguments/
+dist/scripts/

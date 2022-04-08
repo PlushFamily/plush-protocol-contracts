@@ -35,3 +35,5 @@ jobs:
         run: yarn build
       - name: Linter check
         run: yarn lint
+      - name: Run tests
+        run: yarn test
