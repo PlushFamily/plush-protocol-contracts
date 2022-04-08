@@ -31,23 +31,6 @@ jobs:
           envkey_DEFENDER_TEAM_API_KEY: "mumbai"
           envkey_DEFENDER_TEAM_API_SECRET_KEY: "mumbai"
           file_name: .env
-      - name: Create env file
-        env:
-          QA_ENV_FILE: ${{ secrets.QA_ENV_FILE }}
-          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
-        run: |
-          touch .env
-          echo NETWORK="mumbai" > .env
-          echo GOERLI_API_URL="test" > .env
-          echo MUMBAI_API_URL="test" > .env
-          echo MAINNET_API_URL="test" > .env
-          echo POLYGON_API_URL="test" > .env
-          echo PRIVATE_KEY="test" > .env
-          echo ETHERSCAN_API_KEY="test" > .env
-          echo POLYGONSCAN_API_KEY="test" > .env
-          echo DEFENDER_TEAM_API_KEY="test" > .env
-          echo DEFENDER_TEAM_API_SECRET_KEY="test" > .env
-          cat .env
       - name: Build
         run: yarn build
       - name: Linter check
