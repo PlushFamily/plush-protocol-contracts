@@ -21,11 +21,11 @@ jobs:
         with:
           envkey_DEBUG: false
           envkey_NETWORK: "mumbai"
-          envkey_GOERLI_API_URL: "test"
-          envkey_MUMBAI_API_URL: "mumbai"
-          envkey_MAINNET_API_URL: "mumbai"
-          envkey_POLYGON_API_URL: "mumbai"
-          envkey_PRIVATE_KEY: "mumbai"
+          envkey_GOERLI_API_URL: ${{ secrets.WEB3_API_URL }}
+          envkey_MUMBAI_API_URL: ${{ secrets.WEB3_API_URL }}
+          envkey_MAINNET_API_URL: ${{ secrets.WEB3_API_URL }}
+          envkey_POLYGON_API_URL: ${{ secrets.WEB3_API_URL }}
+          envkey_PRIVATE_KEY: ${{ secrets.TEST_ACCOUNT_PRIVATE_KEY }}
           envkey_ETHERSCAN_API_KEY: "mumbai"
           envkey_POLYGONSCAN_API_KEY: "mumbai"
           envkey_DEFENDER_TEAM_API_KEY: "mumbai"
