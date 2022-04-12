@@ -2,6 +2,7 @@ import 'hardhat-contract-sizer';
 import 'dotenv/config';
 import '@typechain/hardhat';
 import '@nomiclabs/hardhat-waffle';
+import 'solidity-coverage';
 import '@nomiclabs/hardhat-etherscan';
 import '@openzeppelin/hardhat-upgrades';
 import '@openzeppelin/hardhat-defender';
