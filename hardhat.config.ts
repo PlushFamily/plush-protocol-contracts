@@ -223,10 +223,14 @@ export default {
       disambiguatePaths: false,
     },
   },
-  defaultNetwork: NETWORK,
+  defaultNetwork: 'local',
   networks: {
     local: {
       url: 'http://127.0.0.1:7545',
+      accounts: [
+        'b461e3d3ad8a749b36f778593b9295d0edbb66f10d71a03ab5b0775ee4deaf1d',
+        'c0511fde3df4217dc226cd59abaa937b04ebee7250816b7aa14bdb4dfff4bf68',
+      ], // Just for the test. Do not use these keys in public networks!
     },
     goerli: {
       url: GOERLI_API_URL,

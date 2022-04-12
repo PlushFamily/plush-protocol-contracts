@@ -47,7 +47,7 @@
   "scripts": {
     "prebuild": "rimraf dist && hardhat clean",
     "build": "hardhat compile && tsc",
-    "test": "hardhat test",
+    "test": "hardhat test test/tests.test.ts",
     "lint:js": "eslint .",
     "lint:js:fix": "eslint . --fix",
     "lint:sol": "solhint \"contracts/**/*.sol\"",
