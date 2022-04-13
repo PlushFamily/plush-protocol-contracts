@@ -13,7 +13,7 @@ import {
   WrappedPlush,
 } from '../types';
 
-describe('Plush Protocol', () => {
+describe('Launching the testing of the Plush Protocol', () => {
   let signers: Signer[];
 
   async function addSigners() {
@@ -222,6 +222,10 @@ describe('Plush Protocol', () => {
     expect(await wrappedPlush.balanceOf(await signers[0].getAddress())).to.eql(
       ethers.utils.parseUnits('3', 18),
     ); // Checking that user has 3 wrapped tokens.
+
+    expect(await plushToken.balanceOf(await signers[0].getAddress())).to.eql(
+      ethers.utils.parseUnits('9999999994', 18),
+    ); // Checking that the number of Plush tokens has decreased
   });
 
   it('WrappedPlush -> Check unwrapping', async () => {
