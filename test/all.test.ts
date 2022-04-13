@@ -4,6 +4,8 @@ import { ethers, upgrades } from 'hardhat';
 
 import {
   Plush,
+  PlushApps,
+  PlushCoinWallets,
   PlushCoreToken,
   PlushGetCoreToken,
   WrappedPlush,
@@ -18,6 +20,8 @@ describe('Plush Protocol', () => {
 
   addSigners();
 
+  const rpc = 'http://127.0.0.1:7545';
+
   let PlushFactory: ContractFactory;
   let plushToken: Plush;
 
@@ -31,13 +35,20 @@ describe('Plush Protocol', () => {
   let plushGetCoreToken: PlushGetCoreToken;
   const plushGetCoreTokenRandomSafeAddress = ethers.Wallet.createRandom();
 
-  it('Deploy Plush', async () => {
+  let PlushAppsFactory: ContractFactory;
+  let plushApps: PlushApps;
+
+  let PlushCoinWalletsFactory: ContractFactory;
+  let plushCoinWallets: PlushCoinWallets;
+  const plushCoinWalletsRandomSafeAddress = ethers.Wallet.createRandom();
+
+  it('[Deploy contract] Plush', async () => {
     PlushFactory = await ethers.getContractFactory('Plush');
     plushToken = (await PlushFactory.deploy()) as Plush;
     await plushToken.deployed();
   });
 
-  it('Deploy WrappedPlush', async () => {
+  it('[Deploy contract] WrappedPlush', async () => {
     WrappedPlushFactory = await ethers.getContractFactory('WrappedPlush');
     wrappedPlush = (await WrappedPlushFactory.deploy(
       plushToken.address,
@@ -45,7 +56,7 @@ describe('Plush Protocol', () => {
     await wrappedPlush.deployed();
   });
 
-  it('Deploy PlushCoreToken', async () => {
+  it('[Deploy contract] PlushCoreToken', async () => {
     PlushCoreTokenFactory = await ethers.getContractFactory('PlushCoreToken');
     plushCoreToken = (await upgrades.deployProxy(PlushCoreTokenFactory, {
       kind: 'uups',
@@ -53,7 +64,7 @@ describe('Plush Protocol', () => {
     await plushCoreToken.deployed();
   });
 
-  it('Deploy PlushGetCoreToken', async () => {
+  it('[Deploy contract] PlushGetCoreToken', async () => {
     PlushGetCoreTokenFactory = await ethers.getContractFactory(
       'PlushGetCoreToken',
     );
@@ -65,6 +76,32 @@ describe('Plush Protocol', () => {
       },
     )) as PlushGetCoreToken;
     await plushGetCoreToken.deployed();
+  });
+
+  it('[Deploy contract] PlushApps', async () => {
+    PlushAppsFactory = await ethers.getContractFactory('PlushApps');
+    plushApps = (await upgrades.deployProxy(PlushAppsFactory, {
+      kind: 'uups',
+    })) as PlushApps;
+    await plushApps.deployed();
+  });
+
+  it('[Deploy contract] PlushCoinWallets', async () => {
+    PlushCoinWalletsFactory = await ethers.getContractFactory(
+      'PlushCoinWallets',
+    );
+    plushCoinWallets = (await upgrades.deployProxy(
+      PlushCoinWalletsFactory,
+      [
+        plushToken.address,
+        plushApps.address,
+        plushCoinWalletsRandomSafeAddress.address,
+      ],
+      {
+        kind: 'uups',
+      },
+    )) as PlushCoinWallets;
+    await plushCoinWallets.deployed();
   });
 
   it('Plush -> Check total supply', async () => {
@@ -370,9 +407,7 @@ describe('Plush Protocol', () => {
       await plushCoreToken.balanceOf(await signers[0].getAddress()),
     ).to.eql(constants.One);
 
-    const provider = new ethers.providers.JsonRpcProvider(
-      'http://127.0.0.1:7545',
-    );
+    const provider = new ethers.providers.JsonRpcProvider(rpc);
 
     const withdrawTokens = await plushGetCoreToken.withdraw(
       ethers.utils.parseUnits('0.0001', 18),
