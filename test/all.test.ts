@@ -29,6 +29,7 @@ describe('Plush Protocol', () => {
 
   let PlushGetCoreTokenFactory: ContractFactory;
   let plushGetCoreToken: PlushGetCoreToken;
+  const plushGetCoreTokenRandomSafeAddress = ethers.Wallet.createRandom();
 
   it('Deploy Plush', async () => {
     PlushFactory = await ethers.getContractFactory('Plush');
@@ -338,30 +339,30 @@ describe('Plush Protocol', () => {
 
   it('PlushGetCoreToken -> Change mint price', async () => {
     const changeMintPrice = await plushGetCoreToken.changeMintPrice(
-      ethers.utils.parseUnits('0.01', 18),
+      ethers.utils.parseUnits('0.0001', 18),
     );
     await changeMintPrice.wait();
 
     expect(await plushGetCoreToken.getMintPrice()).to.eql(
-      ethers.utils.parseUnits('0.01', 18),
+      ethers.utils.parseUnits('0.0001', 18),
     );
   });
 
   it('PlushGetCoreToken -> Change safe address', async () => {
     const changeSafeAddress = await plushGetCoreToken.setSafeAddress(
-      await signers[0].getAddress(),
+      plushGetCoreTokenRandomSafeAddress.address,
     );
     await changeSafeAddress.wait();
 
     expect(await plushGetCoreToken.getSafeAddress()).to.eql(
-      await signers[0].getAddress(),
+      plushGetCoreTokenRandomSafeAddress.address,
     );
   });
 
   it('PlushGetCoreToken -> Check minting', async () => {
     const mintToken = await plushGetCoreToken.mint(
       await signers[0].getAddress(),
-      { value: ethers.utils.parseUnits('0.01', 18) },
+      { value: ethers.utils.parseUnits('0.0001', 18) },
     );
     await mintToken.wait();
 
@@ -369,7 +370,23 @@ describe('Plush Protocol', () => {
       await plushCoreToken.balanceOf(await signers[0].getAddress()),
     ).to.eql(constants.One);
 
-    await plushGetCoreToken.withdraw(ethers.utils.parseUnits('0.01', 18)); // withdraw fee
+    const provider = new ethers.providers.JsonRpcProvider(
+      'http://127.0.0.1:7545',
+    );
+
+    const withdrawTokens = await plushGetCoreToken.withdraw(
+      ethers.utils.parseUnits('0.0001', 18),
+    );
+
+    await withdrawTokens.wait();
+
+    const getNewSafeBalance = await provider
+      .getBalance(plushGetCoreTokenRandomSafeAddress.address)
+      .then((balance) => {
+        return ethers.utils.formatEther(balance);
+      });
+
+    expect(getNewSafeBalance).to.eql('0.0001');
   });
 
   it('PlushGetCoreToken -> Check pause contract', async () => {
