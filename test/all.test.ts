@@ -1,12 +1,14 @@
 import { expect } from 'chai';
-import { constants, ContractFactory, Signer } from 'ethers';
+import { BigNumber, constants, ContractFactory, Signer } from 'ethers';
 import { ethers, upgrades } from 'hardhat';
 
 import {
   Plush,
   PlushApps,
   PlushCoinWallets,
+  PlushController,
   PlushCoreToken,
+  PlushFaucet,
   PlushGetCoreToken,
   WrappedPlush,
 } from '../types';
@@ -41,6 +43,12 @@ describe('Plush Protocol', () => {
   let PlushCoinWalletsFactory: ContractFactory;
   let plushCoinWallets: PlushCoinWallets;
   const plushCoinWalletsRandomSafeAddress = ethers.Wallet.createRandom();
+
+  let PlushControllerFactory: ContractFactory;
+  let plushController: PlushController;
+
+  let PlushFaucetFactory: ContractFactory;
+  let plushFaucet: PlushFaucet;
 
   it('[Deploy contract] Plush', async () => {
     PlushFactory = await ethers.getContractFactory('Plush');
@@ -102,6 +110,30 @@ describe('Plush Protocol', () => {
       },
     )) as PlushCoinWallets;
     await plushCoinWallets.deployed();
+  });
+
+  it('[Deploy contract] Test controller', async () => {
+    PlushControllerFactory = await ethers.getContractFactory('PlushController');
+    plushController = (await upgrades.deployProxy(
+      PlushControllerFactory,
+      [plushToken.address, plushCoinWallets.address],
+      {
+        kind: 'uups',
+      },
+    )) as PlushController;
+    await plushController.deployed();
+  });
+
+  it('[Deploy contract] PlushFaucet', async () => {
+    PlushFaucetFactory = await ethers.getContractFactory('PlushFaucet');
+    plushFaucet = (await upgrades.deployProxy(
+      PlushFaucetFactory,
+      [plushToken.address, plushCoreToken.address, plushCoinWallets.address],
+      {
+        kind: 'uups',
+      },
+    )) as PlushFaucet;
+    await plushFaucet.deployed();
   });
 
   it('Plush -> Check total supply', async () => {
@@ -441,5 +473,95 @@ describe('Plush Protocol', () => {
     await plushGetCoreTokenNEW.deployed();
     expect(plushGetCoreTokenNEW.address).to.eq(plushGetCoreToken.address);
     expect(await plushCoreToken.totalSupply()).to.eql(constants.Two);
+  });
+
+  it('PlushApps -> Checking role assignments', async () => {
+    expect(
+      await plushApps.hasRole(
+        constants.HashZero,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // ADMIN role
+    expect(
+      await plushApps.hasRole(
+        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929',
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // OPERATOR role
+    expect(
+      await plushApps.hasRole(
+        '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
+        await signers[0].getAddress(), // PAUSER role
+      ),
+    ).to.eql(true);
+    expect(
+      await plushApps.hasRole(
+        '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
+        await signers[0].getAddress(), // UPGRADER role
+      ),
+    ).to.eql(true);
+  });
+
+  it('PlushApps -> Add test app', async () => {
+    const addApp = await plushApps.addNewApp(
+      'test',
+      plushController.address,
+      '50',
+    );
+    await addApp.wait();
+
+    expect(await plushApps.getFeeApp(plushController.address)).to.eql(
+      BigNumber.from('50'),
+    );
+  });
+
+  it('PlushApps -> Change fee app', async () => {
+    const changingFee = await plushApps.setFeeApp(
+      plushController.address,
+      '100',
+    );
+    await changingFee.wait();
+
+    expect(await plushApps.getFeeApp(plushController.address)).to.eql(
+      BigNumber.from('100'),
+    );
+  });
+
+  it('PlushApps -> Test disable app', async () => {
+    const disableApp = await plushApps.setIsActive(
+      false,
+      plushController.address,
+    );
+    await disableApp.wait();
+
+    expect(await plushApps.getIsAddressActive(plushController.address)).to.eql(
+      false,
+    );
+
+    // add test some activity with controller
+
+    const enableApp = await plushApps.setIsActive(
+      true,
+      plushController.address,
+    );
+    await enableApp.wait();
+  });
+
+  it('PlushApps -> Check pause contract', async () => {
+    const pauseContract = await plushApps.pause();
+    await pauseContract.wait();
+    expect(await plushApps.paused()).to.eql(true);
+    const onpauseContract = await plushApps.unpause();
+    await onpauseContract.wait();
+  });
+
+  it('PlushApps -> Check upgrade contract', async () => {
+    const plushAppsNEW = (await upgrades.upgradeProxy(
+      plushApps.address,
+      PlushAppsFactory,
+      { kind: 'uups' },
+    )) as PlushApps;
+    await plushAppsNEW.deployed();
+    expect(plushAppsNEW.address).to.eq(plushApps.address);
   });
 });
