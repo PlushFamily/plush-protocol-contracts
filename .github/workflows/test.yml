@@ -22,7 +22,7 @@ jobs:
           envkey_DEBUG: false
           envkey_NETWORK: "cloud"
           envkey_API_URL: ${{ secrets.WEB3_API_URL }}
-          envkey_PRIVATE_KEY: "test"
+          envkey_PRIVATE_KEY: ${{ secrets.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1 }}
           envkey_TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1: ${{ secrets.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1 }}
           envkey_TEST_CLOUD_ACCOUNT_PRIVATE_KEY_2: ${{ secrets.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_2 }}
           envkey_TEST_CLOUD_ACCOUNT_PRIVATE_KEY_3: ${{ secrets.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_3 }}
