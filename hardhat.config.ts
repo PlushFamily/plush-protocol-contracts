@@ -29,7 +29,11 @@ if (
   throw new Error('Not all variables are specified in the env file!');
 }
 
-if (!['local', 'goerli', 'mumbai', 'mainnet', 'polygon'].includes(NETWORK)) {
+if (
+  !['cloud', 'local', 'goerli', 'mumbai', 'mainnet', 'polygon'].includes(
+    NETWORK,
+  )
+) {
   throw new Error('Network not supported!');
 }
 
