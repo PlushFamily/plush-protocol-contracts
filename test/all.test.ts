@@ -607,10 +607,53 @@ describe('Launching the testing of the Plush Protocol', () => {
 
     expect(await plushFaucet.getThreshold()).to.eql(
       ethers.utils.parseUnits('100', 18),
-    ); // Max faucet send amount
+    ); // Max Plush user balance
 
     expect(await plushFaucet.getIsTokenNFTCheck()).to.eql(true); // NFT check
 
     expect(await plushFaucet.getFaucetBalance()).to.eql(ethers.constants.Zero); // Check Faucet balance
+  });
+
+  it('PlushFaucet -> Add tokens to faucet', async () => {
+    const setApprove = await plushToken.approve(
+      plushFaucet.address,
+      ethers.utils.parseUnits('2', 18),
+    );
+    await setApprove.wait();
+
+    const transferTokens = await plushToken.transfer(
+      plushFaucet.address,
+      ethers.utils.parseUnits('2', 18),
+    );
+    await transferTokens.wait();
+
+    expect(await plushFaucet.getFaucetBalance()).to.eql(
+      ethers.utils.parseUnits('2', 18),
+    );
+  });
+
+  it('PlushFaucet -> Get tokens from faucet to PlushCoinWallets', async () => {
+    expect(
+      await plushFaucet.getCanTheAddressReceiveReward(
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // Check that we can to get tokens
+
+    const getTokens = await plushFaucet.send(await signers[0].getAddress());
+    await getTokens.wait();
+
+    expect(await plushFaucet.getFaucetBalance()).to.eql(
+      ethers.utils.parseUnits('1', 18),
+    );
+
+    expect(
+      await plushCoinWallets.getWalletAmount(await signers[0].getAddress()),
+    ).to.eql(ethers.utils.parseUnits('1', 18)); // Check that we to get one token on Safe contract
+  });
+
+  it('PlushFaucet -> Check that we cant to get tokens twice', async () => {
+    await expect(
+      plushFaucet.getCanTheAddressReceiveReward(await signers[0].getAddress()),
+    ).to.be.revertedWith('Time limit');
   });
 });
