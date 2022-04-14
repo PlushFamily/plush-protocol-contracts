@@ -9,10 +9,7 @@ import '@openzeppelin/hardhat-defender';
 
 const {
   NETWORK,
-  MUMBAI_API_URL,
-  GOERLI_API_URL,
-  MAINNET_API_URL,
-  POLYGON_API_URL,
+  API_URL,
   PRIVATE_KEY,
   ETHERSCAN_API_KEY,
   POLYGONSCAN_API_KEY,
@@ -22,10 +19,7 @@ const {
 
 if (
   !NETWORK ||
-  !MUMBAI_API_URL ||
-  !GOERLI_API_URL ||
-  !MAINNET_API_URL ||
-  !POLYGON_API_URL ||
+  !API_URL ||
   !PRIVATE_KEY ||
   !ETHERSCAN_API_KEY ||
   !POLYGONSCAN_API_KEY ||
@@ -223,7 +217,7 @@ export default {
       disambiguatePaths: false,
     },
   },
-  defaultNetwork: 'local',
+  defaultNetwork: NETWORK,
   networks: {
     local: {
       url: 'http://127.0.0.1:7545',
@@ -232,20 +226,28 @@ export default {
         'c0511fde3df4217dc226cd59abaa937b04ebee7250816b7aa14bdb4dfff4bf68',
       ], // Just for the test. Do not use these keys in public networks!
     },
+    cloud: {
+      url: API_URL,
+      accounts: [
+        process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1,
+        process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_2,
+        process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_3,
+      ],
+    },
     goerli: {
-      url: GOERLI_API_URL,
+      url: API_URL,
       accounts: [`0x${PRIVATE_KEY}`],
     },
     mumbai: {
-      url: MUMBAI_API_URL,
+      url: API_URL,
       accounts: [`0x${PRIVATE_KEY}`],
     },
     mainnet: {
-      url: MAINNET_API_URL,
+      url: API_URL,
       accounts: [`0x${PRIVATE_KEY}`],
     },
     polygon: {
-      url: POLYGON_API_URL,
+      url: API_URL,
       accounts: [`0x${PRIVATE_KEY}`],
     },
   },

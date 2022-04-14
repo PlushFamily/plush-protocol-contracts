@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { BigNumber, constants, ContractFactory, Signer } from 'ethers';
-import { ethers, upgrades } from 'hardhat';
+import { ethers, upgrades, waffle } from 'hardhat';
 
 import {
   Plush,
@@ -21,8 +21,6 @@ describe('Launching the testing of the Plush Protocol', () => {
   }
 
   addSigners();
-
-  const rpc = 'http://127.0.0.1:7545';
 
   let PlushFactory: ContractFactory;
   let plushToken: Plush;
@@ -443,7 +441,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       await plushCoreToken.balanceOf(await signers[0].getAddress()),
     ).to.eql(constants.One);
 
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const provider = waffle.provider;
 
     const withdrawTokens = await plushGetCoreToken.withdraw(
       ethers.utils.parseUnits('0.0001', 18),
