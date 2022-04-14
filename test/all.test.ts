@@ -651,7 +651,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     ).to.eql(ethers.utils.parseUnits('1', 18)); // Check that we to get one token on Safe contract
   });
 
-  it('PlushFaucet -> Check that we cant to get tokens twice', async () => {
+  it("PlushFaucet -> Check that we can't to get tokens twice", async () => {
     await expect(
       plushFaucet.getCanTheAddressReceiveReward(await signers[0].getAddress()),
     ).to.be.revertedWith('Time limit');
