@@ -568,4 +568,49 @@ describe('Launching the testing of the Plush Protocol', () => {
     await plushAppsNEW.deployed();
     expect(plushAppsNEW.address).to.eq(plushApps.address);
   });
+
+  it('PlushFaucet -> Checking role assignments', async () => {
+    expect(
+      await plushFaucet.hasRole(
+        constants.HashZero,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // ADMIN role
+    expect(
+      await plushFaucet.hasRole(
+        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929',
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // OPERATOR role
+    expect(
+      await plushFaucet.hasRole(
+        '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
+        await signers[0].getAddress(), // PAUSER role
+      ),
+    ).to.eql(true);
+    expect(
+      await plushFaucet.hasRole(
+        '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
+        await signers[0].getAddress(), // UPGRADER role
+      ),
+    ).to.eql(true);
+  });
+
+  it('PlushFaucet -> Checking initial values', async () => {
+    expect(await plushFaucet.getDistributionTime()).to.eql(
+      BigNumber.from('86400'),
+    ); // 24 hours
+
+    expect(await plushFaucet.getFaucetDripAmount()).to.eql(
+      ethers.utils.parseUnits('1', 18),
+    ); // 1 Plush
+
+    expect(await plushFaucet.getThreshold()).to.eql(
+      ethers.utils.parseUnits('100', 18),
+    ); // Max faucet send amount
+
+    expect(await plushFaucet.getIsTokenNFTCheck()).to.eql(true); // NFT check
+
+    expect(await plushFaucet.getFaucetBalance()).to.eql(ethers.constants.Zero); // Check Faucet balance
+  });
 });
