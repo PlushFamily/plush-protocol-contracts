@@ -232,6 +232,7 @@ export default {
     },
     cloud: {
       url: API_URL,
+      chainId: 352515,
       accounts: [
         process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1,
         process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_2,
