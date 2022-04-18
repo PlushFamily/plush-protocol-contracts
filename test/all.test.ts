@@ -47,6 +47,7 @@ describe('Launching the testing of the Plush Protocol', () => {
 
   let PlushFaucetFactory: ContractFactory;
   let plushFaucet: PlushFaucet;
+  const plushFaucetRandomReceiverAddress = ethers.Wallet.createRandom();
 
   it('[Deploy contract] Plush', async () => {
     PlushFactory = await ethers.getContractFactory('Plush');
@@ -615,18 +616,18 @@ describe('Launching the testing of the Plush Protocol', () => {
   it('PlushFaucet -> Add tokens to faucet', async () => {
     const setApprove = await plushToken.approve(
       plushFaucet.address,
-      ethers.utils.parseUnits('2', 18),
+      ethers.utils.parseUnits('3', 18),
     );
     await setApprove.wait();
 
     const transferTokens = await plushToken.transfer(
       plushFaucet.address,
-      ethers.utils.parseUnits('2', 18),
+      ethers.utils.parseUnits('3', 18),
     );
     await transferTokens.wait();
 
     expect(await plushFaucet.getFaucetBalance()).to.eql(
-      ethers.utils.parseUnits('2', 18),
+      ethers.utils.parseUnits('3', 18),
     );
   });
 
@@ -641,9 +642,8 @@ describe('Launching the testing of the Plush Protocol', () => {
     await getTokens.wait();
 
     expect(await plushFaucet.getFaucetBalance()).to.eql(
-      ethers.utils.parseUnits('1', 18),
+      ethers.utils.parseUnits('2', 18),
     );
-
     expect(
       await plushCoinWallets.getWalletAmount(await signers[0].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18)); // Check that we to get one token on Safe contract
@@ -653,5 +653,142 @@ describe('Launching the testing of the Plush Protocol', () => {
     await expect(
       plushFaucet.getCanTheAddressReceiveReward(await signers[0].getAddress()),
     ).to.be.revertedWith('Time limit');
+  });
+
+  it('PlushFaucet -> Set disable NFT checking', async () => {
+    const changeNFTCheck = await plushFaucet.setTokenNFTCheck(false);
+    await changeNFTCheck.wait();
+    expect(await plushFaucet.getIsTokenNFTCheck()).to.eql(false);
+  });
+
+  it('PlushFaucet -> Try to get tokens without NFT (with disable NFT checking)', async () => {
+    const getTokens = await plushFaucet.send(
+      plushFaucetRandomReceiverAddress.address,
+    );
+    await getTokens.wait();
+    expect(
+      await plushCoinWallets.getWalletAmount(
+        plushFaucetRandomReceiverAddress.address,
+      ),
+    ).to.eql(ethers.utils.parseUnits('1', 18));
+    await expect(
+      plushFaucet.getCanTheAddressReceiveReward(
+        plushFaucetRandomReceiverAddress.address,
+      ),
+    ).to.be.revertedWith('Time limit');
+  });
+
+  it('PlushFaucet -> Withdraw tokens from faucet', async () => {
+    const withdrawTokens = await plushFaucet.withdrawTokens(
+      plushFaucetRandomReceiverAddress.address,
+      ethers.utils.parseUnits('1', 18),
+    );
+    await withdrawTokens.wait();
+
+    expect(
+      await plushToken.balanceOf(plushFaucetRandomReceiverAddress.address),
+    ).to.eql(ethers.utils.parseUnits('1', 18));
+    expect(await plushFaucet.getFaucetBalance()).to.eql(
+      ethers.utils.parseUnits('0', 18),
+    );
+  });
+
+  it('PlushFaucet -> Check pause contract', async () => {
+    const pauseContract = await plushFaucet.pause();
+    await pauseContract.wait();
+    expect(await plushFaucet.paused()).to.eql(true);
+    const onpauseContract = await plushFaucet.unpause();
+    await onpauseContract.wait();
+    expect(await plushFaucet.paused()).to.eql(false);
+  });
+
+  it('PlushFaucet -> Check upgrade contract', async () => {
+    const plushFaucetNEW = (await upgrades.upgradeProxy(
+      plushFaucet.address,
+      PlushFaucetFactory,
+      { kind: 'uups' },
+    )) as PlushFaucet;
+    await plushFaucetNEW.deployed();
+    expect(plushFaucetNEW.address).to.eq(plushFaucet.address);
+  });
+
+  it('PlushCoinWallets -> Checking role assignments', async () => {
+    expect(
+      await plushFaucet.hasRole(
+        constants.HashZero,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // ADMIN role
+    expect(
+      await plushFaucet.hasRole(
+        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929',
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // OPERATOR role
+    expect(
+      await plushFaucet.hasRole(
+        '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
+        await signers[0].getAddress(), // PAUSER role
+      ),
+    ).to.eql(true);
+    expect(
+      await plushFaucet.hasRole(
+        '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
+        await signers[0].getAddress(), // UPGRADER role
+      ),
+    ).to.eql(true);
+  });
+
+  it('PlushCoinWallets -> Checking initial values', async () => {
+    expect(await plushCoinWallets.plushApps()).to.eql(plushApps.address);
+    expect(await plushCoinWallets.plush()).to.eql(plushToken.address);
+    expect(await plushCoinWallets.minimumDeposit()).to.eql(
+      ethers.utils.parseUnits('1', 18),
+    );
+    expect(await plushCoinWallets.getPlushFeeAddress()).to.eql(
+      plushCoinWalletsRandomSafeAddress.address,
+    );
+  });
+
+  it('PlushCoinWallets -> Check user balances', async () => {
+    expect(
+      await plushCoinWallets.getWalletAmount(await signers[0].getAddress()),
+    ).to.eql(ethers.utils.parseUnits('1', 18));
+  });
+
+  it('PlushCoinWallets -> Check transfer tokens in safe', async () => {
+    const transferTokens = await plushCoinWallets.internalTransfer(
+      await signers[1].getAddress(),
+      ethers.utils.parseUnits('1', 18),
+    );
+    await transferTokens.wait();
+    expect(
+      await plushCoinWallets.getWalletAmount(await signers[0].getAddress()),
+    ).to.eql(ethers.utils.parseUnits('0', 18));
+    expect(
+      await plushCoinWallets.getWalletAmount(await signers[1].getAddress()),
+    ).to.eql(ethers.utils.parseUnits('1', 18));
+  });
+
+  it('PlushCoinWallets -> Check pause contract', async () => {
+    const pauseContract = await plushCoinWallets.pause();
+    await pauseContract.wait();
+    expect(await plushCoinWallets.paused()).to.eql(true);
+    const onpauseContract = await plushCoinWallets.unpause();
+    await onpauseContract.wait();
+    expect(await plushCoinWallets.paused()).to.eql(false);
+  });
+
+  it('PlushCoinWallets -> Check upgrade contract', async () => {
+    const plushCoinWalletsNEW = (await upgrades.upgradeProxy(
+      plushCoinWallets.address,
+      PlushCoinWalletsFactory,
+      { kind: 'uups' },
+    )) as PlushCoinWallets;
+    await plushCoinWalletsNEW.deployed();
+    expect(plushCoinWalletsNEW.address).to.eq(plushCoinWallets.address);
+    expect(
+      await plushCoinWallets.getWalletAmount(await signers[1].getAddress()),
+    ).to.eql(ethers.utils.parseUnits('1', 18));
   });
 });
