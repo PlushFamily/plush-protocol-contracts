@@ -16,7 +16,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: plush.address,
-      contract: 'contracts/token/ERC20/Plush.test.ts:Plush',
+      contract: 'contracts/token/ERC20/Plush.sol:Plush',
     });
   }
 }
