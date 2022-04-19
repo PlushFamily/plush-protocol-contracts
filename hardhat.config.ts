@@ -37,6 +37,19 @@ if (
   throw new Error('Network not supported!');
 }
 
+let TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1 = PRIVATE_KEY;
+let TEST_CLOUD_ACCOUNT_PRIVATE_KEY_2 = PRIVATE_KEY;
+let TEST_CLOUD_ACCOUNT_PRIVATE_KEY_3 = PRIVATE_KEY;
+
+if (NETWORK == 'cloud') {
+  TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1 =
+    process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1 || '';
+  TEST_CLOUD_ACCOUNT_PRIVATE_KEY_2 =
+    process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1 || '';
+  TEST_CLOUD_ACCOUNT_PRIVATE_KEY_3 =
+    process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1 || '';
+}
+
 let API_KEY = '';
 
 if (['goerli', 'mainnet'].includes(NETWORK)) {
@@ -233,9 +246,9 @@ export default {
     cloud: {
       url: API_URL,
       accounts: [
-        process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1,
-        process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_2,
-        process.env.TEST_CLOUD_ACCOUNT_PRIVATE_KEY_3,
+        TEST_CLOUD_ACCOUNT_PRIVATE_KEY_1,
+        TEST_CLOUD_ACCOUNT_PRIVATE_KEY_2,
+        TEST_CLOUD_ACCOUNT_PRIVATE_KEY_3,
       ],
     },
     goerli: {
