@@ -386,7 +386,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     ).to.eql(true);
   });
 
-  it('PlushGetLifeSpan -> Check Core token address', async () => {
+  it('PlushGetLifeSpan -> Check LifeSpan token address', async () => {
     expect(await plushGetLifeSpan.getLifeSpanTokenAddress()).to.eql(
       lifeSpan.address,
     );
@@ -626,7 +626,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
   });
 
-  it('PlushFaucet -> Get tokens from faucet to PlushCoinWallets', async () => {
+  it('PlushFaucet -> Get tokens from faucet to PlushAccounts', async () => {
     expect(
       await plushFaucet.getCanTheAddressReceiveReward(
         await signers[0].getAddress(),
