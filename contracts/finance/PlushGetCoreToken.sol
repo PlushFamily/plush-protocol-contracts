@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../token/ERC721/PlushCoreToken.sol";
-import "../finance/pools/PlushNFTCashbackPool.sol";
+import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
@@ -22,7 +22,7 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         bool _result
     );
 
-    PlushNFTCashbackPool public plushNFTCashbackPool;
+    PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
     PlushCoreToken public plushCoreToken;
     address payable private safeAddress;
     uint256 public mintPrice;
@@ -33,9 +33,9 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(PlushCoreToken _plushCore, address payable _safeAddress, PlushNFTCashbackPool _plushNFTCashbackPool) initializer public
+    function initialize(PlushCoreToken _plushCore, address payable _safeAddress, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool) initializer public
     {
-        plushNFTCashbackPool = _plushNFTCashbackPool;
+        plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         plushCoreToken = _plushCore;
         safeAddress = _safeAddress;
         mintPrice = 0.001 ether;
@@ -118,7 +118,7 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         }
 
         plushCoreToken.safeMint(_mintAddress);
-        plushNFTCashbackPool.addLockedTokensToAccount(_mintAddress);
+        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(_mintAddress);
 
         emit TokenMinted(_msgSender(), _mintAddress, msg.value);
     }

@@ -3,27 +3,27 @@ import hre, { upgrades } from 'hardhat';
 import { DevContractsAddresses } from '../../../../arguments/development/consts';
 
 async function main() {
-  const PlushNFTCashbackPool = await hre.ethers.getContractFactory(
-    'PlushNFTCashbackPool',
+  const PlushLifeSpanNFTCashbackPool = await hre.ethers.getContractFactory(
+    'PlushLifeSpanNFTCashbackPool',
   );
 
-  const plushNFTCashbackPool = await upgrades.deployProxy(
-    PlushNFTCashbackPool,
+  const plushLifeSpanNFTCashbackPool = await upgrades.deployProxy(
+    PlushLifeSpanNFTCashbackPool,
     [
       DevContractsAddresses.PLUSH_COIN_ADDRESS,
-      100, // remuneration amount (in wei!)
-      100, // time after which tokens will be unlocked (in sec!)
+      1000000000000, // remuneration amount (in wei!)
+      120, // time after which tokens will be unlocked (in sec!)
     ],
     {
       kind: 'uups',
     },
   );
 
-  await plushNFTCashbackPool.deployed();
+  await plushLifeSpanNFTCashbackPool.deployed();
 
   console.log(
     'PlushNFTCashbackPool -> deployed to address:',
-    plushNFTCashbackPool.address,
+    plushLifeSpanNFTCashbackPool.address,
   );
 
   if (process.env.NETWORK != 'local') {
@@ -35,7 +35,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-        plushNFTCashbackPool.address,
+        plushLifeSpanNFTCashbackPool.address,
       ),
     });
   }
