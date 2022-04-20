@@ -1,28 +1,29 @@
 import hre, { upgrades } from 'hardhat';
 
-import { DevContractsAddresses } from '../../../arguments/development/consts';
+import { DevContractsAddresses } from '../../../../arguments/development/consts';
 
 async function main() {
-  const PlushGetCoreToken = await hre.ethers.getContractFactory(
-    'PlushGetCoreToken',
+  const PlushNFTCashbackPool = await hre.ethers.getContractFactory(
+    'PlushNFTCashbackPool',
   );
 
-  const plushGetCoreToken = await upgrades.deployProxy(
-    PlushGetCoreToken,
+  const plushNFTCashbackPool = await upgrades.deployProxy(
+    PlushNFTCashbackPool,
     [
-      DevContractsAddresses.PLUSH_CORE_TOKEN_ADDRESS,
-      DevContractsAddresses.PLUSH_FEE_COLLECTOR_ADDRESS,
-      DevContractsAddresses.PLUSH_NFT_CASHBACK_POOL,
+      DevContractsAddresses.PLUSH_COIN_ADDRESS,
+      100, // remuneration amount (in wei!)
+      100, // time after which tokens will be unlocked (in sec!)
     ],
     {
       kind: 'uups',
     },
   );
 
-  await plushGetCoreToken.deployed();
+  await plushNFTCashbackPool.deployed();
+
   console.log(
-    'PlushGetCoreToken -> deployed to address:',
-    plushGetCoreToken.address,
+    'PlushNFTCashbackPool -> deployed to address:',
+    plushNFTCashbackPool.address,
   );
 
   if (process.env.NETWORK != 'local') {
@@ -34,7 +35,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-        plushGetCoreToken.address,
+        plushNFTCashbackPool.address,
       ),
     });
   }

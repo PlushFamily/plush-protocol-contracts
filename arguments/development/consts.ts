@@ -9,4 +9,5 @@ export enum DevContractsAddresses {
   PLUSH_APPS_ADDRESS = '0xF17503B5014F16BDBDA36Fd618D3ef02cd0caf46', // Ecosystem contract
   PLUSH_FEE_COLLECTOR_ADDRESS = '0x108dEc7b37C526B2e2DBf8447573dDCB9265C884', // Plush Fee collector DAO contract (multisig)
   PLUSH_DAO_PROTOCOL_ADDRESS = '0x108dEc7b37C526B2e2DBf8447573dDCB9265C884', // Plush DAO Protocol contract (multisig)
+  PLUSH_NFT_CASHBACK_POOL = '0x493924255B4d17046771edc965D9a905064F3B19', // Plush NFT cashback pool contract
 }
