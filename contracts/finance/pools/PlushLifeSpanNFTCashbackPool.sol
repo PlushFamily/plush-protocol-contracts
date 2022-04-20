@@ -14,7 +14,18 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
 
     uint256 public remuneration;
     uint256 public timeUnlock;
+    uint256[] allIds;
+
     Plush public token;
+
+    struct Balance
+    {
+        uint256 balance;
+        uint256 timeIsActive;
+    }
+
+    mapping (address => uint256[]) private idsBalances;
+    mapping (uint256 => Balance) private balanceInfo;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -43,17 +54,6 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
     {
         _unpause();
     }
-
-    uint256[] allIds;
-
-    struct Balance
-    {
-        uint256 balance;
-        uint256 timeIsActive;
-    }
-
-    mapping (address => uint256[]) private idsBalances;
-    mapping (uint256 => Balance) private balanceInfo;
 
     function getWalletAmount(address _wallet) external view returns(uint256[] memory, uint256[] memory, uint256[] memory, uint256[] memory)
     {
