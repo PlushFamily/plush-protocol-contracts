@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 /// @custom:security-contact security@plush.family
 contract WrappedPlush is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper, ERC20Burnable {
     constructor(IERC20 wrappedToken)
-    ERC20("WPlush", "wPLSH")
+    ERC20("wPlush", "wPLSH")
     ERC20Permit("WPlush")
     ERC20Wrapper(wrappedToken)
     {}

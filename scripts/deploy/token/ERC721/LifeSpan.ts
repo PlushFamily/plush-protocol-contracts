@@ -1,13 +1,13 @@
 import { ethers, upgrades, run } from 'hardhat';
 
 async function main() {
-  const PlushCoreToken = await ethers.getContractFactory('PlushCoreToken');
-  const plushCoreToken = await upgrades.deployProxy(PlushCoreToken, {
+  const LifeSpan = await ethers.getContractFactory('LifeSpan');
+  const lifeSpan = await upgrades.deployProxy(LifeSpan, {
     kind: 'uups',
   });
 
-  await plushCoreToken.deployed();
-  console.log('PlushCoreToken -> deployed to address:', plushCoreToken.address);
+  await lifeSpan.deployed();
+  console.log('LifeSpan -> deployed to address:', lifeSpan.address);
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
@@ -18,7 +18,7 @@ async function main() {
 
     await run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-        plushCoreToken.address,
+        lifeSpan.address,
       ),
     });
   }

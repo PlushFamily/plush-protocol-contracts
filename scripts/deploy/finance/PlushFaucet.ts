@@ -9,8 +9,8 @@ async function main() {
     PlushFaucet,
     [
       DevContractsAddresses.PLUSH_COIN_ADDRESS,
-      DevContractsAddresses.PLUSH_CORE_TOKEN_ADDRESS,
-      DevContractsAddresses.PLUSH_COIN_WALLETS_ADDRESS,
+      DevContractsAddresses.LIFESPAN_ADDRESS,
+      DevContractsAddresses.PLUSH_ACCOUNTS_ADDRESS,
     ],
     {
       kind: 'uups',

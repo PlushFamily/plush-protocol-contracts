@@ -3,12 +3,10 @@ import hre, { upgrades } from 'hardhat';
 import { DevContractsAddresses } from '../../../arguments/development/consts';
 
 async function main() {
-  const PlushCoinWallets = await hre.ethers.getContractFactory(
-    'PlushCoinWallets',
-  );
+  const PlushAccounts = await hre.ethers.getContractFactory('PlushAccounts');
 
-  const plushCoinWallets = await upgrades.deployProxy(
-    PlushCoinWallets,
+  const plushAccounts = await upgrades.deployProxy(
+    PlushAccounts,
     [
       DevContractsAddresses.PLUSH_COIN_ADDRESS,
       DevContractsAddresses.PLUSH_APPS_ADDRESS,
@@ -19,12 +17,9 @@ async function main() {
     },
   );
 
-  await plushCoinWallets.deployed();
+  await plushAccounts.deployed();
 
-  console.log(
-    'PlushCoinWallets -> deployed to address:',
-    plushCoinWallets.address,
-  );
+  console.log('PlushAccounts -> deployed to address:', plushAccounts.address);
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
@@ -35,7 +30,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-        plushCoinWallets.address,
+        plushAccounts.address,
       ),
     });
   }

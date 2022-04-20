@@ -35,7 +35,7 @@ async function main() {
     PlushOperationsDAO,
     [
       DevContractsAddresses.WRAPPED_PLUSH_COIN_ADDRESS,
-      DevContractsAddresses.PLUSH_CORE_TOKEN_ADDRESS,
+      DevContractsAddresses.LIFESPAN_ADDRESS,
       plushTimeLock.address,
     ],
     { kind: 'uups' },

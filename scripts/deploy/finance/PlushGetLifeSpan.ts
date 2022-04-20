@@ -3,14 +3,14 @@ import hre, { upgrades } from 'hardhat';
 import { DevContractsAddresses } from '../../../arguments/development/consts';
 
 async function main() {
-  const PlushGetCoreToken = await hre.ethers.getContractFactory(
-    'PlushGetCoreToken',
+  const PlushGetLifeSpan = await hre.ethers.getContractFactory(
+    'PlushGetLifeSpan',
   );
 
-  const plushGetCoreToken = await upgrades.deployProxy(
-    PlushGetCoreToken,
+  const plushGetLifeSpan = await upgrades.deployProxy(
+    PlushGetLifeSpan,
     [
-      DevContractsAddresses.PLUSH_CORE_TOKEN_ADDRESS,
+      DevContractsAddresses.LIFESPAN_ADDRESS,
       DevContractsAddresses.PLUSH_FEE_COLLECTOR_ADDRESS,
     ],
     {
@@ -18,10 +18,10 @@ async function main() {
     },
   );
 
-  await plushGetCoreToken.deployed();
+  await plushGetLifeSpan.deployed();
   console.log(
-    'PlushGetCoreToken -> deployed to address:',
-    plushGetCoreToken.address,
+    'PlushGetLifeSpan -> deployed to address:',
+    plushGetLifeSpan.address,
   );
 
   if (process.env.NETWORK != 'local') {
@@ -33,7 +33,7 @@ async function main() {
 
     await hre.run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-        plushGetCoreToken.address,
+        plushGetLifeSpan.address,
       ),
     });
   }

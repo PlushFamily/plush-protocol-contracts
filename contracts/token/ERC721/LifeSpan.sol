@@ -11,7 +11,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 /// @custom:security-contact security@plush.family
-contract PlushCoreToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable, PausableUpgradeable, AccessControlUpgradeable, ERC721BurnableUpgradeable, UUPSUpgradeable {
+contract LifeSpan is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable, PausableUpgradeable, AccessControlUpgradeable, ERC721BurnableUpgradeable, UUPSUpgradeable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -24,7 +24,7 @@ contract PlushCoreToken is Initializable, ERC721Upgradeable, ERC721EnumerableUpg
 
     function initialize() initializer public
     {
-        __ERC721_init("PlushCoreToken", "PLUSH");
+        __ERC721_init("LifeSpan", "LIFESPAN");
         __ERC721Enumerable_init();
         __Pausable_init();
         __AccessControl_init();

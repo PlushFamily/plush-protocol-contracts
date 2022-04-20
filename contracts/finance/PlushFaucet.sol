@@ -7,8 +7,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../token/ERC20/Plush.sol";
-import "../token/ERC721/PlushCoreToken.sol";
-import "./PlushCoinWallets.sol";
+import "../token/ERC721/LifeSpan.sol";
+import "./PlushAccounts.sol";
 
 
 contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
@@ -17,8 +17,8 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     Plush public token;
-    PlushCoreToken public plushCoreToken;
-    PlushCoinWallets public plushCoinWallets;
+    LifeSpan public lifeSpan;
+    PlushAccounts public plushAccounts;
 
     address public owner;
     mapping(address=>uint256) private nextRequestAt;
@@ -31,11 +31,11 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plushCoin, PlushCoreToken _plushCoreToken, PlushCoinWallets _plushCoinWallets) initializer public
+    function initialize(Plush _plushCoin, LifeSpan _lifeSpan, PlushAccounts _plushAccounts) initializer public
     {
         token = _plushCoin;
-        plushCoreToken = _plushCoreToken;
-        plushCoinWallets = _plushCoinWallets;
+        lifeSpan = _lifeSpan;
+        plushAccounts = _plushAccounts;
         faucetTime = 24 hours;
         faucetDripAmount = 1 * 10 ** token.decimals();
         threshold = 100 * 10 ** token.decimals();
@@ -68,15 +68,15 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         require(generalAmount[_receiver] < threshold, "Quantity limit");
 
         if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_receiver) > 0, "You don't have Core Token");
+            require(lifeSpan.balanceOf(_receiver) > 0, "You don't have LifeSpan Token");
         }
 
         // Next request from the address can be made only after faucetTime
         nextRequestAt[_receiver] = block.timestamp + faucetTime;
         generalAmount[_receiver] += faucetDripAmount;
 
-        token.approve(address(plushCoinWallets), faucetDripAmount);
-        plushCoinWallets.deposit(_receiver, faucetDripAmount);
+        token.approve(address(plushAccounts), faucetDripAmount);
+        plushAccounts.deposit(_receiver, faucetDripAmount);
     }
 
     function setTokenAddress(address _tokenAddr) external onlyRole(OPERATOR_ROLE)
@@ -151,7 +151,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         require(generalAmount[_receiver] < threshold, "Quantity limit");
 
         if(tokenNFTCheck){
-            require(plushCoreToken.balanceOf(_receiver) > 0, "You don't have Core Token");
+            require(lifeSpan.balanceOf(_receiver) > 0, "You don't have LifeSpan Token");
         }
 
         return true;
