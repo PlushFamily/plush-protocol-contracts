@@ -12,8 +12,8 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    uint256 remuneration;
-    uint256 timeUnlock;
+    uint256 public remuneration;
+    uint256 public timeUnlock;
     Plush public token;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
