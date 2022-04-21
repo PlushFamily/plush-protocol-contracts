@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../token/ERC721/LifeSpan.sol";
+import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
@@ -21,6 +22,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
         bool _result
     );
 
+    PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
     LifeSpan public lifeSpan;
     address payable private safeAddress;
     uint256 public mintPrice;
@@ -31,8 +33,9 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(LifeSpan _lifeSpan, address payable _safeAddress) initializer public
+    function initialize(LifeSpan _lifeSpan, address payable _safeAddress, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool) initializer public
     {
+        plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         lifeSpan = _lifeSpan;
         safeAddress = _safeAddress;
         mintPrice = 0.001 ether;
@@ -115,6 +118,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
         }
 
         lifeSpan.safeMint(_mintAddress);
+        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(_mintAddress);
 
         emit TokenMinted(_msgSender(), _mintAddress, msg.value);
     }
