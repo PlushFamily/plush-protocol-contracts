@@ -6,22 +6,22 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-import "../token/ERC721/PlushCoreToken.sol";
+import "../token/ERC721/LifeSpan.sol";
 
 /// @custom:security-contact security@plush.family
-contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    event coreTokenChecked
+    event lifeSpanTokenTokenChecked
     (
         address _holder,
         uint _bal,
         bool _result
     );
 
-    PlushCoreToken public plushCoreToken;
+    LifeSpan public lifeSpan;
     address payable private safeAddress;
     uint256 public mintPrice;
     bool public tokenNFTCheck;
@@ -31,9 +31,9 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(PlushCoreToken _plushCore, address payable _safeAddress) initializer public
+    function initialize(LifeSpan _lifeSpan, address payable _safeAddress) initializer public
     {
-        plushCoreToken = _plushCore;
+        lifeSpan = _lifeSpan;
         safeAddress = _safeAddress;
         mintPrice = 0.001 ether;
         tokenNFTCheck = true;
@@ -58,15 +58,15 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         _unpause();
     }
 
-    function checkUserCoreToken(address _address) private returns (bool)
+    function checkUserLifeSpanToken(address _address) private returns (bool)
     {
         bool result = false;
 
-        if (plushCoreToken.balanceOf(_address) > 0) {
+        if (lifeSpan.balanceOf(_address) > 0) {
             result = true;
         }
 
-        emit coreTokenChecked(_address, plushCoreToken.balanceOf(_address), result);
+        emit lifeSpanTokenTokenChecked(_address, lifeSpan.balanceOf(_address), result);
 
         return result;
     }
@@ -91,9 +91,9 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         safeAddress = payable(_address);
     }
 
-    function setCoreTokenAddress(address _address) external onlyRole(OPERATOR_ROLE)
+    function setLifeSpanAddress(address _address) external onlyRole(OPERATOR_ROLE)
     {
-        plushCoreToken = PlushCoreToken(_address);
+        lifeSpan = LifeSpan(_address);
     }
 
     function getSafeAddress() public view returns (address payable)
@@ -101,9 +101,9 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         return safeAddress;
     }
 
-    function getCoreTokenAddress() public view returns (address)
+    function getLifeSpanTokenAddress() public view returns (address)
     {
-        return address(plushCoreToken);
+        return address(lifeSpan);
     }
 
     function mint(address _mintAddress) public payable
@@ -111,10 +111,10 @@ contract PlushGetCoreToken is Initializable, PausableUpgradeable, AccessControlU
         require(msg.value == mintPrice, "Incorrect amount");
 
         if (tokenNFTCheck) {
-            require(checkUserCoreToken(_mintAddress) == false, "You already have a Core token");
+            require(checkUserLifeSpanToken(_mintAddress) == false, "You already have a LifeSpan token");
         }
 
-        plushCoreToken.safeMint(_mintAddress);
+        lifeSpan.safeMint(_mintAddress);
 
         emit TokenMinted(_msgSender(), _mintAddress, msg.value);
     }

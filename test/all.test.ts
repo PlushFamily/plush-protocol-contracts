@@ -5,11 +5,11 @@ import { ethers, upgrades, waffle } from 'hardhat';
 import {
   Plush,
   PlushApps,
-  PlushCoinWallets,
+  PlushAccounts,
   PlushController,
-  PlushCoreToken,
+  LifeSpan,
   PlushFaucet,
-  PlushGetCoreToken,
+  PlushGetLifeSpan,
   WrappedPlush,
 } from '../types';
 
@@ -28,19 +28,19 @@ describe('Launching the testing of the Plush Protocol', () => {
   let WrappedPlushFactory: ContractFactory;
   let wrappedPlush: WrappedPlush;
 
-  let PlushCoreTokenFactory: ContractFactory;
-  let plushCoreToken: PlushCoreToken;
+  let LifeSpanFactory: ContractFactory;
+  let lifeSpan: LifeSpan;
 
-  let PlushGetCoreTokenFactory: ContractFactory;
-  let plushGetCoreToken: PlushGetCoreToken;
-  const plushGetCoreTokenRandomSafeAddress = ethers.Wallet.createRandom();
+  let PlushGetLifeSpanFactory: ContractFactory;
+  let plushGetLifeSpan: PlushGetLifeSpan;
+  const plushGetLifeSpanRandomSafeAddress = ethers.Wallet.createRandom();
 
   let PlushAppsFactory: ContractFactory;
   let plushApps: PlushApps;
 
-  let PlushCoinWalletsFactory: ContractFactory;
-  let plushCoinWallets: PlushCoinWallets;
-  const plushCoinWalletsRandomSafeAddress = ethers.Wallet.createRandom();
+  let PlushAccountsFactory: ContractFactory;
+  let plushAccounts: PlushAccounts;
+  const plushAccountsRandomSafeAddress = ethers.Wallet.createRandom();
 
   let PlushControllerFactory: ContractFactory;
   let plushController: PlushController;
@@ -63,26 +63,26 @@ describe('Launching the testing of the Plush Protocol', () => {
     await wrappedPlush.deployed();
   });
 
-  it('[Deploy contract] PlushCoreToken', async () => {
-    PlushCoreTokenFactory = await ethers.getContractFactory('PlushCoreToken');
-    plushCoreToken = (await upgrades.deployProxy(PlushCoreTokenFactory, {
+  it('[Deploy contract] LifeSpan', async () => {
+    LifeSpanFactory = await ethers.getContractFactory('LifeSpan');
+    lifeSpan = (await upgrades.deployProxy(LifeSpanFactory, {
       kind: 'uups',
-    })) as PlushCoreToken;
-    await plushCoreToken.deployed();
+    })) as LifeSpan;
+    await lifeSpan.deployed();
   });
 
-  it('[Deploy contract] PlushGetCoreToken', async () => {
-    PlushGetCoreTokenFactory = await ethers.getContractFactory(
-      'PlushGetCoreToken',
+  it('[Deploy contract] PlushGetLifeSpan', async () => {
+    PlushGetLifeSpanFactory = await ethers.getContractFactory(
+      'PlushGetLifeSpan',
     );
-    plushGetCoreToken = (await upgrades.deployProxy(
-      PlushGetCoreTokenFactory,
-      [plushCoreToken.address, await signers[1].getAddress()],
+    plushGetLifeSpan = (await upgrades.deployProxy(
+      PlushGetLifeSpanFactory,
+      [lifeSpan.address, await signers[1].getAddress()],
       {
         kind: 'uups',
       },
-    )) as PlushGetCoreToken;
-    await plushGetCoreToken.deployed();
+    )) as PlushGetLifeSpan;
+    await plushGetLifeSpan.deployed();
   });
 
   it('[Deploy contract] PlushApps', async () => {
@@ -93,29 +93,27 @@ describe('Launching the testing of the Plush Protocol', () => {
     await plushApps.deployed();
   });
 
-  it('[Deploy contract] PlushCoinWallets', async () => {
-    PlushCoinWalletsFactory = await ethers.getContractFactory(
-      'PlushCoinWallets',
-    );
-    plushCoinWallets = (await upgrades.deployProxy(
-      PlushCoinWalletsFactory,
+  it('[Deploy contract] PlushAccounts', async () => {
+    PlushAccountsFactory = await ethers.getContractFactory('PlushAccounts');
+    plushAccounts = (await upgrades.deployProxy(
+      PlushAccountsFactory,
       [
         plushToken.address,
         plushApps.address,
-        plushCoinWalletsRandomSafeAddress.address,
+        plushAccountsRandomSafeAddress.address,
       ],
       {
         kind: 'uups',
       },
-    )) as PlushCoinWallets;
-    await plushCoinWallets.deployed();
+    )) as PlushAccounts;
+    await plushAccounts.deployed();
   });
 
   it('[Deploy contract] Test controller', async () => {
     PlushControllerFactory = await ethers.getContractFactory('PlushController');
     plushController = (await upgrades.deployProxy(
       PlushControllerFactory,
-      [plushToken.address, plushCoinWallets.address],
+      [plushToken.address, plushAccounts.address],
       {
         kind: 'uups',
       },
@@ -127,7 +125,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     PlushFaucetFactory = await ethers.getContractFactory('PlushFaucet');
     plushFaucet = (await upgrades.deployProxy(
       PlushFaucetFactory,
-      [plushToken.address, plushCoreToken.address, plushCoinWallets.address],
+      [plushToken.address, lifeSpan.address, plushAccounts.address],
       {
         kind: 'uups',
       },
@@ -262,196 +260,193 @@ describe('Launching the testing of the Plush Protocol', () => {
     // add checks after delegate
   });
 
-  it('PlushCoreToken -> Check total supply', async () => {
-    expect(await plushCoreToken.totalSupply()).to.eql(ethers.constants.Zero); // ADMIN role
+  it('LifeSpan -> Check total supply', async () => {
+    expect(await lifeSpan.totalSupply()).to.eql(ethers.constants.Zero); // ADMIN role
   });
 
-  it('PlushCoreToken -> Checking role assignments', async () => {
+  it('LifeSpan -> Checking role assignments', async () => {
     expect(
-      await plushCoreToken.hasRole(
-        constants.HashZero,
-        await signers[0].getAddress(),
-      ),
+      await lifeSpan.hasRole(constants.HashZero, await signers[0].getAddress()),
     ).to.eql(true); // ADMIN role
     expect(
-      await plushCoreToken.hasRole(
+      await lifeSpan.hasRole(
         '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
         await signers[0].getAddress(),
       ),
     ).to.eql(true); // MINTER role
     expect(
-      await plushCoreToken.hasRole(
+      await lifeSpan.hasRole(
         '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
         await signers[0].getAddress(), // PAUSER role
       ),
     ).to.eql(true);
     expect(
-      await plushCoreToken.hasRole(
+      await lifeSpan.hasRole(
         '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
         await signers[0].getAddress(), // UPGRADER role
       ),
     ).to.eql(true);
   });
 
-  it('PlushCoreToken -> Checking grant role', async () => {
-    const grantMinterRole = await plushCoreToken.grantRole(
+  it('LifeSpan -> Checking grant role', async () => {
+    const grantMinterRole = await lifeSpan.grantRole(
       '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
       await signers[1].getAddress(),
     );
     await grantMinterRole.wait();
     expect(
-      await plushCoreToken.hasRole(
+      await lifeSpan.hasRole(
         '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
         await signers[1].getAddress(),
       ),
     ).to.eql(true);
   });
 
-  it('PlushCoreToken -> Check mint with granted role', async () => {
-    const mintToken = await plushCoreToken
+  it('LifeSpan -> Check mint with granted role', async () => {
+    const mintToken = await lifeSpan
       .connect(signers[1])
       .safeMint(await signers[1].getAddress());
     await mintToken.wait();
-    expect(
-      await plushCoreToken.balanceOf(await signers[1].getAddress()),
-    ).to.eql(constants.One);
+    expect(await lifeSpan.balanceOf(await signers[1].getAddress())).to.eql(
+      constants.One,
+    );
   });
 
-  it('PlushCoreToken -> revoke role', async () => {
-    const revokeMinterRole = await plushCoreToken.revokeRole(
+  it('LifeSpan -> revoke role', async () => {
+    const revokeMinterRole = await lifeSpan.revokeRole(
       '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
       await signers[1].getAddress(),
     );
     await revokeMinterRole.wait();
     expect(
-      await plushCoreToken.hasRole(
+      await lifeSpan.hasRole(
         '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
         await signers[1].getAddress(),
       ),
     ).to.eql(false);
   });
 
-  it('PlushCoreToken -> Check pause contract', async () => {
-    const pauseContract = await plushCoreToken.pause();
+  it('LifeSpan -> Check pause contract', async () => {
+    const pauseContract = await lifeSpan.pause();
     await pauseContract.wait();
-    expect(await plushCoreToken.paused()).to.eql(true);
-    const onpauseContract = await plushCoreToken.unpause();
+    expect(await lifeSpan.paused()).to.eql(true);
+    const onpauseContract = await lifeSpan.unpause();
     await onpauseContract.wait();
   });
 
-  it('PlushCoreToken -> Check upgrade contract', async () => {
-    const plushCoreTokenNEW = (await upgrades.upgradeProxy(
-      plushCoreToken.address,
-      PlushCoreTokenFactory,
+  it('LifeSpan -> Check upgrade contract', async () => {
+    const lifeSpanNEW = (await upgrades.upgradeProxy(
+      lifeSpan.address,
+      LifeSpanFactory,
       { kind: 'uups' },
-    )) as PlushCoreToken;
-    await plushCoreTokenNEW.deployed();
-    expect(plushCoreTokenNEW.address).to.eq(plushCoreToken.address);
-    expect(await plushCoreToken.totalSupply()).to.eql(constants.One);
+    )) as LifeSpan;
+    await lifeSpanNEW.deployed();
+    expect(lifeSpanNEW.address).to.eq(lifeSpan.address);
+    expect(await lifeSpan.totalSupply()).to.eql(constants.One);
   });
 
-  it('PlushGetCoreToken -> Checking role assignments', async () => {
+  it('PlushGetLifeSpan -> Checking role assignments', async () => {
     expect(
-      await plushGetCoreToken.hasRole(
+      await plushGetLifeSpan.hasRole(
         constants.HashZero,
         await signers[0].getAddress(),
       ),
     ).to.eql(true); // ADMIN role
     expect(
-      await plushGetCoreToken.hasRole(
+      await plushGetLifeSpan.hasRole(
         '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929',
         await signers[0].getAddress(),
       ),
     ).to.eql(true); // OPERATOR role
     expect(
-      await plushGetCoreToken.hasRole(
+      await plushGetLifeSpan.hasRole(
         '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
         await signers[0].getAddress(), // PAUSER role
       ),
     ).to.eql(true);
     expect(
-      await plushGetCoreToken.hasRole(
+      await plushGetLifeSpan.hasRole(
         '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
         await signers[0].getAddress(), // UPGRADER role
       ),
     ).to.eql(true);
   });
 
-  it('PlushGetCoreToken -> Grant minter in PlushCoreToken contract', async () => {
-    const grantRole = await plushCoreToken.grantRole(
+  it('PlushGetLifeSpan -> Grant minter in LifeSpan contract', async () => {
+    const grantRole = await lifeSpan.grantRole(
       '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
-      plushGetCoreToken.address,
+      plushGetLifeSpan.address,
     );
     await grantRole.wait();
     expect(
-      await plushCoreToken.hasRole(
+      await lifeSpan.hasRole(
         '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
-        plushGetCoreToken.address,
+        plushGetLifeSpan.address,
       ),
     ).to.eql(true);
   });
 
-  it('PlushGetCoreToken -> Check Core token address', async () => {
-    expect(await plushGetCoreToken.getCoreTokenAddress()).to.eql(
-      plushCoreToken.address,
+  it('PlushGetLifeSpan -> Check LifeSpan token address', async () => {
+    expect(await plushGetLifeSpan.getLifeSpanTokenAddress()).to.eql(
+      lifeSpan.address,
     );
   });
 
-  it('PlushGetCoreToken -> Check safe address', async () => {
-    expect(await plushGetCoreToken.getSafeAddress()).to.eql(
+  it('PlushGetLifeSpan -> Check safe address', async () => {
+    expect(await plushGetLifeSpan.getSafeAddress()).to.eql(
       await signers[1].getAddress(),
     );
   });
 
-  it('PlushGetCoreToken -> Check mint price', async () => {
-    expect(await plushGetCoreToken.getMintPrice()).to.eql(
+  it('PlushGetLifeSpan -> Check mint price', async () => {
+    expect(await plushGetLifeSpan.getMintPrice()).to.eql(
       ethers.utils.parseUnits('0.001', 18),
     );
   });
 
-  it('PlushGetCoreToken -> Change mint price', async () => {
-    const changeMintPrice = await plushGetCoreToken.changeMintPrice(
+  it('PlushGetLifeSpan -> Change mint price', async () => {
+    const changeMintPrice = await plushGetLifeSpan.changeMintPrice(
       ethers.utils.parseUnits('0.0001', 18),
     );
     await changeMintPrice.wait();
 
-    expect(await plushGetCoreToken.getMintPrice()).to.eql(
+    expect(await plushGetLifeSpan.getMintPrice()).to.eql(
       ethers.utils.parseUnits('0.0001', 18),
     );
   });
 
-  it('PlushGetCoreToken -> Change safe address', async () => {
-    const changeSafeAddress = await plushGetCoreToken.setSafeAddress(
-      plushGetCoreTokenRandomSafeAddress.address,
+  it('PlushGetLifeSpan -> Change safe address', async () => {
+    const changeSafeAddress = await plushGetLifeSpan.setSafeAddress(
+      plushGetLifeSpanRandomSafeAddress.address,
     );
     await changeSafeAddress.wait();
 
-    expect(await plushGetCoreToken.getSafeAddress()).to.eql(
-      plushGetCoreTokenRandomSafeAddress.address,
+    expect(await plushGetLifeSpan.getSafeAddress()).to.eql(
+      plushGetLifeSpanRandomSafeAddress.address,
     );
   });
 
-  it('PlushGetCoreToken -> Check minting', async () => {
-    const mintToken = await plushGetCoreToken.mint(
+  it('PlushGetLifeSpan -> Check minting', async () => {
+    const mintToken = await plushGetLifeSpan.mint(
       await signers[0].getAddress(),
       { value: ethers.utils.parseUnits('0.0001', 18) },
     );
     await mintToken.wait();
 
-    expect(
-      await plushCoreToken.balanceOf(await signers[0].getAddress()),
-    ).to.eql(constants.One);
+    expect(await lifeSpan.balanceOf(await signers[0].getAddress())).to.eql(
+      constants.One,
+    );
 
     const provider = waffle.provider;
 
-    const withdrawTokens = await plushGetCoreToken.withdraw(
+    const withdrawTokens = await plushGetLifeSpan.withdraw(
       ethers.utils.parseUnits('0.0001', 18),
     );
 
     await withdrawTokens.wait();
 
     const getNewSafeBalance = await provider
-      .getBalance(plushGetCoreTokenRandomSafeAddress.address)
+      .getBalance(plushGetLifeSpanRandomSafeAddress.address)
       .then((balance) => {
         return ethers.utils.formatEther(balance);
       });
@@ -459,23 +454,23 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(getNewSafeBalance).to.eql('0.0001');
   });
 
-  it('PlushGetCoreToken -> Check pause contract', async () => {
-    const pauseContract = await plushGetCoreToken.pause();
+  it('PlushGetLifeSpan -> Check pause contract', async () => {
+    const pauseContract = await plushGetLifeSpan.pause();
     await pauseContract.wait();
-    expect(await plushGetCoreToken.paused()).to.eql(true);
-    const onpauseContract = await plushGetCoreToken.unpause();
+    expect(await plushGetLifeSpan.paused()).to.eql(true);
+    const onpauseContract = await plushGetLifeSpan.unpause();
     await onpauseContract.wait();
   });
 
-  it('PlushGetCoreToken -> Check upgrade contract', async () => {
-    const plushGetCoreTokenNEW = (await upgrades.upgradeProxy(
-      plushGetCoreToken.address,
-      PlushGetCoreTokenFactory,
+  it('PlushGetLifeSpan -> Check upgrade contract', async () => {
+    const plushGetLifeSpanNEW = (await upgrades.upgradeProxy(
+      plushGetLifeSpan.address,
+      PlushGetLifeSpanFactory,
       { kind: 'uups' },
-    )) as PlushGetCoreToken;
-    await plushGetCoreTokenNEW.deployed();
-    expect(plushGetCoreTokenNEW.address).to.eq(plushGetCoreToken.address);
-    expect(await plushCoreToken.totalSupply()).to.eql(constants.Two);
+    )) as PlushGetLifeSpan;
+    await plushGetLifeSpanNEW.deployed();
+    expect(plushGetLifeSpanNEW.address).to.eq(plushGetLifeSpan.address);
+    expect(await lifeSpan.totalSupply()).to.eql(constants.Two);
   });
 
   it('PlushApps -> Checking role assignments', async () => {
@@ -631,7 +626,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
   });
 
-  it('PlushFaucet -> Get tokens from faucet to PlushCoinWallets', async () => {
+  it('PlushFaucet -> Get tokens from faucet to PlushAccounts', async () => {
     expect(
       await plushFaucet.getCanTheAddressReceiveReward(
         await signers[0].getAddress(),
@@ -645,7 +640,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       ethers.utils.parseUnits('2', 18),
     );
     expect(
-      await plushCoinWallets.getWalletAmount(await signers[0].getAddress()),
+      await plushAccounts.getWalletAmount(await signers[0].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18)); // Check that we to get one token on Safe contract
   });
 
@@ -667,7 +662,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await getTokens.wait();
     expect(
-      await plushCoinWallets.getWalletAmount(
+      await plushAccounts.getWalletAmount(
         plushFaucetRandomReceiverAddress.address,
       ),
     ).to.eql(ethers.utils.parseUnits('1', 18));
@@ -712,7 +707,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(plushFaucetNEW.address).to.eq(plushFaucet.address);
   });
 
-  it('PlushCoinWallets -> Checking role assignments', async () => {
+  it('PlushAccounts -> Checking role assignments', async () => {
     expect(
       await plushFaucet.hasRole(
         constants.HashZero,
@@ -739,56 +734,56 @@ describe('Launching the testing of the Plush Protocol', () => {
     ).to.eql(true);
   });
 
-  it('PlushCoinWallets -> Checking initial values', async () => {
-    expect(await plushCoinWallets.plushApps()).to.eql(plushApps.address);
-    expect(await plushCoinWallets.plush()).to.eql(plushToken.address);
-    expect(await plushCoinWallets.minimumDeposit()).to.eql(
+  it('PlushAccounts -> Checking initial values', async () => {
+    expect(await plushAccounts.plushApps()).to.eql(plushApps.address);
+    expect(await plushAccounts.plush()).to.eql(plushToken.address);
+    expect(await plushAccounts.minimumDeposit()).to.eql(
       ethers.utils.parseUnits('1', 18),
     );
-    expect(await plushCoinWallets.getPlushFeeAddress()).to.eql(
-      plushCoinWalletsRandomSafeAddress.address,
+    expect(await plushAccounts.getPlushFeeAddress()).to.eql(
+      plushAccountsRandomSafeAddress.address,
     );
   });
 
-  it('PlushCoinWallets -> Check user balances', async () => {
+  it('PlushAccounts -> Check user balances', async () => {
     expect(
-      await plushCoinWallets.getWalletAmount(await signers[0].getAddress()),
+      await plushAccounts.getWalletAmount(await signers[0].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18));
   });
 
-  it('PlushCoinWallets -> Check transfer tokens in safe', async () => {
-    const transferTokens = await plushCoinWallets.internalTransfer(
+  it('PlushAccounts -> Check transfer tokens in safe', async () => {
+    const transferTokens = await plushAccounts.internalTransfer(
       await signers[1].getAddress(),
       ethers.utils.parseUnits('1', 18),
     );
     await transferTokens.wait();
     expect(
-      await plushCoinWallets.getWalletAmount(await signers[0].getAddress()),
+      await plushAccounts.getWalletAmount(await signers[0].getAddress()),
     ).to.eql(ethers.utils.parseUnits('0', 18));
     expect(
-      await plushCoinWallets.getWalletAmount(await signers[1].getAddress()),
+      await plushAccounts.getWalletAmount(await signers[1].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18));
   });
 
-  it('PlushCoinWallets -> Check pause contract', async () => {
-    const pauseContract = await plushCoinWallets.pause();
+  it('PlushAccounts -> Check pause contract', async () => {
+    const pauseContract = await plushAccounts.pause();
     await pauseContract.wait();
-    expect(await plushCoinWallets.paused()).to.eql(true);
-    const onpauseContract = await plushCoinWallets.unpause();
+    expect(await plushAccounts.paused()).to.eql(true);
+    const onpauseContract = await plushAccounts.unpause();
     await onpauseContract.wait();
-    expect(await plushCoinWallets.paused()).to.eql(false);
+    expect(await plushAccounts.paused()).to.eql(false);
   });
 
-  it('PlushCoinWallets -> Check upgrade contract', async () => {
-    const plushCoinWalletsNEW = (await upgrades.upgradeProxy(
-      plushCoinWallets.address,
-      PlushCoinWalletsFactory,
+  it('PlushAccounts -> Check upgrade contract', async () => {
+    const plushAccountsNEW = (await upgrades.upgradeProxy(
+      plushAccounts.address,
+      PlushAccountsFactory,
       { kind: 'uups' },
-    )) as PlushCoinWallets;
-    await plushCoinWalletsNEW.deployed();
-    expect(plushCoinWalletsNEW.address).to.eq(plushCoinWallets.address);
+    )) as PlushAccounts;
+    await plushAccountsNEW.deployed();
+    expect(plushAccountsNEW.address).to.eq(plushAccounts.address);
     expect(
-      await plushCoinWallets.getWalletAmount(await signers[1].getAddress()),
+      await plushAccounts.getWalletAmount(await signers[1].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18));
   });
 });

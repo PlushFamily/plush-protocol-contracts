@@ -26,13 +26,12 @@ npm install @plushfamily/plush-protocol-contracts
 ### Description of protocol contracts
 
 - **PlushApps** - the main contract of the ecosystem. It contains the addresses of the current applications of the ecosystem.
-- **PlushCoinWallets** - using to simplify transactions in the ecosystem and the storage of application tokens.
+- **PlushAccounts** - using to simplify transactions in the ecosystem and the storage of application tokens.
 - **PlushController** - the main contract of a third-party application. Used to connect app to the Plush ecosystem.
 - **Plush** - ERC-20 ecosystem token (***PLSH***).
 - **WrappedPlush** - wrapped ERC-20 ecosystem token (***wPLSH***).
-- **Plush** - ERC-721 core token (***PLUSH***).
-- **PlushCoreToken** - ERC-721 core token (***PLUSH***).
-- **PlushGetCoreToken** - self-minting of core token (***PLUSH***).
+- **LifeSpan** - ERC-721 LifeSpan token (***LIFESPAN***).
+- **PlushGetLifeSpan** - self-minting of LifeSpan token (***LIFESPAN***).
 - **PlushFaucet** - ERC-20 ecosystem token faucet (***PLSH***).
 
 ## Using

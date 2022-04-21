@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../../token/ERC20/Plush.sol";
-import "../../finance/PlushCoinWallets.sol";
+import "../../finance/PlushAccounts.sol";
 
 
 contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
@@ -17,7 +17,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
 
     uint256 public constant version = 2;
     Plush public plush;
-    PlushCoinWallets public plushCoinWallets;
+    PlushAccounts public plushAccounts;
 
     mapping (address => uint) public indexWithdrawal;
     address[] public withdrawalAddresses;
@@ -28,10 +28,10 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plush, PlushCoinWallets _plushCoinWallets) initializer public
+    function initialize(Plush _plush, PlushAccounts _plushAccounts) initializer public
     {
         plush = _plush;
-        plushCoinWallets = _plushCoinWallets;
+        plushAccounts = _plushAccounts;
 
         __Pausable_init();
         __AccessControl_init();
@@ -105,7 +105,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
 
     function getAvailableBalanceForWithdrawal() public view returns (uint256)
     {
-        return plushCoinWallets.getWalletAmount(address(this));
+        return plushAccounts.getWalletAmount(address(this));
     }
 
     function withdraw(uint256 _amount) external
@@ -113,7 +113,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         require(withdrawalAddressExist(msg.sender), "Withdrawal is not available.");
         require(getAvailableBalanceForWithdrawal() >= _amount, "Not enough balance.");
 
-        plushCoinWallets.withdrawByController(_amount, msg.sender);
+        plushAccounts.withdrawByController(_amount, msg.sender);
     }
 
     function getAllWithdrawalAddresses() public view returns (address[] memory)
@@ -128,12 +128,12 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
 
     function decreaseWalletAmountTrans(address _address, uint256 _amount) external
     {
-        plushCoinWallets.decreaseWalletAmount(_address, _amount);
+        plushAccounts.decreaseWalletAmount(_address, _amount);
     }
 
     function increaseWalletAmountTrans(address _address, uint256 _amount) external
     {
-        plushCoinWallets.internalTransfer(_address, _amount);
+        plushAccounts.internalTransfer(_address, _amount);
     }
 
     function getVersion() public pure returns (uint256)

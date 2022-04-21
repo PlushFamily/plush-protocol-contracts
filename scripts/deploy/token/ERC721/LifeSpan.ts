@@ -1,10 +1,10 @@
-import hre, { ethers, upgrades } from 'hardhat';
+import { ethers, upgrades, run } from 'hardhat';
 import { constants } from 'ethers';
 
-import { DevContractsAddresses } from '../../../arguments/development/consts';
+import { DevContractsAddresses } from '../../../../arguments/development/consts';
 
-const OPERATOR_ROLE = ethers.utils.keccak256(
-  ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
+const MINTER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('MINTER_ROLE'),
 );
 const PAUSER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('PAUSER_ROLE'),
@@ -14,49 +14,40 @@ const UPGRADER_ROLE = ethers.utils.keccak256(
 );
 
 async function main() {
-  const PlushFaucet = await hre.ethers.getContractFactory('PlushFaucet');
+  const LifeSpan = await ethers.getContractFactory('LifeSpan');
+  const lifeSpan = await upgrades.deployProxy(LifeSpan, {
+    kind: 'uups',
+  });
 
   const signers = await ethers.getSigners();
 
-  const plushFaucet = await upgrades.deployProxy(
-    PlushFaucet,
-    [
-      DevContractsAddresses.PLUSH_COIN_ADDRESS,
-      DevContractsAddresses.LIFESPAN_ADDRESS,
-      DevContractsAddresses.PLUSH_ACCOUNTS_ADDRESS,
-    ],
-    {
-      kind: 'uups',
-    },
-  );
-
-  await plushFaucet.deployed();
-  console.log('PlushFaucet -> deployed to address:', plushFaucet.address);
+  await lifeSpan.deployed();
+  console.log('LifeSpan -> deployed to address:', lifeSpan.address);
 
   console.log('Grant all roles for DAO Protocol...\n');
 
-  const grantAdminRole = await plushFaucet.grantRole(
+  const grantAdminRole = await lifeSpan.grantRole(
     constants.HashZero,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
   ); // ADMIN role
 
   await grantAdminRole.wait();
 
-  const grantOperatorRole = await plushFaucet.grantRole(
-    OPERATOR_ROLE,
+  const grantMinterRole = await lifeSpan.grantRole(
+    MINTER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
-  ); // OPERATOR role
+  ); // MINTER role
 
-  await grantOperatorRole.wait();
+  await grantMinterRole.wait();
 
-  const grantPauserRole = await plushFaucet.grantRole(
+  const grantPauserRole = await lifeSpan.grantRole(
     PAUSER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
   ); // PAUSER role
 
   await grantPauserRole.wait();
 
-  const grantUpgraderRole = await plushFaucet.grantRole(
+  const grantUpgraderRole = await lifeSpan.grantRole(
     UPGRADER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
   ); // UPGRADER role
@@ -65,28 +56,28 @@ async function main() {
 
   console.log('Revoke all roles from existing account...\n');
 
-  const revokeOperatorRole = await plushFaucet.revokeRole(
-    OPERATOR_ROLE,
+  const revokeMinterRole = await lifeSpan.revokeRole(
+    MINTER_ROLE,
     await signers[0].getAddress(),
-  ); // OPERATOR role
+  ); // MINTER role
 
-  await revokeOperatorRole.wait();
+  await revokeMinterRole.wait();
 
-  const revokeUpgraderRole = await plushFaucet.revokeRole(
-    UPGRADER_ROLE,
-    await signers[0].getAddress(),
-  ); // UPGRADER role
-
-  await revokeUpgraderRole.wait();
-
-  const revokePauserRole = await plushFaucet.revokeRole(
+  const revokePauserRole = await lifeSpan.revokeRole(
     PAUSER_ROLE,
     await signers[0].getAddress(),
   ); // PAUSER role
 
   await revokePauserRole.wait();
 
-  const revokeAdminRole = await plushFaucet.revokeRole(
+  const revokeUpgraderRole = await lifeSpan.revokeRole(
+    UPGRADER_ROLE,
+    await signers[0].getAddress(),
+  ); // UPGRADER role
+
+  await revokeUpgraderRole.wait();
+
+  const revokeAdminRole = await lifeSpan.revokeRole(
     constants.HashZero,
     await signers[0].getAddress(),
   ); // ADMIN role
@@ -100,9 +91,9 @@ async function main() {
     });
     console.log('Verifying...\n');
 
-    await hre.run('verify:verify', {
+    await run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-        plushFaucet.address,
+        lifeSpan.address,
       ),
     });
   }
