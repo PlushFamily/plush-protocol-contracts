@@ -1,4 +1,17 @@
 import { ethers, upgrades, run } from 'hardhat';
+import { constants } from 'ethers';
+
+import { DevContractsAddresses } from '../../../../arguments/development/consts';
+
+const MINTER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('MINTER_ROLE'),
+);
+const PAUSER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('PAUSER_ROLE'),
+);
+const UPGRADER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('UPGRADER_ROLE'),
+);
 
 async function main() {
   const LifeSpan = await ethers.getContractFactory('LifeSpan');
@@ -6,8 +19,70 @@ async function main() {
     kind: 'uups',
   });
 
+  const signers = await ethers.getSigners();
+
   await lifeSpan.deployed();
   console.log('LifeSpan -> deployed to address:', lifeSpan.address);
+
+  console.log('Grant all roles for DAO Protocol...\n');
+
+  const grantAdminRole = await lifeSpan.grantRole(
+    constants.HashZero,
+    DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
+  ); // ADMIN role
+
+  await grantAdminRole.wait();
+
+  const grantMinterRole = await lifeSpan.grantRole(
+    MINTER_ROLE,
+    DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
+  ); // MINTER role
+
+  await grantMinterRole.wait();
+
+  const grantPauserRole = await lifeSpan.grantRole(
+    PAUSER_ROLE,
+    DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
+  ); // PAUSER role
+
+  await grantPauserRole.wait();
+
+  const grantUpgraderRole = await lifeSpan.grantRole(
+    UPGRADER_ROLE,
+    DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
+  ); // UPGRADER role
+
+  await grantUpgraderRole.wait();
+
+  console.log('Revoke all roles from existing account...\n');
+
+  const revokeMinterRole = await lifeSpan.revokeRole(
+    MINTER_ROLE,
+    await signers[0].getAddress(),
+  ); // MINTER role
+
+  await revokeMinterRole.wait();
+
+  const revokePauserRole = await lifeSpan.revokeRole(
+    PAUSER_ROLE,
+    await signers[0].getAddress(),
+  ); // PAUSER role
+
+  await revokePauserRole.wait();
+
+  const revokeUpgraderRole = await lifeSpan.revokeRole(
+    UPGRADER_ROLE,
+    await signers[0].getAddress(),
+  ); // UPGRADER role
+
+  await revokeUpgraderRole.wait();
+
+  const revokeAdminRole = await lifeSpan.revokeRole(
+    constants.HashZero,
+    await signers[0].getAddress(),
+  ); // ADMIN role
+
+  await revokeAdminRole.wait();
 
   if (process.env.NETWORK != 'local') {
     console.log('Waiting 1m before verify contract\n');
