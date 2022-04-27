@@ -96,7 +96,7 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
 
     function unlockTokens() public onlyRole(OPERATOR_ROLE)
     {
-        unlockAllTokens = _switch;
+        unlockAllTokens = true;
     }
 
     function getWalletAmount(address _wallet) external view returns(uint256[] memory, uint256[] memory, uint256[] memory, uint256[] memory)
