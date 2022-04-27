@@ -34,3 +34,8 @@ jobs:
         run: yarn lint
       - name: Run tests
         run: yarn test
+      - name: Run Slither
+        uses: crytic/slither-action@v0.1.1
+        continue-on-error: true
+        with:
+          node-version: 16
