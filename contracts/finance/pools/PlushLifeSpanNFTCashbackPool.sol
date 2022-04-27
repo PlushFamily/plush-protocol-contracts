@@ -13,9 +13,9 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    uint256 public remuneration;
-    uint256 public timeUnlock;
-    bool public unlockAllTokens;
+    uint256 private remuneration;
+    uint256 private timeUnlock;
+    bool private unlockAllTokens;
     uint256[] allIds;
 
     Plush public token;
@@ -59,31 +59,6 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         _unpause();
     }
 
-    function getWalletAmount(address _wallet) external view returns(uint256[] memory, uint256[] memory, uint256[] memory, uint256[] memory)
-    {
-        uint256[] memory availableBalance = new uint256[](idsBalances[_wallet].length);
-        uint256[] memory availableTimeIsActive = new uint256[](idsBalances[_wallet].length);
-        uint256[] memory unavailableBalance = new uint256[](idsBalances[_wallet].length);
-        uint256[] memory unavailableTimeIsActive = new uint256[](idsBalances[_wallet].length);
-
-        for(uint256 i = 0; i < idsBalances[_wallet].length; i++){
-            if(unlockAllTokens || balanceInfo[i].timeIsActive != 0){
-                if(balanceInfo[i].timeIsActive < block.timestamp){
-                    availableBalance[i] = balanceInfo[i].balance;
-                    availableTimeIsActive[i] = balanceInfo[i].timeIsActive;
-                }else{
-                    unavailableBalance[i] = balanceInfo[i].balance;
-                    unavailableTimeIsActive[i] = balanceInfo[i].timeIsActive;
-                }
-            }else{
-                unavailableBalance[i] = balanceInfo[i].balance;
-                unavailableTimeIsActive[i] = balanceInfo[i].timeIsActive;
-            }
-        }
-
-        return (availableBalance, availableTimeIsActive, unavailableBalance, unavailableTimeIsActive);
-    }
-
     function addRemunerationToAccount(address _wallet) public onlyRole(OPERATOR_ROLE)
     {
         if(getFreeTokensInContract() >= remuneration){
@@ -114,24 +89,49 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         remuneration = _amount;
     }
 
-    function getRemuneration() external view returns(uint256)
-    {
-        return remuneration;
-    }
-
     function setTimeUnlock(uint256 _amount) public onlyRole(OPERATOR_ROLE)
     {
         timeUnlock = _amount;
     }
 
-    function getTimeUnlock() external view returns(uint256)
-    {
-        return timeUnlock;
-    }
-
     function unlockAllTokensSwitch(bool _switch) public onlyRole(OPERATOR_ROLE)
     {
         unlockAllTokens = _switch;
+    }
+
+    function getWalletAmount(address _wallet) external view returns(uint256[] memory, uint256[] memory, uint256[] memory, uint256[] memory)
+    {
+        uint256[] memory availableBalance = new uint256[](idsBalances[_wallet].length);
+        uint256[] memory availableTimeIsActive = new uint256[](idsBalances[_wallet].length);
+        uint256[] memory unavailableBalance = new uint256[](idsBalances[_wallet].length);
+        uint256[] memory unavailableTimeIsActive = new uint256[](idsBalances[_wallet].length);
+
+        for(uint256 i = 0; i < idsBalances[_wallet].length; i++){
+            if(unlockAllTokens || balanceInfo[i].timeIsActive != 0){
+                if(balanceInfo[i].timeIsActive < block.timestamp){
+                    availableBalance[i] = balanceInfo[i].balance;
+                    availableTimeIsActive[i] = balanceInfo[i].timeIsActive;
+                }else{
+                    unavailableBalance[i] = balanceInfo[i].balance;
+                    unavailableTimeIsActive[i] = balanceInfo[i].timeIsActive;
+                }
+            }else{
+                unavailableBalance[i] = balanceInfo[i].balance;
+                unavailableTimeIsActive[i] = balanceInfo[i].timeIsActive;
+            }
+        }
+
+        return (availableBalance, availableTimeIsActive, unavailableBalance, unavailableTimeIsActive);
+    }
+
+    function getRemuneration() external view returns(uint256)
+    {
+        return remuneration;
+    }
+
+    function getTimeUnlock() external view returns(uint256)
+    {
+        return timeUnlock;
     }
 
     function getFreeTokensInContract() private view returns(uint256)
