@@ -15,6 +15,7 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
 
     uint256 public remuneration;
     uint256 public timeUnlock;
+    bool public unlockAllTokens;
     uint256[] allIds;
 
     Plush public token;
@@ -36,6 +37,8 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         token = _plushCoin;
         remuneration = _remuneration;
         timeUnlock = _timeUnlock;
+        unlockAllTokens = false;
+
         __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -64,9 +67,14 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         uint256[] memory unavailableTimeIsActive = new uint256[](idsBalances[_wallet].length);
 
         for(uint256 i = 0; i < idsBalances[_wallet].length; i++){
-            if(balanceInfo[i].timeIsActive < block.timestamp){
-                availableBalance[i] = balanceInfo[i].balance;
-                availableTimeIsActive[i] = balanceInfo[i].timeIsActive;
+            if(unlockAllTokens || balanceInfo[i].timeIsActive != 0){
+                if(balanceInfo[i].timeIsActive < block.timestamp){
+                    availableBalance[i] = balanceInfo[i].balance;
+                    availableTimeIsActive[i] = balanceInfo[i].timeIsActive;
+                }else{
+                    unavailableBalance[i] = balanceInfo[i].balance;
+                    unavailableTimeIsActive[i] = balanceInfo[i].timeIsActive;
+                }
             }else{
                 unavailableBalance[i] = balanceInfo[i].balance;
                 unavailableTimeIsActive[i] = balanceInfo[i].timeIsActive;
@@ -83,8 +91,12 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
 
             allIds.push(id);
             idsBalances[_wallet].push(id);
-            balanceInfo[id].balance = remuneration;
-            balanceInfo[id].timeIsActive = block.timestamp + timeUnlock;
+
+            if(unlockAllTokens){
+                balanceInfo[id] = Balance(remuneration, block.timestamp + timeUnlock);
+            }else{
+                balanceInfo[id] = Balance(remuneration, 0);
+            }
         }
     }
 
@@ -117,6 +129,11 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         return timeUnlock;
     }
 
+    function unlockAllTokensSwitch(bool _switch) public onlyRole(OPERATOR_ROLE)
+    {
+        unlockAllTokens = _switch;
+    }
+
     function getFreeTokensInContract() private view returns(uint256)
     {
         uint256 unavailableTokens = 0;
@@ -133,8 +150,10 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         uint256 availableBalance = 0;
 
         for(uint256 i = 0; i < idsBalances[_wallet].length; i++){
-            if(balanceInfo[i].timeIsActive < block.timestamp){
-                availableBalance += balanceInfo[i].balance;
+            if(unlockAllTokens || balanceInfo[i].timeIsActive != 0){
+                if(balanceInfo[i].timeIsActive < block.timestamp){
+                    availableBalance += balanceInfo[i].balance;
+                }
             }
         }
 
@@ -146,28 +165,30 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         uint256 summary = _amount;
 
         for(uint256 i = 0; i < idsBalances[_wallet].length; i++){
-            if(balanceInfo[i].timeIsActive < block.timestamp){
-                if(summary < balanceInfo[i].balance){
-                    balanceInfo[i].balance -= summary;
-                    break;
-                }else if(summary == balanceInfo[i].balance){
-                    deleteIdAndInfo(_wallet, i);
-                    break;
-                }else{
-                    summary -= balanceInfo[i].balance;
-                    deleteIdAndInfo(_wallet, i);
+            if(unlockAllTokens || balanceInfo[i].timeIsActive != 0){
+                if(balanceInfo[i].timeIsActive < block.timestamp){
+                    if(summary < balanceInfo[i].balance){
+                        balanceInfo[i].balance -= summary;
+                        break;
+                    }else if(summary == balanceInfo[i].balance){
+                        deleteIdAndInfo(_wallet, i);
+                        break;
+                    }else{
+                        summary -= balanceInfo[i].balance;
+                        deleteIdAndInfo(_wallet, i);
+                    }
                 }
             }
         }
     }
 
-    function deleteIdAndInfo(address _wallet, uint256 id) private
+    function deleteIdAndInfo(address _wallet, uint256 _id) private
     {
-        delete balanceInfo[id];
-        delete allIds[id];
+        delete balanceInfo[_id];
+        delete allIds[_id];
 
         for (uint256 j = 0; j < idsBalances[_wallet].length; j++){
-            if(idsBalances[_wallet][j] == id){
+            if(idsBalances[_wallet][j] == _id){
                 delete idsBalances[_wallet][j];
             }
         }
