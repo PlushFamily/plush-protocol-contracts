@@ -12,6 +12,7 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+    bytes32 public constant REMUNERATION_ROLE = keccak256("REMUNERATION_ROLE");
 
     uint256 private remuneration;
     uint256 private timeUnlock;
@@ -47,6 +48,7 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
+        _grantRole(REMUNERATION_ROLE, msg.sender);
     }
 
     function pause() public onlyRole(PAUSER_ROLE)
@@ -59,7 +61,19 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         _unpause();
     }
 
-    function addRemunerationToAccount(address _wallet) public onlyRole(OPERATOR_ROLE)
+    function addRemunerationToAccountManually(address _wallet, uint256 _amount) public onlyRole(OPERATOR_ROLE)
+    {
+        require(getFreeTokensInContract() >= _amount, "Not enough funds");
+
+        uint256 id = idsBalances[_wallet].length;
+
+        allIds.push(id);
+        idsBalances[_wallet].push(id);
+
+        balanceInfo[id] = Balance(_amount, 0);
+    }
+
+    function addRemunerationToAccount(address _wallet) public onlyRole(REMUNERATION_ROLE)
     {
         if(getFreeTokensInContract() >= remuneration){
             uint256 id = idsBalances[_wallet].length;
