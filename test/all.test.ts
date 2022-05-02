@@ -13,6 +13,22 @@ import {
   WrappedPlush,
 } from '../types';
 
+const MINTER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('MINTER_ROLE'),
+);
+const PAUSER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('PAUSER_ROLE'),
+);
+const UPGRADER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('UPGRADER_ROLE'),
+);
+const OPERATOR_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
+);
+const STAFF_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('STAFF_ROLE'),
+);
+
 describe('Launching the testing of the Plush Protocol', () => {
   let signers: Signer[];
 
@@ -269,20 +285,14 @@ describe('Launching the testing of the Plush Protocol', () => {
       await lifeSpan.hasRole(constants.HashZero, await signers[0].getAddress()),
     ).to.eql(true); // ADMIN role
     expect(
-      await lifeSpan.hasRole(
-        '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
-        await signers[0].getAddress(),
-      ),
-    ).to.eql(true); // MINTER role
+      await lifeSpan.hasRole(MINTER_ROLE, await signers[0].getAddress()),
+    ).to.eql(true);
     expect(
-      await lifeSpan.hasRole(
-        '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
-        await signers[0].getAddress(), // PAUSER role
-      ),
+      await lifeSpan.hasRole(PAUSER_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
     expect(
       await lifeSpan.hasRole(
-        '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
+        UPGRADER_ROLE,
         await signers[0].getAddress(), // UPGRADER role
       ),
     ).to.eql(true);
@@ -290,15 +300,12 @@ describe('Launching the testing of the Plush Protocol', () => {
 
   it('LifeSpan -> Checking grant role', async () => {
     const grantMinterRole = await lifeSpan.grantRole(
-      '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
+      MINTER_ROLE,
       await signers[1].getAddress(),
     );
     await grantMinterRole.wait();
     expect(
-      await lifeSpan.hasRole(
-        '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
-        await signers[1].getAddress(),
-      ),
+      await lifeSpan.hasRole(MINTER_ROLE, await signers[1].getAddress()),
     ).to.eql(true);
   });
 
@@ -314,15 +321,12 @@ describe('Launching the testing of the Plush Protocol', () => {
 
   it('LifeSpan -> revoke role', async () => {
     const revokeMinterRole = await lifeSpan.revokeRole(
-      '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
+      MINTER_ROLE,
       await signers[1].getAddress(),
     );
     await revokeMinterRole.wait();
     expect(
-      await lifeSpan.hasRole(
-        '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
-        await signers[1].getAddress(),
-      ),
+      await lifeSpan.hasRole(MINTER_ROLE, await signers[1].getAddress()),
     ).to.eql(false);
   });
 
@@ -353,36 +357,36 @@ describe('Launching the testing of the Plush Protocol', () => {
       ),
     ).to.eql(true); // ADMIN role
     expect(
-      await plushGetLifeSpan.hasRole(
-        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929',
-        await signers[0].getAddress(),
-      ),
-    ).to.eql(true); // OPERATOR role
+      await plushGetLifeSpan.hasRole(STAFF_ROLE, await signers[0].getAddress()),
+    ).to.eql(true);
     expect(
       await plushGetLifeSpan.hasRole(
-        '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
-        await signers[0].getAddress(), // PAUSER role
+        OPERATOR_ROLE,
+        await signers[0].getAddress(),
       ),
     ).to.eql(true);
     expect(
       await plushGetLifeSpan.hasRole(
-        '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
-        await signers[0].getAddress(), // UPGRADER role
+        PAUSER_ROLE,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true);
+    expect(
+      await plushGetLifeSpan.hasRole(
+        UPGRADER_ROLE,
+        await signers[0].getAddress(),
       ),
     ).to.eql(true);
   });
 
   it('PlushGetLifeSpan -> Grant minter in LifeSpan contract', async () => {
     const grantRole = await lifeSpan.grantRole(
-      '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
+      MINTER_ROLE,
       plushGetLifeSpan.address,
     );
     await grantRole.wait();
     expect(
-      await lifeSpan.hasRole(
-        '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
-        plushGetLifeSpan.address,
-      ),
+      await lifeSpan.hasRole(MINTER_ROLE, plushGetLifeSpan.address),
     ).to.eql(true);
   });
 
@@ -454,6 +458,34 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(getNewSafeBalance).to.eql('0.0001');
   });
 
+  it('PlushGetLifeSpan -> Check free minting', async () => {
+    await expect(
+      plushGetLifeSpan
+        .connect(signers[1])
+        .freeMint(await signers[1].getAddress()),
+    ).to.be.reverted;
+
+    const grantRole = await plushGetLifeSpan.grantRole(
+      STAFF_ROLE,
+      await signers[1].getAddress(),
+    );
+    await grantRole.wait();
+    expect(
+      await plushGetLifeSpan.hasRole(STAFF_ROLE, await signers[1].getAddress()),
+    ).to.eql(true);
+
+    const randomAddress = ethers.Wallet.createRandom();
+
+    const mintToken = await plushGetLifeSpan
+      .connect(signers[1])
+      .freeMint(randomAddress.address);
+    await mintToken.wait();
+
+    expect(await lifeSpan.balanceOf(randomAddress.address)).to.eql(
+      constants.One,
+    );
+  });
+
   it('PlushGetLifeSpan -> Check pause contract', async () => {
     const pauseContract = await plushGetLifeSpan.pause();
     await pauseContract.wait();
@@ -470,7 +502,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     )) as PlushGetLifeSpan;
     await plushGetLifeSpanNEW.deployed();
     expect(plushGetLifeSpanNEW.address).to.eq(plushGetLifeSpan.address);
-    expect(await lifeSpan.totalSupply()).to.eql(constants.Two);
+    expect(await lifeSpan.totalSupply()).to.eql(BigNumber.from('3'));
   });
 
   it('PlushApps -> Checking role assignments', async () => {
@@ -481,22 +513,13 @@ describe('Launching the testing of the Plush Protocol', () => {
       ),
     ).to.eql(true); // ADMIN role
     expect(
-      await plushApps.hasRole(
-        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929',
-        await signers[0].getAddress(),
-      ),
-    ).to.eql(true); // OPERATOR role
-    expect(
-      await plushApps.hasRole(
-        '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
-        await signers[0].getAddress(), // PAUSER role
-      ),
+      await plushApps.hasRole(OPERATOR_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
     expect(
-      await plushApps.hasRole(
-        '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
-        await signers[0].getAddress(), // UPGRADER role
-      ),
+      await plushApps.hasRole(PAUSER_ROLE, await signers[0].getAddress()),
+    ).to.eql(true);
+    expect(
+      await plushApps.hasRole(UPGRADER_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
   });
 
@@ -571,22 +594,13 @@ describe('Launching the testing of the Plush Protocol', () => {
       ),
     ).to.eql(true); // ADMIN role
     expect(
-      await plushFaucet.hasRole(
-        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929',
-        await signers[0].getAddress(),
-      ),
-    ).to.eql(true); // OPERATOR role
-    expect(
-      await plushFaucet.hasRole(
-        '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
-        await signers[0].getAddress(), // PAUSER role
-      ),
+      await plushFaucet.hasRole(OPERATOR_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
     expect(
-      await plushFaucet.hasRole(
-        '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
-        await signers[0].getAddress(), // UPGRADER role
-      ),
+      await plushFaucet.hasRole(PAUSER_ROLE, await signers[0].getAddress()),
+    ).to.eql(true);
+    expect(
+      await plushFaucet.hasRole(UPGRADER_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
   });
 
@@ -715,22 +729,13 @@ describe('Launching the testing of the Plush Protocol', () => {
       ),
     ).to.eql(true); // ADMIN role
     expect(
-      await plushFaucet.hasRole(
-        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929',
-        await signers[0].getAddress(),
-      ),
-    ).to.eql(true); // OPERATOR role
-    expect(
-      await plushFaucet.hasRole(
-        '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a',
-        await signers[0].getAddress(), // PAUSER role
-      ),
+      await plushFaucet.hasRole(OPERATOR_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
     expect(
-      await plushFaucet.hasRole(
-        '0x189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3',
-        await signers[0].getAddress(), // UPGRADER role
-      ),
+      await plushFaucet.hasRole(PAUSER_ROLE, await signers[0].getAddress()),
+    ).to.eql(true);
+    expect(
+      await plushFaucet.hasRole(UPGRADER_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
   });
 
