@@ -3,6 +3,10 @@ import { constants } from 'ethers';
 
 import { DevContractsAddresses } from '../../../arguments/development/consts';
 
+const STAFF_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('STAFF_ROLE'),
+);
+
 const OPERATOR_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
 );
@@ -47,6 +51,13 @@ async function main() {
 
   await grantAdminRole.wait();
 
+  const grantStaffRole = await plushGetLifeSpan.grantRole(
+    STAFF_ROLE,
+    DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
+  );
+
+  await grantStaffRole.wait();
+
   const grantOperatorRole = await plushGetLifeSpan.grantRole(
     OPERATOR_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
@@ -69,6 +80,13 @@ async function main() {
   await grantUpgraderRole.wait();
 
   console.log('Revoke all roles from existing account...\n');
+
+  const revokeStaffRole = await plushGetLifeSpan.revokeRole(
+    STAFF_ROLE,
+    await signers[0].getAddress(),
+  );
+
+  await revokeStaffRole.wait();
 
   const revokeOperatorRole = await plushGetLifeSpan.revokeRole(
     OPERATOR_ROLE,

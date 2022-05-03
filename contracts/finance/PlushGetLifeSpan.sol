@@ -11,6 +11,7 @@ import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+    bytes32 public constant STAFF_ROLE = keccak256("STAFF_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
@@ -28,7 +29,8 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     uint256 public mintPrice;
     bool public tokenNFTCheck;
 
-    event TokenMinted(address indexed purchaser, address indexed beneficiary, uint256 amount);
+    event TokenMinted(address indexed purchaser, address indexed recipient, uint256 amount);
+    event TokenFreeMinted(address indexed staffer, address indexed recipient);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -46,6 +48,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(STAFF_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
@@ -114,7 +117,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
         require(msg.value == mintPrice, "Incorrect amount");
 
         if (tokenNFTCheck) {
-            require(checkUserLifeSpanToken(_mintAddress) == false, "You already have a LifeSpan token");
+            require(checkUserLifeSpanToken(_mintAddress) == false, "The specified address already has a LifeSpan token");
         }
 
         lifeSpan.safeMint(_mintAddress);
@@ -123,10 +126,21 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
         emit TokenMinted(_msgSender(), _mintAddress, msg.value);
     }
 
+    function freeMint(address _mintAddress) public onlyRole(STAFF_ROLE)
+    {
+        if (tokenNFTCheck) {
+            require(checkUserLifeSpanToken(_mintAddress) == false, "The specified address already has a LifeSpan token");
+        }
+
+        lifeSpan.safeMint(_mintAddress);
+
+        emit TokenFreeMinted(_msgSender(), _mintAddress);
+    }
+
     function withdraw(uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
         (bool success, ) = safeAddress.call{value: _amount}("");
-        require(success, "Transfer failed.");
+        require(success, "Withdrawal Error");
     }
 
     function _authorizeUpgrade(address newImplementation)
