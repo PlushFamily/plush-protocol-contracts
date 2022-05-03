@@ -14,6 +14,22 @@ import {
   PlushLifeSpanNFTCashbackPool,
 } from '../types';
 
+const OPERATOR_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
+);
+const REMUNERATION_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('REMUNERATION_ROLE'),
+);
+const MINTER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('MINTER_ROLE'),
+);
+const PAUSER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('PAUSER_ROLE'),
+);
+const UPGRADER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('UPGRADER_ROLE'),
+);
+
 describe('Launching the testing of the Plush Protocol', () => {
   let signers: Signer[];
 
@@ -421,6 +437,20 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(
       await plushLifeSpanNFTCashbackPool.hasRole(
         '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929', // OPERATOR role
+        plushGetLifeSpan.address,
+      ),
+    ).to.eql(true);
+  });
+
+  it('PlushGetLifeSpan -> Grant REMUNERATION_ROLE in PlushLifeSpanNFTCashbackPool contract', async () => {
+    const grantRole = await plushLifeSpanNFTCashbackPool.grantRole(
+      REMUNERATION_ROLE,
+      plushGetLifeSpan.address,
+    );
+    await grantRole.wait();
+    expect(
+      await plushLifeSpanNFTCashbackPool.hasRole(
+        REMUNERATION_ROLE,
         plushGetLifeSpan.address,
       ),
     ).to.eql(true);
