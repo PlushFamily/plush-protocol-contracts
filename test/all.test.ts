@@ -33,7 +33,6 @@ const UPGRADER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('UPGRADER_ROLE'),
 );
 
-
 describe('Launching the testing of the Plush Protocol', () => {
   let signers: Signer[];
 
