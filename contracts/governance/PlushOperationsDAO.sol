@@ -10,7 +10,6 @@ import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelo
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-
 import "../token/ERC721/LifeSpan.sol";
 
 /// @custom:security-contact security@plush.family
@@ -53,15 +52,6 @@ contract PlushOperationsDAO is Initializable, GovernorUpgradeable, GovernorSetti
     return super.quorum(blockNumber);
   }
 
-  function getVotes(address account, uint256 blockNumber) public view override(IGovernorUpgradeable, GovernorVotesUpgradeable) returns (uint256)
-  {
-    if(lifeSpan.balanceOf(account) > 0){
-      return super.getVotes(account, blockNumber);
-    }
-
-    return 0;
-  }
-
   function state(uint256 proposalId) public view override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (ProposalState)
   {
     return super.state(proposalId);
@@ -95,5 +85,14 @@ contract PlushOperationsDAO is Initializable, GovernorUpgradeable, GovernorSetti
   function supportsInterface(bytes4 interfaceId) public view override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (bool)
   {
     return super.supportsInterface(interfaceId);
+  }
+
+  function _getVotes(address account, uint256 blockNumber, bytes memory params) internal view virtual override(GovernorUpgradeable, GovernorVotesUpgradeable) returns (uint256)
+  {
+    if(lifeSpan.balanceOf(account) > 0){
+      return super._getVotes(account, blockNumber, params);
+    }
+
+    return 0;
   }
 }

@@ -35,4 +35,8 @@ contract WrappedPlush is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper, ERC20Burn
     {
         super._burn(account, amount);
     }
+
+    function decimals() public view virtual override(ERC20, ERC20Wrapper) returns (uint8) {
+        return super.decimals();
+    }
 }
