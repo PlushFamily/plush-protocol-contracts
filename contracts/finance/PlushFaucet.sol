@@ -5,18 +5,21 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-import "../token/ERC20/Plush.sol";
 import "../token/ERC721/LifeSpan.sol";
 import "./PlushAccounts.sol";
 
 
 contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+    using SafeERC20Upgradeable for IERC20Upgradeable;
+
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    Plush public token;
+    IERC20Upgradeable public plush;
     LifeSpan public lifeSpan;
     PlushAccounts public plushAccounts;
 
@@ -31,14 +34,14 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plushCoin, LifeSpan _lifeSpan, PlushAccounts _plushAccounts) initializer public
+    function initialize(IERC20Upgradeable _plushCoin, LifeSpan _lifeSpan, PlushAccounts _plushAccounts) initializer public
     {
-        token = _plushCoin;
+        plush = _plushCoin;
         lifeSpan = _lifeSpan;
         plushAccounts = _plushAccounts;
         faucetTime = 24 hours;
-        faucetDripAmount = 1 * 10 ** token.decimals();
-        threshold = 100 * 10 ** token.decimals();
+        faucetDripAmount = 1 * 10 ** 18;
+        threshold = 100 * 10 ** 18;
         tokenNFTCheck = true;
 
         __Pausable_init();
@@ -63,7 +66,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
 
     function send(address _receiver) external
     {
-        require(token.balanceOf(address(this)) >= faucetDripAmount, "Empty");
+        require(plush.balanceOf(address(this)) >= faucetDripAmount, "Empty");
         require(nextRequestAt[_receiver] < block.timestamp, "Time limit");
         require(generalAmount[_receiver] < threshold, "Quantity limit");
 
@@ -75,13 +78,13 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         nextRequestAt[_receiver] = block.timestamp + faucetTime;
         generalAmount[_receiver] += faucetDripAmount;
 
-        token.approve(address(plushAccounts), faucetDripAmount);
+        plush.approve(address(plushAccounts), faucetDripAmount);
         plushAccounts.deposit(_receiver, faucetDripAmount);
     }
 
     function setTokenAddress(address _tokenAddr) external onlyRole(OPERATOR_ROLE)
     {
-        token = Plush(_tokenAddr);
+        plush = IERC20Upgradeable(_tokenAddr);
     }
 
     function setFaucetDripAmount(uint256 _amount) external onlyRole(OPERATOR_ROLE)
@@ -106,8 +109,8 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
 
     function withdrawTokens(address _receiver, uint256 _amount) external onlyRole(OPERATOR_ROLE)
     {
-        require(token.balanceOf(address(this)) >= _amount, "FaucetError: Insufficient funds");
-        require(token.transfer(_receiver, _amount), "Transaction error.");
+        require(plush.balanceOf(address(this)) >= _amount, "FaucetError: Insufficient funds");
+        require(plush.transfer(_receiver, _amount), "Transaction error.");
     }
 
     function getThreshold() external view returns(uint256)
@@ -122,7 +125,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
 
     function getFaucetBalance() external view returns(uint256)
     {
-        return token.balanceOf(address(this));
+        return plush.balanceOf(address(this));
     }
 
     function getDistributionTime() external view returns(uint256)
@@ -146,7 +149,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
 
     function getCanTheAddressReceiveReward(address _receiver) external view returns(bool)
     {
-        require(token.balanceOf(address(this)) >= faucetDripAmount, "Faucet is empty");
+        require(plush.balanceOf(address(this)) >= faucetDripAmount, "Faucet is empty");
         require(nextRequestAt[_receiver] < block.timestamp, "Time limit");
         require(generalAmount[_receiver] < threshold, "Quantity limit");
 

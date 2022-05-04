@@ -5,10 +5,12 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-
-import "../../token/ERC20/Plush.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+    using SafeERC20Upgradeable for IERC20Upgradeable;
+
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
@@ -19,7 +21,7 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
     bool private unlockAllTokens;
     uint256[] allIds;
 
-    Plush public token;
+    IERC20Upgradeable public plush;
 
     struct Balance
     {
@@ -33,9 +35,9 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plushCoin, uint256 _remuneration, uint256 _timeUnlock) initializer public
+    function initialize(IERC20Upgradeable _plushCoin, uint256 _remuneration, uint256 _timeUnlock) initializer public
     {
-        token = _plushCoin;
+        plush = _plushCoin;
         remuneration = _remuneration;
         timeUnlock = _timeUnlock;
         unlockAllTokens = false;
@@ -91,9 +93,9 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
 
     function withdraw(uint256 _amount) external
     {
-        require(token.balanceOf(address(this)) >= _amount, "Pool is empty.");
+        require(plush.balanceOf(address(this)) >= _amount, "Pool is empty.");
         require(getAvailableBalanceInAccount(msg.sender) >= _amount, "Not enough balance.");
-        require(token.transfer(msg.sender, _amount), "Transaction error.");
+        require(plush.transfer(msg.sender, _amount), "Transaction error.");
 
         decreaseWalletAmount(msg.sender, _amount);
     }
@@ -156,7 +158,7 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
             unavailableTokens += balanceInfo[allIds[i]].balance;
         }
 
-        return token.balanceOf(address(this)) - unavailableTokens;
+        return plush.balanceOf(address(this)) - unavailableTokens;
     }
 
     function getAvailableBalanceInAccount(address _wallet) private view returns(uint256)

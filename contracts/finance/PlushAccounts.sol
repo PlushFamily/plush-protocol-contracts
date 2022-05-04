@@ -5,16 +5,19 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 import "../PlushApps.sol";
-import "../token/ERC20/Plush.sol";
 
 contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+    using SafeERC20Upgradeable for IERC20Upgradeable;
+
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    Plush public plush;
+    IERC20Upgradeable public plush;
     PlushApps public plushApps;
 
     uint256 public minimumDeposit;
@@ -30,11 +33,11 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plush, PlushApps _plushApps, address _plushFeeAddress) initializer public
+    function initialize(IERC20Upgradeable _plush, PlushApps _plushApps, address _plushFeeAddress) initializer public
     {
         plushApps = _plushApps;
         plush = _plush;
-        minimumDeposit = 1 * 10 ** plush.decimals();
+        minimumDeposit = 1 * 10 ** 18;
         plushFeeWallet = _plushFeeAddress;
 
         __Pausable_init();

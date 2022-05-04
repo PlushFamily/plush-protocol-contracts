@@ -421,13 +421,13 @@ describe('Launching the testing of the Plush Protocol', () => {
 
   it('PlushGetLifeSpan -> Grant operator role in PlushLifeSpanNFTCashbackPool contract', async () => {
     const grantRole = await plushLifeSpanNFTCashbackPool.grantRole(
-      '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929', // OPERATOR role
+      OPERATOR_ROLE,
       plushGetLifeSpan.address,
     );
     await grantRole.wait();
     expect(
       await plushLifeSpanNFTCashbackPool.hasRole(
-        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929', // OPERATOR role
+        OPERATOR_ROLE,
         plushGetLifeSpan.address,
       ),
     ).to.eql(true);
