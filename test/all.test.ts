@@ -581,8 +581,10 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushApps -> Add test app', async () => {
+    const testApp = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('test'));
+
     const addApp = await plushApps.addNewApp(
-      'test',
+      testApp,
       plushController.address,
       '50',
     );
@@ -606,10 +608,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushApps -> Test disable app', async () => {
-    const disableApp = await plushApps.setIsActive(
-      false,
-      plushController.address,
-    );
+    const disableApp = await plushApps.setAppDisable(plushController.address);
     await disableApp.wait();
 
     expect(await plushApps.getIsAddressActive(plushController.address)).to.eql(
@@ -618,10 +617,7 @@ describe('Launching the testing of the Plush Protocol', () => {
 
     // add test some activity with controller
 
-    const enableApp = await plushApps.setIsActive(
-      true,
-      plushController.address,
-    );
+    const enableApp = await plushApps.setAppEnable(plushController.address);
     await enableApp.wait();
   });
 
