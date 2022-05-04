@@ -11,8 +11,18 @@ import {
   PlushFaucet,
   PlushGetLifeSpan,
   WrappedPlush,
+  PlushLifeSpanNFTCashbackPool,
 } from '../types';
 
+const OPERATOR_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
+);
+const STAFF_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('STAFF_ROLE'),
+);
+const REMUNERATION_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('REMUNERATION_ROLE'),
+);
 const MINTER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('MINTER_ROLE'),
 );
@@ -21,12 +31,6 @@ const PAUSER_ROLE = ethers.utils.keccak256(
 );
 const UPGRADER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('UPGRADER_ROLE'),
-);
-const OPERATOR_ROLE = ethers.utils.keccak256(
-  ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
-);
-const STAFF_ROLE = ethers.utils.keccak256(
-  ethers.utils.toUtf8Bytes('STAFF_ROLE'),
 );
 
 describe('Launching the testing of the Plush Protocol', () => {
@@ -50,6 +54,9 @@ describe('Launching the testing of the Plush Protocol', () => {
   let PlushGetLifeSpanFactory: ContractFactory;
   let plushGetLifeSpan: PlushGetLifeSpan;
   const plushGetLifeSpanRandomSafeAddress = ethers.Wallet.createRandom();
+
+  let PlushLifeSpanNFTCashbackPoolFactory: ContractFactory;
+  let plushLifeSpanNFTCashbackPool: PlushLifeSpanNFTCashbackPool;
 
   let PlushAppsFactory: ContractFactory;
   let plushApps: PlushApps;
@@ -87,13 +94,35 @@ describe('Launching the testing of the Plush Protocol', () => {
     await lifeSpan.deployed();
   });
 
+  it('[Deploy contract] PlushLifeSpanNFTCashbackPool', async () => {
+    PlushLifeSpanNFTCashbackPoolFactory = await ethers.getContractFactory(
+      'PlushLifeSpanNFTCashbackPool',
+    );
+    plushLifeSpanNFTCashbackPool = (await upgrades.deployProxy(
+      PlushLifeSpanNFTCashbackPoolFactory,
+      [
+        plushToken.address,
+        1000000000000, // remuneration amount (in wei!)
+        120, // time after which tokens will be unlocked (in sec!)
+      ],
+      {
+        kind: 'uups',
+      },
+    )) as PlushLifeSpanNFTCashbackPool;
+    await plushLifeSpanNFTCashbackPool.deployed();
+  });
+
   it('[Deploy contract] PlushGetLifeSpan', async () => {
     PlushGetLifeSpanFactory = await ethers.getContractFactory(
       'PlushGetLifeSpan',
     );
     plushGetLifeSpan = (await upgrades.deployProxy(
       PlushGetLifeSpanFactory,
-      [lifeSpan.address, await signers[1].getAddress()],
+      [
+        lifeSpan.address,
+        await signers[1].getAddress(),
+        plushLifeSpanNFTCashbackPool.address,
+      ],
       {
         kind: 'uups',
       },
@@ -387,6 +416,34 @@ describe('Launching the testing of the Plush Protocol', () => {
     await grantRole.wait();
     expect(
       await lifeSpan.hasRole(MINTER_ROLE, plushGetLifeSpan.address),
+    ).to.eql(true);
+  });
+
+  it('PlushGetLifeSpan -> Grant operator role in PlushLifeSpanNFTCashbackPool contract', async () => {
+    const grantRole = await plushLifeSpanNFTCashbackPool.grantRole(
+      '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929', // OPERATOR role
+      plushGetLifeSpan.address,
+    );
+    await grantRole.wait();
+    expect(
+      await plushLifeSpanNFTCashbackPool.hasRole(
+        '0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929', // OPERATOR role
+        plushGetLifeSpan.address,
+      ),
+    ).to.eql(true);
+  });
+
+  it('PlushGetLifeSpan -> Grant REMUNERATION_ROLE in PlushLifeSpanNFTCashbackPool contract', async () => {
+    const grantRole = await plushLifeSpanNFTCashbackPool.grantRole(
+      REMUNERATION_ROLE,
+      plushGetLifeSpan.address,
+    );
+    await grantRole.wait();
+    expect(
+      await plushLifeSpanNFTCashbackPool.hasRole(
+        REMUNERATION_ROLE,
+        plushGetLifeSpan.address,
+      ),
     ).to.eql(true);
   });
 
