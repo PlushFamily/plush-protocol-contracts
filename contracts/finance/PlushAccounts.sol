@@ -103,7 +103,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
     function decreaseWalletAmount(address _wallet, uint256 _amount) public
     {
         require(walletInfo[_wallet].balance >= _amount, "Not enough balance.");
-        require(plushApps.getIsAddressActive(msg.sender) == true, "You have no rights.");
+        require(plushApps.getAppStatus(msg.sender) == true, "You have no rights.");
 
         uint256 percent = _amount * plushApps.getFeeApp(msg.sender) / 100000;
 

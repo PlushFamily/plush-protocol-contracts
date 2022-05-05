@@ -59,7 +59,7 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
      * @notice Delete app from PlushApps
      * @param controllerAddress App controller address
      */
-    function deleteApp(address controllerAddress) public onlyRole(OPERATOR_ROLE) {
+    function deleteApp(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
         require(appsList[controllerAddress].exists, "Application doesn't exist");
 
         delete appsList[controllerAddress];
@@ -93,6 +93,7 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
      */
     function setAppEnable(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
         require(appsList[controllerAddress].exists, "Application doesn't exist");
+        require(!appsList[controllerAddress].active, "Application already enable");
 
         appsList[controllerAddress].active = true;
     }
@@ -103,18 +104,30 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
      */
     function setAppDisable(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
         require(appsList[controllerAddress].exists, "Application doesn't exist");
+        require(appsList[controllerAddress].active, "Application already disable");
 
         appsList[controllerAddress].active = false;
     }
 
+    /**
+     * @notice Update application controller address
+     * @param oldControllerAddress exist controller application address
+     * @param newControllerAddress new controller application address
+     */
     function setNewController(address oldControllerAddress, address newControllerAddress) external onlyRole(OPERATOR_ROLE) {
-        require(appsList[oldControllerAddress].exists, "Application doesn't exist");
+        require(appsList[oldControllerAddress].exists, "There is no application with the specified address");
+        require(!appsList[newControllerAddress].exists, "This controller address is already in use");
 
         appsList[newControllerAddress] = appsList[oldControllerAddress];
-        deleteApp(oldControllerAddress);
+        delete appsList[oldControllerAddress];
     }
 
-    function getIsAddressActive(address controllerAddress) public view returns(bool) {
+    /**
+     * @notice Get app status (enable/disable)
+     * @param controllerAddress app controller address
+     * @return app enable status in boolean
+     */
+    function getAppStatus(address controllerAddress) public view returns(bool) {
         require(appsList[controllerAddress].exists, "Application doesn't exist");
 
         return appsList[controllerAddress].active;

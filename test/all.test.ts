@@ -611,9 +611,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     const disableApp = await plushApps.setAppDisable(plushController.address);
     await disableApp.wait();
 
-    expect(await plushApps.getIsAddressActive(plushController.address)).to.eql(
-      false,
-    );
+    expect(await plushApps.getAppStatus(plushController.address)).to.eql(false);
 
     // add test some activity with controller
 
