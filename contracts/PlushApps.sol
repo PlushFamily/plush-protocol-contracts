@@ -53,6 +53,8 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         require(!appsList[controllerAddress].exists, "Application already exists");
 
         appsList[controllerAddress] = Apps(name, fee, true, true);
+
+        emit AppAdded(name, controllerAddress, fee);
     }
 
     /**
@@ -63,6 +65,8 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         require(appsList[controllerAddress].exists, "Application doesn't exist");
 
         delete appsList[controllerAddress];
+
+        emit AppDeleted(controllerAddress);
     }
 
     /**
@@ -85,6 +89,8 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         require(appsList[controllerAddress].exists, "Application doesn't exist");
 
         appsList[controllerAddress].fee = fee;
+
+        emit AppFeeChanged(controllerAddress, fee);
     }
 
     /**
@@ -96,6 +102,8 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         require(!appsList[controllerAddress].active, "Application already enable");
 
         appsList[controllerAddress].active = true;
+
+        emit AppEnabled(controllerAddress);
     }
 
     /**
@@ -107,6 +115,8 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         require(appsList[controllerAddress].active, "Application already disable");
 
         appsList[controllerAddress].active = false;
+
+        emit AppDisabled(controllerAddress);
     }
 
     /**
@@ -120,6 +130,8 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
 
         appsList[newControllerAddress] = appsList[oldControllerAddress];
         delete appsList[oldControllerAddress];
+
+        emit AppControllerUpdated(oldControllerAddress, newControllerAddress);
     }
 
     /**

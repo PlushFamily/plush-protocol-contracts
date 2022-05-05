@@ -69,4 +69,38 @@ interface IPlushApps {
      * @return app enable status in boolean
      */
     function getAppStatus(address controllerAddress) external view returns(bool);
+
+    /// @notice Emitted when app is added
+    event AppAdded(
+        bytes32 name,
+        address indexed controllerAddress,
+        uint256 fee
+    );
+
+    /// @notice Emitted when app has been deleted
+    event AppDeleted(
+        address indexed controllerAddress
+    );
+
+    /// @notice Emitted when app fee was changed
+    event AppFeeChanged(
+        address indexed controllerAddress,
+        uint256 fee
+    );
+
+    /// @notice Emitted when enable app
+    event AppEnabled(
+        address indexed controllerAddress
+    );
+
+    /// @notice Emitted when disable app
+    event AppDisabled(
+        address indexed controllerAddress
+    );
+
+    /// @notice Emitted changed controlled address
+    event AppControllerUpdated(
+        address indexed oldControllerAddress,
+        address indexed newControllerAddress
+    );
 }
