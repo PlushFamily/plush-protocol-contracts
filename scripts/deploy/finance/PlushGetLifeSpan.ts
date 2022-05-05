@@ -28,8 +28,8 @@ async function main() {
     PlushGetLifeSpan,
     [
       DevContractsAddresses.LIFESPAN_ADDRESS,
-      DevContractsAddresses.PLUSH_FEE_COLLECTOR_ADDRESS,
       DevContractsAddresses.PLUSH_NFT_CASHBACK_POOL_ADDRESS,
+      DevContractsAddresses.PLUSH_FEE_COLLECTOR_ADDRESS,
     ],
     {
       kind: 'uups',

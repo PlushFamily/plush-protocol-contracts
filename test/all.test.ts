@@ -120,8 +120,8 @@ describe('Launching the testing of the Plush Protocol', () => {
       PlushGetLifeSpanFactory,
       [
         lifeSpan.address,
-        await signers[1].getAddress(),
         plushLifeSpanNFTCashbackPool.address,
+        await signers[1].getAddress(),
       ],
       {
         kind: 'uups',
