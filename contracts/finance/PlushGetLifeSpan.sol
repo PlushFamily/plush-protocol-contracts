@@ -32,8 +32,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(LifeSpan _lifeSpan, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool, address payable _royaltyAddress) initializer public
-    {
+    function initialize(LifeSpan _lifeSpan, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool, address payable _royaltyAddress) initializer public {
         plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         lifeSpan = _lifeSpan;
         royaltyAddress = _royaltyAddress;
@@ -53,91 +52,123 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     }
 
     /// @notice Pause contract
-    function pause() public onlyRole(PAUSER_ROLE)
-    {
+    function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /// @notice Unpause contract
-    function unpause() public onlyRole(PAUSER_ROLE)
-    {
+    function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
-    function checkUserLifeSpanToken(address _address) private view returns (bool)
-    {
+    /// @notice Prohibit a user from minting multiple tokens
+    function setDenyMultipleMinting() external onlyRole(OPERATOR_ROLE) {
+        require(denyMultipleMinting == false, "Multiple minting is already prohibited");
 
-        if (lifeSpan.balanceOf(_address) > 0) {
-            return true;
-        }
-
-        return false;
+        denyMultipleMinting = true;
     }
 
-    function changeTokenCheckStatus() public onlyRole(OPERATOR_ROLE)
-    {
-        denyMultipleMinting = !denyMultipleMinting;
+    /// @notice Allow a user to mint multiple tokens
+    function setAllowMultipleMinting() external onlyRole(OPERATOR_ROLE) {
+        require(denyMultipleMinting == true, "Multiple minting is already allowed");
+
+        denyMultipleMinting = false;
     }
 
-    function changeMintPrice(uint256 _price) public onlyRole(OPERATOR_ROLE)
-    {
-        mintPrice = _price;
+    /**
+     * @notice Change mint price
+     * @param newPrice new LifeSpan token mint price
+     */
+    function changeMintPrice(uint256 newPrice) external onlyRole(OPERATOR_ROLE) {
+        mintPrice = newPrice;
+
+        emit MintPriceChanged(newPrice);
     }
 
-    function getMintPrice() external view returns (uint256)
-    {
+    /**
+     * @notice Get current mint price
+     * @return mint price in wei
+     */
+    function getMintPrice() public view returns (uint256) {
         return mintPrice;
     }
 
-    function setSafeAddress(address _address) external onlyRole(OPERATOR_ROLE)
-    {
+    /**
+     * @notice Set new royalty address
+     * @param _address new royalty address
+     */
+    function setRoyaltyAddress(address _address) external onlyRole(OPERATOR_ROLE) {
         royaltyAddress = payable(_address);
+
+        emit RoyaltyAddressChanged(_address);
     }
 
-    function setLifeSpanAddress(address _address) external onlyRole(OPERATOR_ROLE)
-    {
+    /**
+     * @notice Set new LifeSpan contract address
+     * @param _address new LifeSpan contract address
+     */
+    function setLifeSpanAddress(address _address) external onlyRole(OPERATOR_ROLE) {
         lifeSpan = LifeSpan(_address);
+
+        emit LifeSpanAddressChanged(_address);
     }
 
-    function getSafeAddress() public view returns (address payable)
-    {
+    /**
+     * @notice Get current royalty address
+     * @return royalty address
+     */
+    function getRoyaltyAddress() public view returns (address payable) {
         return royaltyAddress;
     }
 
-    function getLifeSpanTokenAddress() public view returns (address)
-    {
+    /**
+     * @notice Get current LifeSpan address
+     * @return LifeSpan address
+     */
+    function getLifeSpanTokenAddress() public view returns (address) {
         return address(lifeSpan);
     }
 
-    function mint(address _mintAddress) public payable
-    {
+    /**
+     * @notice Mint LifeSpan token
+     * @param mintAddress where to enroll the LifeSpan token after minting
+     */
+    function mint(address mintAddress) public payable {
         require(msg.value == mintPrice, "Incorrect amount");
 
         if (denyMultipleMinting) {
-            require(checkUserLifeSpanToken(_mintAddress) == false, "The specified address already has a LifeSpan token");
+            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "The specified address already has a LifeSpan token");
         }
 
-        lifeSpan.safeMint(_mintAddress);
-        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(_mintAddress);
+        lifeSpan.safeMint(mintAddress);
+        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(mintAddress);
 
-        emit TokenMinted(_msgSender(), _mintAddress, msg.value);
+        emit TokenMinted(msg.sender, mintAddress, msg.value);
     }
 
-    function freeMint(address _mintAddress) public onlyRole(STAFF_ROLE)
-    {
+    /**
+     * @notice Free mint LifeSpan token for staffers
+     * @param mintAddress where to enroll the LifeSpan token after minting
+     */
+    function freeMint(address mintAddress) public onlyRole(STAFF_ROLE) {
         if (denyMultipleMinting) {
-            require(checkUserLifeSpanToken(_mintAddress) == false, "The specified address already has a LifeSpan token");
+            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "The specified address already has a LifeSpan token");
         }
 
-        lifeSpan.safeMint(_mintAddress);
+        lifeSpan.safeMint(mintAddress);
 
-        emit TokenFreeMinted(_msgSender(), _mintAddress);
+        emit TokenFreeMinted(msg.sender, mintAddress);
     }
 
-    function withdraw(uint256 amount) external onlyRole(OPERATOR_ROLE)
-    {
+    /**
+     * @notice Withdraw mint royalty on royaltyAddress
+     * @param amount withdraw amount
+     */
+    function withdraw(uint256 amount) external onlyRole(OPERATOR_ROLE) {
         (bool success, ) = royaltyAddress.call{value: amount}("");
         require(success, "Withdrawal Error");
+
+        emit RoyaltyWithdrawn(amount, royaltyAddress);
     }
 
     function _authorizeUpgrade(address newImplementation)

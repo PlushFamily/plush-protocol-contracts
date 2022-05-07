@@ -454,7 +454,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushGetLifeSpan -> Check safe address', async () => {
-    expect(await plushGetLifeSpan.getSafeAddress()).to.eql(
+    expect(await plushGetLifeSpan.getRoyaltyAddress()).to.eql(
       await signers[1].getAddress(),
     );
   });
@@ -477,12 +477,12 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushGetLifeSpan -> Change safe address', async () => {
-    const changeSafeAddress = await plushGetLifeSpan.setSafeAddress(
+    const changeSafeAddress = await plushGetLifeSpan.setRoyaltyAddress(
       plushGetLifeSpanRandomSafeAddress.address,
     );
     await changeSafeAddress.wait();
 
-    expect(await plushGetLifeSpan.getSafeAddress()).to.eql(
+    expect(await plushGetLifeSpan.getRoyaltyAddress()).to.eql(
       plushGetLifeSpanRandomSafeAddress.address,
     );
   });

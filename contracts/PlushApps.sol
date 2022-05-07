@@ -125,13 +125,13 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
      * @param newControllerAddress new controller application address
      */
     function setNewController(address oldControllerAddress, address newControllerAddress) external onlyRole(OPERATOR_ROLE) {
-        require(appsList[oldControllerAddress].exists, "There is no application with the specified address");
-        require(!appsList[newControllerAddress].exists, "This controller address is already in use");
+        require(appsList[oldControllerAddress].exists, "Application doesn't exist");
+        require(!appsList[newControllerAddress].exists, "New controller address is already in use");
 
         appsList[newControllerAddress] = appsList[oldControllerAddress];
         delete appsList[oldControllerAddress];
 
-        emit AppControllerUpdated(oldControllerAddress, newControllerAddress);
+        emit AppControllerAddressUpdated(oldControllerAddress, newControllerAddress);
     }
 
     /**

@@ -99,7 +99,7 @@ interface IPlushApps {
     );
 
     /// @notice Emitted changed controlled address
-    event AppControllerUpdated(
+    event AppControllerAddressUpdated(
         address indexed oldControllerAddress,
         address indexed newControllerAddress
     );
