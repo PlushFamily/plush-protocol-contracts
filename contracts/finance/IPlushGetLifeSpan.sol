@@ -68,8 +68,6 @@ interface IPlushGetLifeSpan {
      */
     function withdraw(uint256 amount) external;
 
-
-
     /// @notice Emitted when LifeSpan token has been minted
     event TokenMinted(
         address indexed purchaser,
