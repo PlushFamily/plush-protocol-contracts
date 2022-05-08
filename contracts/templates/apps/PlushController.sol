@@ -81,14 +81,14 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     }
 
     function addNewAppAddress(address _appAddress) external onlyRole(OPERATOR_ROLE) {
-        require(!appAddressExist(_appAddress), "This app already exists.");
+        require(indexApps[_appAddress] > 0 == false, "This app already exists.");
 
         indexApps[_appAddress] = appAddresses.length + 1;
         appAddresses.push(_appAddress);
     }
 
     function deleteAppAddress(address _appAddress) external onlyRole(OPERATOR_ROLE) {
-        require(appAddressExist(_appAddress), "There is no such app.");
+        require(indexApps[_appAddress] > 0, "There is no such app.");
 
         delete appAddresses[indexApps[_appAddress] - 1];
         delete indexApps[_appAddress];
