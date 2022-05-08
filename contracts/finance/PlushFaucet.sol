@@ -83,32 +83,51 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         alreadyReceived[msg.sender] += faucetDripAmount;
 
         plush.approve(address(plushAccounts), faucetDripAmount);
+
+        require(plush.allowance(address(this), address(plushAccounts)) >= faucetDripAmount);
+
         plushAccounts.deposit(msg.sender, faucetDripAmount);
     }
 
-    function setTokenAddress(address _tokenAddr) external onlyRole(OPERATOR_ROLE) {
-        plush = IERC20Upgradeable(_tokenAddr);
+    /**
+     * @notice Set ERC-20 faucet token
+     * @param newAddress contract address of new token
+     */
+    function setTokenAddress(address newAddress) external onlyRole(OPERATOR_ROLE) {
+        plush = IERC20Upgradeable(newAddress);
     }
 
-    function setFaucetDripAmount(uint256 _amount) external onlyRole(OPERATOR_ROLE) {
-        faucetDripAmount = _amount;
+    /**
+     * @notice Set faucet drip amount
+     * @param amount new faucet drip amount
+     */
+    function setFaucetDripAmount(uint256 amount) external onlyRole(OPERATOR_ROLE) {
+        faucetDripAmount = amount;
     }
 
+    /**
+     * @notice Set the maximum amount of tokens that a user can receive for the entire time
+     * @param amount new maximum amount
+     */
     function setMaxReceiveAmount(uint256 amount) external onlyRole(OPERATOR_ROLE) {
         maxReceiveAmount = amount;
     }
 
-    function setFaucetTime(uint256 _time) external onlyRole(OPERATOR_ROLE) {
-        faucetTimeLimit = _time;
+    /**
+     * @notice Set the time after which the user will be able to use the faucet
+     * @param time new faucet time limit in seconds (timestamp)
+     */
+    function setFaucetTimeLimit(uint256 time) external onlyRole(OPERATOR_ROLE) {
+        faucetTimeLimit = time;
     }
 
     function setTokenNFTCheck(bool _isCheck) external onlyRole(OPERATOR_ROLE) {
         tokenNFTCheck = _isCheck;
     }
 
-    function withdrawTokens(address _receiver, uint256 _amount) external onlyRole(OPERATOR_ROLE) {
-        require(plush.balanceOf(address(this)) >= _amount, "FaucetError: Insufficient funds");
-        require(plush.transfer(_receiver, _amount), "Transaction error.");
+    function withdraw(address receiver, uint256 amount) external onlyRole(OPERATOR_ROLE) {
+        require(plush.balanceOf(address(this)) >= amount, "FaucetError: Insufficient funds");
+        require(plush.transfer(receiver, amount), "Transaction error.");
     }
 
     function getMaxReceiveAmount() external view returns(uint256) {

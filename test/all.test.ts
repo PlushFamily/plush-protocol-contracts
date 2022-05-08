@@ -733,7 +733,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushFaucet -> Withdraw tokens from faucet', async () => {
-    const withdrawTokens = await plushFaucet.withdrawTokens(
+    const withdrawTokens = await plushFaucet.withdraw(
       plushFaucetRandomReceiverAddress.address,
       ethers.utils.parseUnits('1', 18),
     );
