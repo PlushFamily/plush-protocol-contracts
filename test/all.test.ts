@@ -657,6 +657,9 @@ describe('Launching the testing of the Plush Protocol', () => {
       await plushFaucet.hasRole(OPERATOR_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
     expect(
+      await plushFaucet.hasRole(BANKER_ROLE, await signers[0].getAddress()),
+    ).to.eql(true);
+    expect(
       await plushFaucet.hasRole(PAUSER_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
     expect(
@@ -725,7 +728,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushFaucet -> Set disable NFT checking', async () => {
-    const changeNFTCheck = await plushFaucet.setTokenNFTCheck(false);
+    const changeNFTCheck = await plushFaucet.setDisableNFTCheck();
     await changeNFTCheck.wait();
     expect(await plushFaucet.getIsTokenNFTCheck()).to.eql(false);
   });

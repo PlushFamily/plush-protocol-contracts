@@ -32,6 +32,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      * @dev Roles definitions
      */
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant BANKER_ROLE = keccak256("BANKER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
@@ -54,6 +55,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(BANKER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
@@ -121,13 +123,19 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         faucetTimeLimit = time;
     }
 
-    function setTokenNFTCheck(bool _isCheck) external onlyRole(OPERATOR_ROLE) {
-        tokenNFTCheck = _isCheck;
+    function setEnableNFTCheck() external onlyRole(OPERATOR_ROLE) {
+        require(tokenNFTCheck == false, "NFT verification is already enabled");
+        tokenNFTCheck = true;
     }
 
-    function withdraw(address receiver, uint256 amount) external onlyRole(OPERATOR_ROLE) {
-        require(plush.balanceOf(address(this)) >= amount, "FaucetError: Insufficient funds");
-        require(plush.transfer(receiver, amount), "Transaction error.");
+    function setDisableNFTCheck() external onlyRole(OPERATOR_ROLE) {
+        require(tokenNFTCheck == true, "NFT verification is already disabled");
+        tokenNFTCheck = false;
+    }
+
+    function withdraw(address receiver, uint256 amount) external onlyRole(BANKER_ROLE) {
+        require(plush.balanceOf(address(this)) >= amount, "The faucet is empty");
+        require(plush.transfer(receiver, amount), "Transaction error");
     }
 
     function getMaxReceiveAmount() external view returns(uint256) {
@@ -150,21 +158,21 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         return tokenNFTCheck;
     }
 
-    function getDistributionOfAddress(address _receiver) external view returns(uint256) {
-        if(nextRequestAt[_receiver] <= block.timestamp || nextRequestAt[_receiver] == 0){
+    function getDistributionOfAddress(address receiver) external view returns(uint256) {
+        if(nextRequestAt[receiver] <= block.timestamp || nextRequestAt[receiver] == 0){
             return 0;
         }
 
-        return nextRequestAt[_receiver] - block.timestamp;
+        return nextRequestAt[receiver] - block.timestamp;
     }
 
-    function getCanTheAddressReceiveReward(address _receiver) external view returns(bool) {
+    function getCanTheAddressReceiveReward(address receiver) external view returns(bool) {
         require(plush.balanceOf(address(this)) >= faucetDripAmount, "The faucet is empty");
-        require(nextRequestAt[_receiver] < block.timestamp, "Try again later");
-        require(alreadyReceived[_receiver] < maxReceiveAmount, "Quantity limit");
+        require(nextRequestAt[receiver] < block.timestamp, "Try again later");
+        require(alreadyReceived[receiver] < maxReceiveAmount, "Quantity limit");
 
         if(tokenNFTCheck){
-            require(lifeSpan.balanceOf(_receiver) > 0, "You don't have LifeSpan Token");
+            require(lifeSpan.balanceOf(receiver) > 0, "Receiver don't have LifeSpan Token");
         }
 
         return true;
