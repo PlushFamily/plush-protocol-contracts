@@ -698,7 +698,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       ),
     ).to.eql(true); // Check that we can to get tokens
 
-    const getTokens = await plushFaucet.send(await signers[0].getAddress());
+    const getTokens = await plushFaucet.send();
     await getTokens.wait();
 
     expect(await plushFaucet.getFaucetBalance()).to.eql(
@@ -712,7 +712,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   it("PlushFaucet -> Check that we can't to get tokens twice", async () => {
     await expect(
       plushFaucet.getCanTheAddressReceiveReward(await signers[0].getAddress()),
-    ).to.be.revertedWith('Time limit');
+    ).to.be.revertedWith('Try again late');
   });
 
   it('PlushFaucet -> Set disable NFT checking', async () => {
@@ -722,20 +722,14 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushFaucet -> Try to get tokens without NFT (with disable NFT checking)', async () => {
-    const getTokens = await plushFaucet.send(
-      plushFaucetRandomReceiverAddress.address,
-    );
+    const getTokens = await plushFaucet.connect(signers[1]).send();
     await getTokens.wait();
     expect(
-      await plushAccounts.getWalletAmount(
-        plushFaucetRandomReceiverAddress.address,
-      ),
+      await plushAccounts.getWalletAmount(await signers[1].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18));
     await expect(
-      plushFaucet.getCanTheAddressReceiveReward(
-        plushFaucetRandomReceiverAddress.address,
-      ),
-    ).to.be.revertedWith('Time limit');
+      plushFaucet.getCanTheAddressReceiveReward(await signers[1].getAddress()),
+    ).to.be.revertedWith('Try again later');
   });
 
   it('PlushFaucet -> Withdraw tokens from faucet', async () => {
@@ -818,7 +812,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     ).to.eql(ethers.utils.parseUnits('0', 18));
     expect(
       await plushAccounts.getWalletAmount(await signers[1].getAddress()),
-    ).to.eql(ethers.utils.parseUnits('1', 18));
+    ).to.eql(ethers.utils.parseUnits('2', 18));
   });
 
   it('PlushAccounts -> Check pause contract', async () => {
@@ -840,6 +834,6 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(plushAccountsNEW.address).to.eq(plushAccounts.address);
     expect(
       await plushAccounts.getWalletAmount(await signers[1].getAddress()),
-    ).to.eql(ethers.utils.parseUnits('1', 18));
+    ).to.eql(ethers.utils.parseUnits('2', 18));
   });
 });
