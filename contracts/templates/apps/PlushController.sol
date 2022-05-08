@@ -8,10 +8,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
+import "./IPlushController.sol";
+
 import "../../finance/PlushAccounts.sol";
 
 
-contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushController {
 
     uint256 public constant version = 3;
 
@@ -65,14 +67,14 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
      * @param withdrawalAddress withdrawal address
      */
     function addNewWithdrawalAddress(address withdrawalAddress) external onlyRole(OPERATOR_ROLE) {
-        require(!withdrawalAddressExist(withdrawalAddress), "This address has already been added");
+        require(indexWithdrawal[withdrawalAddress] > 0 == false, "This address has already been added");
 
         indexWithdrawal[withdrawalAddress] = withdrawalAddresses.length + 1;
         withdrawalAddresses.push(withdrawalAddress);
     }
 
     function deleteWithdrawalAddress(address _withdrawalAddress) external onlyRole(OPERATOR_ROLE) {
-        require(withdrawalAddressExist(_withdrawalAddress), "There is no such address.");
+        require(indexWithdrawal[_withdrawalAddress] > 0, "There is no such address.");
 
         delete withdrawalAddresses[indexWithdrawal[_withdrawalAddress] - 1];
         delete indexWithdrawal[_withdrawalAddress];
@@ -100,30 +102,22 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         return false;
     }
 
-    function appAddressExist(address _address) public view returns (bool) {
-        if (indexApps[_address] > 0) {
-            return true;
-        }
-
-        return false;
-    }
-
     function getAvailableBalanceForWithdrawal() public view returns (uint256) {
         return plushAccounts.getWalletAmount(address(this));
     }
 
     function withdraw(uint256 _amount) external {
-        require(withdrawalAddressExist(msg.sender), "Withdrawal is not available.");
+        require(indexWithdrawal[msg.sender] > 0, "Withdrawal is not available.");
         require(getAvailableBalanceForWithdrawal() >= _amount, "Not enough balance.");
 
         plushAccounts.withdrawByController(_amount, msg.sender);
     }
 
-    function getAllWithdrawalAddresses() public view returns (address[] memory) {
+    function getWithdrawalAddresses() public view returns (address[] memory) {
         return withdrawalAddresses;
     }
 
-    function getAllAppAddresses() public view returns (address[] memory) {
+    function getAppAddresses() public view returns (address[] memory) {
         return appAddresses;
     }
 
@@ -133,10 +127,6 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
 
     function increaseWalletAmountTrans(address _address, uint256 _amount) external {
         plushAccounts.internalTransfer(_address, _amount);
-    }
-
-    function getVersion() public pure returns (uint256) {
-        return version;
     }
 
     function _authorizeUpgrade(address newImplementation)
