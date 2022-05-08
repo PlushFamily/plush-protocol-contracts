@@ -25,6 +25,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
      * @dev Roles definitions
      */
     bytes32 public constant STAFF_ROLE = keccak256("STAFF_ROLE");
+    bytes32 public constant BANKER_ROLE = keccak256("BANKER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
@@ -45,6 +46,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(BANKER_ROLE, msg.sender);
         _grantRole(STAFF_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
@@ -97,7 +99,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
      * @notice Set new royalty address
      * @param _address new royalty address
      */
-    function setRoyaltyAddress(address _address) external onlyRole(OPERATOR_ROLE) {
+    function setRoyaltyAddress(address _address) external onlyRole(BANKER_ROLE) {
         royaltyAddress = payable(_address);
 
         emit RoyaltyAddressChanged(_address);
@@ -164,7 +166,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
      * @notice Withdraw mint royalty on royaltyAddress
      * @param amount withdraw amount
      */
-    function withdraw(uint256 amount) external onlyRole(OPERATOR_ROLE) {
+    function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
         (bool success, ) = royaltyAddress.call{value: amount}("");
         require(success, "Withdrawal Error");
 

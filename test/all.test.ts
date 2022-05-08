@@ -14,6 +14,9 @@ import {
   PlushLifeSpanNFTCashbackPool,
 } from '../types';
 
+const BANKER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('BANKER_ROLE'),
+);
 const OPERATOR_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
 );
@@ -385,6 +388,12 @@ describe('Launching the testing of the Plush Protocol', () => {
         await signers[0].getAddress(),
       ),
     ).to.eql(true); // ADMIN role
+    expect(
+      await plushGetLifeSpan.hasRole(
+        BANKER_ROLE,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true);
     expect(
       await plushGetLifeSpan.hasRole(STAFF_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
