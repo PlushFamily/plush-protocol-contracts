@@ -664,7 +664,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       ethers.utils.parseUnits('1', 18),
     ); // 1 Plush
 
-    expect(await plushFaucet.getThreshold()).to.eql(
+    expect(await plushFaucet.getMaxReceiveAmount()).to.eql(
       ethers.utils.parseUnits('100', 18),
     ); // Max Plush user balance
 

@@ -21,11 +21,11 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     PlushAccounts public plushAccounts;
 
     mapping(address=>uint256) private nextRequestAt;
-    mapping(address=>uint256) private generalAmount;
+    mapping(address=>uint256) private alreadyReceived;
 
     uint256 public faucetDripAmount;
-    uint256 public faucetTime;
-    uint256 private threshold;
+    uint256 public faucetTimeLimit;
+    uint256 private maxReceiveAmount;
     bool private tokenNFTCheck;
 
     /**
@@ -43,9 +43,9 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         lifeSpan = _lifeSpan;
         plushAccounts = _plushAccounts;
 
-        faucetTime = 24 hours;
+        faucetTimeLimit = 24 hours;
         faucetDripAmount = 1 * 10 ** 18;
-        threshold = 100 * 10 ** 18;
+        maxReceiveAmount = 100 * 10 ** 18;
         tokenNFTCheck = true;
 
         __Pausable_init();
@@ -72,15 +72,15 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     function send() external {
         require(plush.balanceOf(address(this)) >= faucetDripAmount, "The faucet is empty");
         require(nextRequestAt[msg.sender] < block.timestamp, "Try again later");
-        require(generalAmount[msg.sender] < threshold, "Quantity limit");
+        require(alreadyReceived[msg.sender] < maxReceiveAmount, "Quantity limit");
 
         if(tokenNFTCheck){
             require(lifeSpan.balanceOf(msg.sender) > 0, "You don't have LifeSpan Token");
         }
 
         // Next request from the address can be made only after faucetTime
-        nextRequestAt[msg.sender] = block.timestamp + faucetTime;
-        generalAmount[msg.sender] += faucetDripAmount;
+        nextRequestAt[msg.sender] = block.timestamp + faucetTimeLimit;
+        alreadyReceived[msg.sender] += faucetDripAmount;
 
         plush.approve(address(plushAccounts), faucetDripAmount);
         plushAccounts.deposit(msg.sender, faucetDripAmount);
@@ -94,12 +94,12 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         faucetDripAmount = _amount;
     }
 
-    function setThreshold(uint256 _amount) external onlyRole(OPERATOR_ROLE) {
-        threshold = _amount;
+    function setMaxReceiveAmount(uint256 amount) external onlyRole(OPERATOR_ROLE) {
+        maxReceiveAmount = amount;
     }
 
     function setFaucetTime(uint256 _time) external onlyRole(OPERATOR_ROLE) {
-        faucetTime = _time;
+        faucetTimeLimit = _time;
     }
 
     function setTokenNFTCheck(bool _isCheck) external onlyRole(OPERATOR_ROLE) {
@@ -111,8 +111,8 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         require(plush.transfer(_receiver, _amount), "Transaction error.");
     }
 
-    function getThreshold() external view returns(uint256) {
-        return threshold;
+    function getMaxReceiveAmount() external view returns(uint256) {
+        return maxReceiveAmount;
     }
 
     function getFaucetDripAmount() external view returns(uint256) {
@@ -124,7 +124,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     }
 
     function getDistributionTime() external view returns(uint256) {
-        return faucetTime;
+        return faucetTimeLimit;
     }
 
     function getIsTokenNFTCheck() external view returns(bool) {
@@ -142,7 +142,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     function getCanTheAddressReceiveReward(address _receiver) external view returns(bool) {
         require(plush.balanceOf(address(this)) >= faucetDripAmount, "The faucet is empty");
         require(nextRequestAt[_receiver] < block.timestamp, "Try again later");
-        require(generalAmount[_receiver] < threshold, "Quantity limit");
+        require(alreadyReceived[_receiver] < maxReceiveAmount, "Quantity limit");
 
         if(tokenNFTCheck){
             require(lifeSpan.balanceOf(_receiver) > 0, "You don't have LifeSpan Token");
