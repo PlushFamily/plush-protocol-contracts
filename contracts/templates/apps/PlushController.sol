@@ -20,9 +20,6 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     IERC20Upgradeable public plush;
     IPlushAccounts public plushAccounts;
 
-    mapping(address => uint) public indexWithdrawal;
-    address[] public withdrawalAddresses;
-
     mapping(address => uint) public indexApps;
     address[] public appAddresses;
 
@@ -31,6 +28,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
      */
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant BANKER_ROLE = keccak256("BANKER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -45,6 +43,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(BANKER_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
@@ -60,71 +59,40 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         _unpause();
     }
 
-    /**
-     * @notice Add new withdrawal address
-     * @param withdrawalAddress new withdrawal address
-     */
-    function addNewWithdrawalAddress(address withdrawalAddress) external onlyRole(OPERATOR_ROLE) {
-        require(indexWithdrawal[withdrawalAddress] > 0 == false, "This address has already been added");
-
-        indexWithdrawal[withdrawalAddress] = withdrawalAddresses.length + 1;
-        withdrawalAddresses.push(withdrawalAddress);
-    }
-
-    function deleteWithdrawalAddress(address withdrawalAddress) external onlyRole(OPERATOR_ROLE) {
-        require(indexWithdrawal[withdrawalAddress] > 0, "There is no such address.");
-
-        delete withdrawalAddresses[indexWithdrawal[withdrawalAddress] - 1];
-        delete indexWithdrawal[withdrawalAddress];
-    }
-
     function addNewAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
-        require(indexApps[appAddress] > 0 == false, "This app already exists.");
+        require(indexApps[appAddress] > 0 == false, "Application doesn't exist");
 
         indexApps[appAddress] = appAddresses.length + 1;
         appAddresses.push(appAddress);
     }
 
     function deleteAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
-        require(indexApps[appAddress] > 0, "There is no such app.");
+        require(indexApps[appAddress] > 0, "Application doesn't exist");
 
         delete appAddresses[indexApps[appAddress] - 1];
         delete indexApps[appAddress];
     }
 
-    function withdrawalAddressExist(address _address) public view returns (bool) {
-        if (indexWithdrawal[_address] > 0) {
-            return true;
-        }
-
-        return false;
-    }
-
-    function getAvailableBalanceForWithdrawal() public view returns (uint256) {
+    function getBalance() public view returns (uint256) {
         return plushAccounts.getAccountBalance(address(this));
     }
 
-    function withdraw(uint256 amount) external {
-        require(indexWithdrawal[msg.sender] > 0, "Withdrawal is not available.");
-        require(getAvailableBalanceForWithdrawal() >= amount, "Not enough balance.");
+    function withdraw(uint256 amount) external onlyRole(BANKER_ROLE)  {
+        require(getBalance() >= amount, "Insufficient funds");
 
         plushAccounts.withdrawByController(msg.sender, amount);
-    }
-
-    function getWithdrawalAddresses() public view returns (address[] memory) {
-        return withdrawalAddresses;
     }
 
     function getAppAddresses() public view returns (address[] memory) {
         return appAddresses;
     }
 
-    function decreaseWalletAmountTrans(address _address, uint256 _amount) external {
-        plushAccounts.decreaseAccountBalance(_address, _amount);
+    function decreaseAccountBalance(address account, uint256 amount) external {
+        plushAccounts.decreaseAccountBalance(account, amount);
     }
 
-    function increaseWalletAmountTrans(address _address, uint256 _amount) external {
-        plushAccounts.internalTransfer(_address, _amount);
+    function increaseAccountBalance(address account, uint256 amount) external {
+        plushAccounts.internalTransfer(account, amount);
     }
 
     function _authorizeUpgrade(address newImplementation)
