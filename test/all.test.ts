@@ -715,7 +715,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       ethers.utils.parseUnits('2', 18),
     );
     expect(
-      await plushAccounts.getWalletAmount(await signers[0].getAddress()),
+      await plushAccounts.getAccountBalance(await signers[0].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18)); // Check that we to get one token on Safe contract
   });
 
@@ -735,7 +735,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     const getTokens = await plushFaucet.connect(signers[1]).send();
     await getTokens.wait();
     expect(
-      await plushAccounts.getWalletAmount(await signers[1].getAddress()),
+      await plushAccounts.getAccountBalance(await signers[1].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18));
     await expect(
       plushFaucet.getCanTheAddressReceiveReward(await signers[1].getAddress()),
@@ -807,7 +807,7 @@ describe('Launching the testing of the Plush Protocol', () => {
 
   it('PlushAccounts -> Check user balances', async () => {
     expect(
-      await plushAccounts.getWalletAmount(await signers[0].getAddress()),
+      await plushAccounts.getAccountBalance(await signers[0].getAddress()),
     ).to.eql(ethers.utils.parseUnits('1', 18));
   });
 
@@ -818,10 +818,10 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await transferTokens.wait();
     expect(
-      await plushAccounts.getWalletAmount(await signers[0].getAddress()),
+      await plushAccounts.getAccountBalance(await signers[0].getAddress()),
     ).to.eql(ethers.utils.parseUnits('0', 18));
     expect(
-      await plushAccounts.getWalletAmount(await signers[1].getAddress()),
+      await plushAccounts.getAccountBalance(await signers[1].getAddress()),
     ).to.eql(ethers.utils.parseUnits('2', 18));
   });
 
@@ -843,7 +843,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     await plushAccountsNEW.deployed();
     expect(plushAccountsNEW.address).to.eq(plushAccounts.address);
     expect(
-      await plushAccounts.getWalletAmount(await signers[1].getAddress()),
+      await plushAccounts.getAccountBalance(await signers[1].getAddress()),
     ).to.eql(ethers.utils.parseUnits('2', 18));
   });
 });

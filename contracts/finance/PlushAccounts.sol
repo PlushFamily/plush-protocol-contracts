@@ -20,7 +20,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
     uint256 public minimumDeposit;
     address public plushFeeAddress;
 
-    mapping(address => Wallet) public walletInfo;
+    mapping(address => Account) public accounts;
 
     /**
      * @dev Roles definitions
@@ -60,7 +60,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
 
     /**
      * @notice Deposit tokens to the account
-     * @param account wallet address
+     * @param account address
      * @param amount the amount to be deposited in tokens
      */
     function deposit(address account, uint256 amount) public {
@@ -68,7 +68,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         require(plush.allowance(msg.sender, address(this)) >= amount, "Not enough allowance");
         require(plush.transferFrom(msg.sender, address(this), amount), "Transaction error");
 
-        increaseWalletAmount(account, amount);
+        increaseAccountBalance(account, amount);
 
         emit Deposited(msg.sender, account, amount);
     }
@@ -78,10 +78,10 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      * @param amount the amount of tokens being withdrawn
      */
     function withdraw(uint256 amount) external {
-        require(walletInfo[msg.sender].balance >= amount, "Not enough balance");
+        require(accounts[msg.sender].balance >= amount, "Not enough balance");
         require(plush.transfer(msg.sender, amount), "Transaction error");
 
-        walletInfo[msg.sender].balance -= amount;
+        accounts[msg.sender].balance -= amount;
 
         emit Withdrawn(msg.sender, amount);
     }
@@ -92,42 +92,42 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      * @param amount the amount of tokens being withdrawn
      */
     function withdrawByController(address account, uint256 amount) external {
-        require(walletInfo[msg.sender].balance >= amount, "Not enough balance");
+        require(accounts[msg.sender].balance >= amount, "Not enough balance");
         require(plush.transfer(account, amount), "Transaction error");
 
-        walletInfo[msg.sender].balance -= amount;
+        accounts[msg.sender].balance -= amount;
     }
 
-    function increaseWalletAmount(address account, uint256 amount) private {
+    function increaseAccountBalance(address account, uint256 amount) private {
         require(amount >= minimumDeposit, "Less than minimum deposit");
 
-        walletInfo[account].balance += amount;
+        accounts[account].balance += amount;
     }
 
     function internalTransfer(address account, uint256 amount) public {
-        require(walletInfo[msg.sender].balance >= amount, "Not enough balance(Sender).");
+        require(accounts[msg.sender].balance >= amount, "Not enough balance(Sender).");
 
-        walletInfo[msg.sender].balance -= amount;
-        walletInfo[account].balance += amount;
+        accounts[msg.sender].balance -= amount;
+        accounts[account].balance += amount;
     }
 
-    function decreaseWalletAmount(address account, uint256 amount) public {
-        require(walletInfo[account].balance >= amount, "Not enough balance.");
+    function decreaseAccountBalance(address account, uint256 amount) public {
+        require(accounts[account].balance >= amount, "Not enough balance.");
         require(plushApps.getAppStatus(msg.sender) == true, "You have no rights.");
 
         uint256 percent = amount * plushApps.getFeeApp(msg.sender) / 100000;
 
-        walletInfo[account].balance -= amount;
-        walletInfo[msg.sender].balance += amount - percent;
-        walletInfo[plushFeeAddress].balance += percent;
+        accounts[account].balance -= amount;
+        accounts[msg.sender].balance += amount - percent;
+        accounts[plushFeeAddress].balance += percent;
     }
 
-    function getPlushFeeWalletAmount() public view returns (uint256) {
-        return walletInfo[plushFeeAddress].balance;
+    function getPlushFeeAccountBalance() public view returns (uint256) {
+        return accounts[plushFeeAddress].balance;
     }
 
-    function getWalletAmount(address account) external view returns (uint256) {
-        return walletInfo[account].balance;
+    function getAccountBalance(address account) external view returns (uint256) {
+        return accounts[account].balance;
     }
 
     function setMinimumDeposit(uint256 amount) external onlyRole(OPERATOR_ROLE) {

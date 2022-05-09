@@ -62,7 +62,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
 
     /**
      * @notice Add new withdrawal address
-     * @param withdrawalAddress withdrawal address
+     * @param withdrawalAddress new withdrawal address
      */
     function addNewWithdrawalAddress(address withdrawalAddress) external onlyRole(OPERATOR_ROLE) {
         require(indexWithdrawal[withdrawalAddress] > 0 == false, "This address has already been added");
@@ -71,25 +71,25 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         withdrawalAddresses.push(withdrawalAddress);
     }
 
-    function deleteWithdrawalAddress(address _withdrawalAddress) external onlyRole(OPERATOR_ROLE) {
-        require(indexWithdrawal[_withdrawalAddress] > 0, "There is no such address.");
+    function deleteWithdrawalAddress(address withdrawalAddress) external onlyRole(OPERATOR_ROLE) {
+        require(indexWithdrawal[withdrawalAddress] > 0, "There is no such address.");
 
-        delete withdrawalAddresses[indexWithdrawal[_withdrawalAddress] - 1];
-        delete indexWithdrawal[_withdrawalAddress];
+        delete withdrawalAddresses[indexWithdrawal[withdrawalAddress] - 1];
+        delete indexWithdrawal[withdrawalAddress];
     }
 
-    function addNewAppAddress(address _appAddress) external onlyRole(OPERATOR_ROLE) {
-        require(indexApps[_appAddress] > 0 == false, "This app already exists.");
+    function addNewAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
+        require(indexApps[appAddress] > 0 == false, "This app already exists.");
 
-        indexApps[_appAddress] = appAddresses.length + 1;
-        appAddresses.push(_appAddress);
+        indexApps[appAddress] = appAddresses.length + 1;
+        appAddresses.push(appAddress);
     }
 
-    function deleteAppAddress(address _appAddress) external onlyRole(OPERATOR_ROLE) {
-        require(indexApps[_appAddress] > 0, "There is no such app.");
+    function deleteAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
+        require(indexApps[appAddress] > 0, "There is no such app.");
 
-        delete appAddresses[indexApps[_appAddress] - 1];
-        delete indexApps[_appAddress];
+        delete appAddresses[indexApps[appAddress] - 1];
+        delete indexApps[appAddress];
     }
 
     function withdrawalAddressExist(address _address) public view returns (bool) {
@@ -101,7 +101,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     }
 
     function getAvailableBalanceForWithdrawal() public view returns (uint256) {
-        return plushAccounts.getWalletAmount(address(this));
+        return plushAccounts.getAccountBalance(address(this));
     }
 
     function withdraw(uint256 amount) external {
@@ -120,7 +120,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     }
 
     function decreaseWalletAmountTrans(address _address, uint256 _amount) external {
-        plushAccounts.decreaseWalletAmount(_address, _amount);
+        plushAccounts.decreaseAccountBalance(_address, _amount);
     }
 
     function increaseWalletAmountTrans(address _address, uint256 _amount) external {

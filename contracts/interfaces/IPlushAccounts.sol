@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 interface IPlushAccounts {
 
-    struct Wallet {
+    struct Account {
         uint256 balance;
     }
 
@@ -36,11 +36,11 @@ interface IPlushAccounts {
 
     function internalTransfer(address account, uint256 amount) external;
 
-    function decreaseWalletAmount(address account, uint256 amount) external;
+    function decreaseAccountBalance(address account, uint256 amount) external;
 
-    function getPlushFeeWalletAmount() external view returns (uint256);
+    function getPlushFeeAccountBalance() external view returns (uint256);
 
-    function getWalletAmount(address account) external view returns (uint256);
+    function getAccountBalance(address account) external view returns (uint256);
 
     function setMinimumDeposit(uint256 amount) external;
 
