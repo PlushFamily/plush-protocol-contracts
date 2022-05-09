@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-import "./IPlushGetLifeSpan.sol";
+import "../interfaces/IPlushGetLifeSpan.sol";
 
 import "../token/ERC721/LifeSpan.sol";
 import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";

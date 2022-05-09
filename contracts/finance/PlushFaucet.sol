@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-import "./IPlushFaucet.sol";
+import "../interfaces/IPlushFaucet.sol";
 
 import "../token/ERC721/LifeSpan.sol";
 import "./PlushAccounts.sol";

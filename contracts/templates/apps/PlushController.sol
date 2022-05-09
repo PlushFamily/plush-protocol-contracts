@@ -8,10 +8,9 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-import "./IPlushController.sol";
+import "../../interfaces/IPlushController.sol";
 
 import "../../finance/PlushAccounts.sol";
-
 
 contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushController {
 
