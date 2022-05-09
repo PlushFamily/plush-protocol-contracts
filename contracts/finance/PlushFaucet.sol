@@ -89,6 +89,8 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         require(plush.allowance(address(this), address(plushAccounts)) >= faucetDripAmount);
 
         plushAccounts.deposit(msg.sender, faucetDripAmount);
+
+        emit TokensSent(msg.sender, faucetDripAmount);
     }
 
     /**
@@ -143,6 +145,8 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     function withdraw(uint256 amount, address receiver) external onlyRole(BANKER_ROLE) {
         require(plush.balanceOf(address(this)) >= amount, "The faucet is empty");
         require(plush.transfer(receiver, amount), "Transaction error");
+
+        emit TokensWithdrawn(msg.sender, receiver, amount);
     }
 
     /**

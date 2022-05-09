@@ -90,4 +90,17 @@ interface IPlushFaucet {
      * @return boolean
      */
     function getCanTheAddressReceiveReward(address receiver) external view returns(bool);
+
+    /// @notice Emitted when user get tokens from faucet
+    event TokensSent(
+        address indexed receiver,
+        uint256 amount
+    );
+
+    /// @notice Emitted when were the tokens withdrawn from the faucet
+    event TokensWithdrawn(
+        address indexed banker,
+        address indexed receiver,
+        uint256 amount
+    );
 }
