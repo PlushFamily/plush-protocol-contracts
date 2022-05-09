@@ -58,6 +58,19 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
     }
 
     /**
+     * @notice Check if the application exists
+     * @param controllerAddress App controller address
+     * @return boolean exists status
+     */
+    function getAppExists(address controllerAddress) public view returns (bool) {
+        if (appsList[controllerAddress].exists) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @notice Delete app from PlushApps
      * @param controllerAddress App controller address
      */

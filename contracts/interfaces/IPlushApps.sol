@@ -25,6 +25,13 @@ interface IPlushApps {
     function addNewApp(bytes32 name, address controllerAddress, uint256 fee) external;
 
     /**
+     * @notice Check if the application exists
+     * @param controllerAddress App controller address
+     * @return boolean exists status
+     */
+    function getAppExists(address controllerAddress) external view returns (bool);
+
+    /**
      * @notice Delete app from PlushApps
      * @param controllerAddress App controller address
      */

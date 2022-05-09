@@ -64,21 +64,23 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      * @param amount the amount to be deposited in tokens
      */
     function deposit(address account, uint256 amount) public {
+        require(amount >= minimumDeposit, "Less than minimum deposit");
         require(plush.balanceOf(msg.sender) >= amount, "Insufficient funds");
         require(plush.allowance(msg.sender, address(this)) >= amount, "Not enough allowance");
         require(plush.transferFrom(msg.sender, address(this), amount), "Transaction error");
 
-        increaseAccountBalance(account, amount);
+        accounts[account].balance += amount;
 
         emit Deposited(msg.sender, account, amount);
     }
 
     /**
-     * @notice Withdraw ERC-20 tokens from your account to the current address
+     * @notice Withdraw ERC-20 tokens from user account to the current wallet address
      * @param amount the amount of tokens being withdrawn
      */
     function withdraw(uint256 amount) external {
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
+        require(plushApps.getAppExists(msg.sender) == false, "The wallet is a controller");
         require(plush.transfer(msg.sender, amount), "Transaction error");
 
         accounts[msg.sender].balance -= amount;
@@ -87,34 +89,36 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
     }
 
     /**
-     * @notice Withdrawal of tokens by the controller from its account to available withdrawal addresses
+     * @notice Withdrawal of tokens by the controller from his account to available withdrawal addresses
      * @param account withdraw address
      * @param amount the amount of tokens being withdrawn
      */
     function withdrawByController(address account, uint256 amount) external {
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
-        require(plushApps.getAppStatus(msg.sender) == true, "The wallet is not a controller");
+        require(plushApps.getAppStatus(msg.sender), "The wallet is not a active controller");
         require(plush.transfer(account, amount), "Transaction error");
 
         accounts[msg.sender].balance -= amount;
+
+        emit ControllerWithdrawn(msg.sender, account, amount);
     }
 
-    function increaseAccountBalance(address account, uint256 amount) private {
-        require(amount >= minimumDeposit, "Less than minimum deposit");
+    function internalTransfer(address account, uint256 amount) external {
+        if (plushApps.getAppExists(msg.sender) == true){
+            require(plushApps.getAppStatus(msg.sender), "The wallet is not a active controller");
+        }
 
-        accounts[account].balance += amount;
-    }
-
-    function internalTransfer(address account, uint256 amount) public {
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
 
         accounts[msg.sender].balance -= amount;
         accounts[account].balance += amount;
+
+        emit Transferred(msg.sender, account, amount);
     }
 
     function decreaseAccountBalance(address account, uint256 amount) public {
         require(accounts[account].balance >= amount, "Insufficient funds");
-        require(plushApps.getAppStatus(msg.sender) == true, "The wallet is not a controller");
+        require(plushApps.getAppStatus(msg.sender), "The wallet is not a active controller");
 
         uint256 percent = amount * plushApps.getFeeApp(msg.sender) / 100000;
 

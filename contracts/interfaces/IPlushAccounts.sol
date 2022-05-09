@@ -63,4 +63,18 @@ interface IPlushAccounts {
         uint256 amount
     );
 
+    /// @notice Emitted when were the tokens withdrawn from the account to the user address
+    event ControllerWithdrawn(
+        address indexed controller,
+        address indexed account,
+        uint256 amount
+    );
+
+    /// @notice Emitted when were the tokens transferred inside PlushAccounts
+    event Transferred(
+        address indexed sender,
+        address indexed recipient,
+        uint256 amount
+    );
+
 }
