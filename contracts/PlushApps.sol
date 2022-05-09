@@ -74,7 +74,7 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
      * @param controllerAddress controller address
      * @return App fee
      */
-    function getFeeApp(address controllerAddress) public view returns(uint256) {
+    function getFeeApp(address controllerAddress) public view returns (uint256) {
         require(appsList[controllerAddress].exists, "Application doesn't exist");
 
         return appsList[controllerAddress].fee;
@@ -139,7 +139,7 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
      * @param controllerAddress app controller address
      * @return app enable status in boolean
      */
-    function getAppStatus(address controllerAddress) public view returns(bool) {
+    function getAppStatus(address controllerAddress) public view returns (bool) {
         require(appsList[controllerAddress].exists, "Application doesn't exist");
 
         return appsList[controllerAddress].active;

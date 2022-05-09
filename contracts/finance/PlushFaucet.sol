@@ -20,8 +20,8 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
     LifeSpan public lifeSpan;
     PlushAccounts public plushAccounts;
 
-    mapping(address=>uint256) private nextRequestAt;
-    mapping(address=>uint256) private alreadyReceived;
+    mapping(address => uint256) private nextRequestAt;
+    mapping(address => uint256) private alreadyReceived;
 
     uint256 public faucetDripAmount;
     uint256 public faucetTimeLimit;
@@ -76,7 +76,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         require(nextRequestAt[msg.sender] < block.timestamp, "Try again later");
         require(alreadyReceived[msg.sender] < maxReceiveAmount, "Quantity limit");
 
-        if(tokenNFTCheck){
+        if (tokenNFTCheck) {
             require(lifeSpan.balanceOf(msg.sender) > 0, "You don't have LifeSpan Token");
         }
 
@@ -153,7 +153,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      * @notice Return how many tokens a user can get in total for the entire time
      * @return number of tokens in wei
      */
-    function getMaxReceiveAmount() public view returns(uint256) {
+    function getMaxReceiveAmount() public view returns (uint256) {
         return maxReceiveAmount;
     }
 
@@ -161,7 +161,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      * @notice Return how many tokens you can get at one time
      * @return number of tokens in wei
      */
-    function getFaucetDripAmount() public view returns(uint256) {
+    function getFaucetDripAmount() public view returns (uint256) {
         return faucetDripAmount;
     }
 
@@ -169,7 +169,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      * @notice Return the faucet balance
      * @return number of tokens in wei
      */
-    function getFaucetBalance() public view returns(uint256) {
+    function getFaucetBalance() public view returns (uint256) {
         return plush.balanceOf(address(this));
     }
 
@@ -177,7 +177,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      * @notice Return the time limit between interaction with the faucet
      * @return number of seconds (timestamp)
      */
-    function getTimeLimit() public view returns(uint256) {
+    function getTimeLimit() public view returns (uint256) {
         return faucetTimeLimit;
     }
 
@@ -185,7 +185,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      * @notice Return whether the faucet checks for the presence of LifeSpan NFT
      * @return boolean
      */
-    function getIsTokenNFTCheck() public view returns(bool) {
+    function getIsTokenNFTCheck() public view returns (bool) {
         return tokenNFTCheck;
     }
 
@@ -193,8 +193,8 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      * @notice Return the time how long the user has to wait before using the faucet again
      * @return number of seconds (timestamp)
      */
-    function getUserTimeLimit(address receiver) external view returns(uint256) {
-        if(nextRequestAt[receiver] <= block.timestamp || nextRequestAt[receiver] == 0){
+    function getUserTimeLimit(address receiver) external view returns (uint256) {
+        if (nextRequestAt[receiver] <= block.timestamp || nextRequestAt[receiver] == 0) {
             return 0;
         }
 
@@ -205,12 +205,12 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      * @notice Check whether the user can use the faucet
      * @return boolean
      */
-    function getCanTheAddressReceiveReward(address receiver) external view returns(bool) {
+    function getCanTheAddressReceiveReward(address receiver) external view returns (bool) {
         require(plush.balanceOf(address(this)) >= faucetDripAmount, "The faucet is empty");
         require(nextRequestAt[receiver] < block.timestamp, "Try again later");
         require(alreadyReceived[receiver] < maxReceiveAmount, "Quantity limit");
 
-        if(tokenNFTCheck){
+        if (tokenNFTCheck) {
             require(lifeSpan.balanceOf(receiver) > 0, "Receiver don't have LifeSpan Token");
         }
 

@@ -35,7 +35,7 @@ interface IPlushApps {
      * @param controllerAddress controller address
      * @return App fee
      */
-    function getFeeApp(address controllerAddress) external view returns(uint256);
+    function getFeeApp(address controllerAddress) external view returns (uint256);
 
     /**
      * @notice Change fee app
@@ -68,7 +68,7 @@ interface IPlushApps {
      * @param controllerAddress app controller address
      * @return app enable status in boolean
      */
-    function getAppStatus(address controllerAddress) external view returns(bool);
+    function getAppStatus(address controllerAddress) external view returns (bool);
 
     /// @notice Emitted when app is added
     event AppAdded(

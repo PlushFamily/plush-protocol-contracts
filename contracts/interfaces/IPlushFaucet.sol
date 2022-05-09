@@ -53,43 +53,43 @@ interface IPlushFaucet {
      * @notice Return how many tokens a user can get in total for the entire time
      * @return number of tokens in wei
      */
-    function getMaxReceiveAmount() external view returns(uint256);
+    function getMaxReceiveAmount() external view returns (uint256);
 
     /**
      * @notice Return how many tokens you can get at one time
      * @return number of tokens in wei
      */
-    function getFaucetDripAmount() external view returns(uint256);
+    function getFaucetDripAmount() external view returns (uint256);
 
     /**
      * @notice Return the faucet balance
      * @return number of tokens in wei
      */
-    function getFaucetBalance() external view returns(uint256);
+    function getFaucetBalance() external view returns (uint256);
 
     /**
      * @notice Return the time limit between interaction with the faucet
      * @return number of seconds (timestamp)
      */
-    function getTimeLimit() external view returns(uint256);
+    function getTimeLimit() external view returns (uint256);
 
     /**
      * @notice Return whether the faucet checks for the presence of LifeSpan NFT
      * @return boolean
      */
-    function getIsTokenNFTCheck() external view returns(bool);
+    function getIsTokenNFTCheck() external view returns (bool);
 
     /**
      * @notice Return the time how long the user has to wait before using the faucet again
      * @return number of seconds (timestamp)
      */
-    function getUserTimeLimit(address receiver) external view returns(uint256);
+    function getUserTimeLimit(address receiver) external view returns (uint256);
 
     /**
      * @notice Check whether the user can use the faucet
      * @return boolean
      */
-    function getCanTheAddressReceiveReward(address receiver) external view returns(bool);
+    function getCanTheAddressReceiveReward(address receiver) external view returns (bool);
 
     /// @notice Emitted when user get tokens from faucet
     event TokensSent(

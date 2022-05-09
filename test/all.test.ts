@@ -3,15 +3,15 @@ import { BigNumber, constants, ContractFactory, Signer } from 'ethers';
 import { ethers, upgrades, waffle } from 'hardhat';
 
 import {
-  Plush,
-  PlushApps,
-  PlushAccounts,
-  PlushController,
   LifeSpan,
+  Plush,
+  PlushAccounts,
+  PlushApps,
+  PlushController,
   PlushFaucet,
   PlushGetLifeSpan,
-  WrappedPlush,
   PlushLifeSpanNFTCashbackPool,
+  WrappedPlush,
 } from '../types';
 
 const BANKER_ROLE = ethers.utils.keccak256(
