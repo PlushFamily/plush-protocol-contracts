@@ -103,6 +103,11 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         emit ControllerWithdrawn(msg.sender, account, amount);
     }
 
+    /**
+     * @notice Transfer of tokens between accounts inside PlushAccounts
+     * @param account receiver address
+     * @param amount transfer amount
+     */
     function internalTransfer(address account, uint256 amount) external {
         if (plushApps.getAppExists(msg.sender) == true){
             require(plushApps.getAppStatus(msg.sender), "The wallet is not a active controller");
@@ -116,37 +121,70 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         emit Transferred(msg.sender, account, amount);
     }
 
+    /**
+     * @notice Debiting user tokens by the controller
+     * @param account user account
+     * @param amount amount of tokens debited
+     */
     function decreaseAccountBalance(address account, uint256 amount) public {
         require(accounts[account].balance >= amount, "Insufficient funds");
         require(plushApps.getAppStatus(msg.sender), "The wallet is not a active controller");
 
-        uint256 percent = amount * plushApps.getFeeApp(msg.sender) / 100000;
+        uint256 percent = amount * plushApps.getFeeApp(msg.sender) / 100000; // Plush fee
 
         accounts[account].balance -= amount;
         accounts[msg.sender].balance += amount - percent;
         accounts[plushFeeAddress].balance += percent;
+
+        emit Debited(msg.sender, account, amount);
     }
 
+    /**
+     * @notice Return Plush Fee account balance
+     * @return account balance in wei
+     */
     function getPlushFeeAccountBalance() public view returns (uint256) {
         return accounts[plushFeeAddress].balance;
     }
 
+    /**
+     * @notice Check account balance
+     * @param account requesting account
+     * @return account balance in wei
+     */
     function getAccountBalance(address account) external view returns (uint256) {
         return accounts[account].balance;
     }
 
+    /**
+     * @notice Set minimum account deposit amount
+     * @param amount minimum deposit amount in wei
+     */
     function setMinimumDeposit(uint256 amount) external onlyRole(OPERATOR_ROLE) {
         minimumDeposit = amount;
     }
 
+    /**
+     * @notice Get minimum account deposit amount
+     * @return minimum deposit amount in wei
+     */
     function getMinimumDeposit() external view returns (uint256) {
         return minimumDeposit;
     }
 
+    /**
+     * @notice Set Plush fee address
+     * @param amount fee amount in wei
+     * @return address
+     */
     function setPlushFeeAddress(address account) public {
         plushFeeAddress = account;
     }
 
+    /**
+     * @notice Get Plush fee address
+     * @return address
+     */
     function getPlushFeeAddress() public view returns (address) {
         return plushFeeAddress;
     }
