@@ -811,7 +811,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     ).to.eql(ethers.utils.parseUnits('1', 18));
   });
 
-  it('PlushAccounts -> Check transfer tokens in safe', async () => {
+  it('PlushAccounts -> Check transfer tokens inside safe', async () => {
     const transferTokens = await plushAccounts.internalTransfer(
       await signers[1].getAddress(),
       ethers.utils.parseUnits('1', 18),

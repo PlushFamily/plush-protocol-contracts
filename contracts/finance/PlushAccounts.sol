@@ -69,18 +69,31 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         require(plush.transferFrom(msg.sender, address(this), amount), "Transaction error");
 
         increaseWalletAmount(account, amount);
+
+        emit Deposited(msg.sender, account, amount);
     }
 
+    /**
+     * @notice Withdraw ERC-20 tokens from your account to the current address
+     * @param amount the amount of tokens being withdrawn
+     */
     function withdraw(uint256 amount) external {
         require(walletInfo[msg.sender].balance >= amount, "Not enough balance");
-        require(plush.transfer(msg.sender, amount), "Transaction error.");
+        require(plush.transfer(msg.sender, amount), "Transaction error");
 
         walletInfo[msg.sender].balance -= amount;
+
+        emit Withdrawn(msg.sender, amount);
     }
 
+    /**
+     * @notice Withdraw ERC-20 tokens from your account to the current address
+     * @param account output address
+     * @param amount the amount of tokens being withdrawn
+     */
     function withdrawByController(address account, uint256 amount) external {
-        require(walletInfo[msg.sender].balance >= amount, "Not enough balance.");
-        require(plush.transfer(account, amount), "Transaction error.");
+        require(walletInfo[msg.sender].balance >= amount, "Not enough balance");
+        require(plush.transfer(account, amount), "Transaction error");
 
         walletInfo[msg.sender].balance -= amount;
     }
@@ -109,7 +122,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         walletInfo[plushFeeWallet].balance += percent;
     }
 
-    function getPlushFeeWalletAmount() external onlyRole(OPERATOR_ROLE) view returns (uint256) {
+    function getPlushFeeWalletAmount() external view onlyRole(OPERATOR_ROLE) returns (uint256) {
         return walletInfo[plushFeeWallet].balance;
     }
 
@@ -129,7 +142,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         plushFeeWallet = account;
     }
 
-    function getPlushFeeAddress() external onlyRole(OPERATOR_ROLE) view returns (address) {
+    function getPlushFeeAddress() external view onlyRole(OPERATOR_ROLE) returns (address) {
         return plushFeeWallet;
     }
 

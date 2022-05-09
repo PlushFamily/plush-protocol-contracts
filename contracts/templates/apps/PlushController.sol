@@ -9,8 +9,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 import "../../interfaces/IPlushController.sol";
-
-import "../../finance/PlushAccounts.sol";
+import "../../interfaces/IPlushAccounts.sol";
 
 contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushController {
 
@@ -19,7 +18,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
-    PlushAccounts public plushAccounts;
+    IPlushAccounts public plushAccounts;
 
     mapping (address => uint) public indexWithdrawal;
     address[] public withdrawalAddresses;
@@ -37,7 +36,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(IERC20Upgradeable plushAddress, PlushAccounts plushAccountsAddress) initializer public {
+    function initialize(IERC20Upgradeable plushAddress, IPlushAccounts plushAccountsAddress) initializer public {
         plush = plushAddress;
         plushAccounts = plushAccountsAddress;
 
