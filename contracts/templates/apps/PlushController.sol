@@ -20,10 +20,10 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
     IERC20Upgradeable public plush;
     IPlushAccounts public plushAccounts;
 
-    mapping (address => uint) public indexWithdrawal;
+    mapping(address => uint) public indexWithdrawal;
     address[] public withdrawalAddresses;
 
-    mapping (address => uint) public indexApps;
+    mapping(address => uint) public indexApps;
     address[] public appAddresses;
 
     /**

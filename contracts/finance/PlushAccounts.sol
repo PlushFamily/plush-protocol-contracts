@@ -174,10 +174,9 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
 
     /**
      * @notice Set Plush fee address
-     * @param amount fee amount in wei
-     * @return address
+     * @param account fee address
      */
-    function setPlushFeeAddress(address account) public {
+    function setPlushFeeAddress(address account) external onlyRole(OPERATOR_ROLE) {
         plushFeeAddress = account;
     }
 
