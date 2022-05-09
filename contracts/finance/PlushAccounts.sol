@@ -64,7 +64,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      * @param amount the amount to be deposited in tokens
      */
     function deposit(address account, uint256 amount) public {
-        require(plush.balanceOf(msg.sender) >= amount, "Not enough balance");
+        require(plush.balanceOf(msg.sender) >= amount, "Insufficient funds");
         require(plush.allowance(msg.sender, address(this)) >= amount, "Not enough allowance");
         require(plush.transferFrom(msg.sender, address(this), amount), "Transaction error");
 
@@ -78,7 +78,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      * @param amount the amount of tokens being withdrawn
      */
     function withdraw(uint256 amount) external {
-        require(accounts[msg.sender].balance >= amount, "Not enough balance");
+        require(accounts[msg.sender].balance >= amount, "Insufficient funds");
         require(plush.transfer(msg.sender, amount), "Transaction error");
 
         accounts[msg.sender].balance -= amount;
@@ -87,12 +87,13 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
     }
 
     /**
-     * @notice Withdraw ERC-20 tokens from your account to the current address
-     * @param account output address
+     * @notice Withdrawal of tokens by the controller from its account to available withdrawal addresses
+     * @param account withdraw address
      * @param amount the amount of tokens being withdrawn
      */
     function withdrawByController(address account, uint256 amount) external {
-        require(accounts[msg.sender].balance >= amount, "Not enough balance");
+        require(accounts[msg.sender].balance >= amount, "Insufficient funds");
+        require(plushApps.getAppStatus(msg.sender) == true, "The wallet is not a controller");
         require(plush.transfer(account, amount), "Transaction error");
 
         accounts[msg.sender].balance -= amount;
@@ -105,15 +106,15 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
     }
 
     function internalTransfer(address account, uint256 amount) public {
-        require(accounts[msg.sender].balance >= amount, "Not enough balance(Sender).");
+        require(accounts[msg.sender].balance >= amount, "Insufficient funds");
 
         accounts[msg.sender].balance -= amount;
         accounts[account].balance += amount;
     }
 
     function decreaseAccountBalance(address account, uint256 amount) public {
-        require(accounts[account].balance >= amount, "Not enough balance.");
-        require(plushApps.getAppStatus(msg.sender) == true, "You have no rights.");
+        require(accounts[account].balance >= amount, "Insufficient funds");
+        require(plushApps.getAppStatus(msg.sender) == true, "The wallet is not a controller");
 
         uint256 percent = amount * plushApps.getFeeApp(msg.sender) / 100000;
 
@@ -138,7 +139,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         return minimumDeposit;
     }
 
-    function setPlushFeeAddress(address account) public{
+    function setPlushFeeAddress(address account) public {
         plushFeeAddress = account;
     }
 
