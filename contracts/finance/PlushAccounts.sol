@@ -18,7 +18,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
     IPlushApps public plushApps;
 
     uint256 public minimumDeposit;
-    address private plushFeeWallet;
+    address public plushFeeAddress;
 
     mapping(address => Wallet) public walletInfo;
 
@@ -36,7 +36,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         plushApps = _plushApps;
         plush = _plush;
         minimumDeposit = 1 * 10 ** 18;
-        plushFeeWallet = _plushFeeAddress;
+        plushFeeAddress = _plushFeeAddress;
 
         __Pausable_init();
         __AccessControl_init();
@@ -119,11 +119,11 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
 
         walletInfo[account].balance -= amount;
         walletInfo[msg.sender].balance += amount - percent;
-        walletInfo[plushFeeWallet].balance += percent;
+        walletInfo[plushFeeAddress].balance += percent;
     }
 
-    function getPlushFeeWalletAmount() external view onlyRole(OPERATOR_ROLE) returns (uint256) {
-        return walletInfo[plushFeeWallet].balance;
+    function getPlushFeeWalletAmount() public view returns (uint256) {
+        return walletInfo[plushFeeAddress].balance;
     }
 
     function getWalletAmount(address account) external view returns (uint256) {
@@ -138,12 +138,12 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         return minimumDeposit;
     }
 
-    function setPlushFeeAddress(address account) external onlyRole(OPERATOR_ROLE) {
-        plushFeeWallet = account;
+    function setPlushFeeAddress(address account) public{
+        plushFeeAddress = account;
     }
 
-    function getPlushFeeAddress() external view onlyRole(OPERATOR_ROLE) returns (address) {
-        return plushFeeWallet;
+    function getPlushFeeAddress() public view returns (address) {
+        return plushFeeAddress;
     }
 
     function _authorizeUpgrade(address newImplementation)
