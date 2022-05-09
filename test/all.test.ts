@@ -668,9 +668,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushFaucet -> Checking initial values', async () => {
-    expect(await plushFaucet.getDistributionTime()).to.eql(
-      BigNumber.from('86400'),
-    ); // 24 hours
+    expect(await plushFaucet.getTimeLimit()).to.eql(BigNumber.from('86400')); // 24 hours
 
     expect(await plushFaucet.getFaucetDripAmount()).to.eql(
       ethers.utils.parseUnits('1', 18),
@@ -746,8 +744,8 @@ describe('Launching the testing of the Plush Protocol', () => {
 
   it('PlushFaucet -> Withdraw tokens from faucet', async () => {
     const withdrawTokens = await plushFaucet.withdraw(
-      plushFaucetRandomReceiverAddress.address,
       ethers.utils.parseUnits('1', 18),
+      plushFaucetRandomReceiverAddress.address,
     );
     await withdrawTokens.wait();
 

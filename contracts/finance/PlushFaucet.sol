@@ -123,42 +123,73 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         faucetTimeLimit = time;
     }
 
+    /// @notice Enable the LifeSpan NFT check for using the faucet
     function setEnableNFTCheck() external onlyRole(OPERATOR_ROLE) {
         require(tokenNFTCheck == false, "NFT verification is already enabled");
         tokenNFTCheck = true;
     }
 
+    /// @notice Disable the LifeSpan NFT check for using the faucet
     function setDisableNFTCheck() external onlyRole(OPERATOR_ROLE) {
         require(tokenNFTCheck == true, "NFT verification is already disabled");
         tokenNFTCheck = false;
     }
 
-    function withdraw(address receiver, uint256 amount) external onlyRole(BANKER_ROLE) {
+    /**
+     * @notice Withdraw the required number of tokens from the faucet
+     * @param amount required token amount (ERC-20)
+     * @param receiver address of the tokens recipient
+     */
+    function withdraw(uint256 amount, address receiver) external onlyRole(BANKER_ROLE) {
         require(plush.balanceOf(address(this)) >= amount, "The faucet is empty");
         require(plush.transfer(receiver, amount), "Transaction error");
     }
 
-    function getMaxReceiveAmount() external view returns(uint256) {
+    /**
+     * @notice Return how many tokens a user can get in total for the entire time
+     * @return number of tokens in wei
+     */
+    function getMaxReceiveAmount() public view returns(uint256) {
         return maxReceiveAmount;
     }
 
-    function getFaucetDripAmount() external view returns(uint256) {
+    /**
+     * @notice Return how many tokens you can get at one time
+     * @return number of tokens in wei
+     */
+    function getFaucetDripAmount() public view returns(uint256) {
         return faucetDripAmount;
     }
 
-    function getFaucetBalance() external view returns(uint256) {
+    /**
+     * @notice Return the faucet balance
+     * @return number of tokens in wei
+     */
+    function getFaucetBalance() public view returns(uint256) {
         return plush.balanceOf(address(this));
     }
 
-    function getDistributionTime() external view returns(uint256) {
+    /**
+     * @notice Return the time limit between interaction with the faucet
+     * @return number of seconds (timestamp)
+     */
+    function getTimeLimit() public view returns(uint256) {
         return faucetTimeLimit;
     }
 
-    function getIsTokenNFTCheck() external view returns(bool) {
+    /**
+     * @notice Return whether the faucet checks for the presence of LifeSpan NFT
+     * @return boolean
+     */
+    function getIsTokenNFTCheck() public view returns(bool) {
         return tokenNFTCheck;
     }
 
-    function getDistributionOfAddress(address receiver) external view returns(uint256) {
+    /**
+     * @notice Return the time how long the user has to wait before using the faucet again
+     * @return number of seconds (timestamp)
+     */
+    function getUserTimeLimit(address receiver) external view returns(uint256) {
         if(nextRequestAt[receiver] <= block.timestamp || nextRequestAt[receiver] == 0){
             return 0;
         }
@@ -166,6 +197,10 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         return nextRequestAt[receiver] - block.timestamp;
     }
 
+    /**
+     * @notice Check whether the user can use the faucet
+     * @return boolean
+     */
     function getCanTheAddressReceiveReward(address receiver) external view returns(bool) {
         require(plush.balanceOf(address(this)) >= faucetDripAmount, "The faucet is empty");
         require(nextRequestAt[receiver] < block.timestamp, "Try again later");
