@@ -27,10 +27,10 @@ interface IPlushGetLifeSpan {
     function getMintPrice() external view returns (uint256);
 
     /**
-     * @notice Set new royalty address
-     * @param _address new royalty address
+     * @notice Set new fee address
+     * @param _address new fee address
      */
-    function setRoyaltyAddress(address _address) external;
+    function setFeeAddress(address _address) external;
 
     /**
      * @notice Set new LifeSpan contract address
@@ -39,10 +39,10 @@ interface IPlushGetLifeSpan {
     function setLifeSpanAddress(address _address) external;
 
     /**
-     * @notice Get current royalty address
-     * @return royalty address
+     * @notice Get current fee address
+     * @return fee address
      */
-    function getRoyaltyAddress() external view returns (address payable);
+    function getFeeAddress() external view returns (address payable);
 
     /**
      * @notice Get current LifeSpan address
@@ -63,7 +63,7 @@ interface IPlushGetLifeSpan {
     function freeMint(address mintAddress) external;
 
     /**
-     * @notice Withdraw mint royalty on royaltyAddress
+     * @notice Withdraw mint fee on feeAddress
      * @param amount withdraw amount
      */
     function withdraw(uint256 amount) external;
@@ -86,9 +86,9 @@ interface IPlushGetLifeSpan {
         uint256 newPrice
     );
 
-    /// @notice Emitted when royalty address has been changed
-    event RoyaltyAddressChanged(
-        address indexed royaltyAddress
+    /// @notice Emitted when feee address has been changed
+    event FeeAddressChanged(
+        address indexed feeAddress
     );
 
     /// @notice Emitted when LifeSpan contract address has been changed
@@ -96,10 +96,10 @@ interface IPlushGetLifeSpan {
         address indexed lifeSpanAddress
     );
 
-    /// @notice Emitted when was the royalty withdrawn
-    event RoyaltyWithdrawn(
+    /// @notice Emitted when was the fee withdrawn
+    event FeeWithdrawn(
         uint256 amount,
-        address indexed royaltyAddress
+        address indexed feeAddress
     );
 
 }

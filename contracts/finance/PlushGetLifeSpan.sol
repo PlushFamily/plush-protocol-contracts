@@ -16,7 +16,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     LifeSpan public lifeSpan;
     PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
 
-    address payable private royaltyAddress;  // Address for royalty transfer
+    address payable private feeAddress;  // Address for fee transfer
 
     uint256 public mintPrice;
     bool public denyMultipleMinting;
@@ -33,10 +33,10 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(LifeSpan _lifeSpan, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool, address payable _royaltyAddress) initializer public {
+    function initialize(LifeSpan _lifeSpan, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool, address payable _feeAddress) initializer public {
         plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         lifeSpan = _lifeSpan;
-        royaltyAddress = _royaltyAddress;
+        feeAddress = _feeAddress;
 
         mintPrice = 0.001 ether;
         denyMultipleMinting = true;
@@ -96,13 +96,13 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     }
 
     /**
-     * @notice Set new royalty address
-     * @param _address new royalty address
+     * @notice Set new fee address
+     * @param _address new fee address
      */
-    function setRoyaltyAddress(address _address) external onlyRole(BANKER_ROLE) {
-        royaltyAddress = payable(_address);
+    function setFeeAddress(address _address) external onlyRole(BANKER_ROLE) {
+        feeAddress = payable(_address);
 
-        emit RoyaltyAddressChanged(_address);
+        emit FeeAddressChanged(_address);
     }
 
     /**
@@ -116,11 +116,11 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     }
 
     /**
-     * @notice Get current royalty address
-     * @return royalty address
+     * @notice Get current fee address
+     * @return fee address
      */
-    function getRoyaltyAddress() public view returns (address payable) {
-        return royaltyAddress;
+    function getFeeAddress() public view returns (address payable) {
+        return feeAddress;
     }
 
     /**
@@ -163,15 +163,15 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
     }
 
     /**
-     * @notice Withdraw mint royalty on royaltyAddress
+     * @notice Withdraw mint fee on feeAddress
      * @param amount withdraw amount
      */
     function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
         require(amount <= address(this).balance, "The withdrawal amount exceeds the contract balance");
-        (bool success,) = royaltyAddress.call{value : amount}("");
+        (bool success,) = feeAddress.call{value : amount}("");
         require(success, "Withdrawal Error");
 
-        emit RoyaltyWithdrawn(amount, royaltyAddress);
+        emit FeeWithdrawn(amount, feeAddress);
     }
 
     function _authorizeUpgrade(address newImplementation)
