@@ -105,11 +105,11 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         return plushAccounts.getWalletAmount(address(this));
     }
 
-    function withdraw(uint256 _amount) external {
+    function withdraw(uint256 amount) external {
         require(indexWithdrawal[msg.sender] > 0, "Withdrawal is not available.");
-        require(getAvailableBalanceForWithdrawal() >= _amount, "Not enough balance.");
+        require(getAvailableBalanceForWithdrawal() >= amount, "Not enough balance.");
 
-        plushAccounts.withdrawByController(_amount, msg.sender);
+        plushAccounts.withdrawByController(msg.sender, amount);
     }
 
     function getWithdrawalAddresses() public view returns (address[] memory) {

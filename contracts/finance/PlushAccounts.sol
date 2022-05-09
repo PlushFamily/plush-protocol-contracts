@@ -8,33 +8,31 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-import "../PlushApps.sol";
+import "../interfaces/IPlushAccounts.sol";
+import "../interfaces/IPlushApps.sol";
 
-contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushAccounts {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
-
     IERC20Upgradeable public plush;
-    PlushApps public plushApps;
+    IPlushApps public plushApps;
 
     uint256 public minimumDeposit;
     address private plushFeeWallet;
 
-    struct Wallet
-    {
-        uint256 balance;
-    }
-
     mapping(address => Wallet) public walletInfo;
+
+    /**
+     * @dev Roles definitions
+     */
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(IERC20Upgradeable _plush, PlushApps _plushApps, address _plushFeeAddress) initializer public
-    {
+    function initialize(IERC20Upgradeable _plush, IPlushApps _plushApps, address _plushFeeAddress) initializer public {
         plushApps = _plushApps;
         plush = _plush;
         minimumDeposit = 1 * 10 ** 18;
@@ -50,95 +48,88 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE)
-    {
+    /// @notice Pause contract
+    function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE)
-    {
+    /// @notice Unpause contract
+    function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
-    function deposit(address _wallet, uint256 _amount) public
-    {
-        require(plush.balanceOf(msg.sender) >= _amount, "Not enough balance.");
-        require(plush.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance.");
-        require(plush.transferFrom(msg.sender, address(this), _amount), "Transaction error.");
+    /**
+     * @notice Deposit tokens to the account
+     * @param account wallet address
+     * @param amount the amount to be deposited in tokens
+     */
+    function deposit(address account, uint256 amount) public {
+        require(plush.balanceOf(msg.sender) >= amount, "Not enough balance");
+        require(plush.allowance(msg.sender, address(this)) >= amount, "Not enough allowance");
+        require(plush.transferFrom(msg.sender, address(this), amount), "Transaction error");
 
-        increaseWalletAmount(_wallet, _amount);
+        increaseWalletAmount(account, amount);
     }
 
-    function withdraw(uint256 _amount) external
-    {
-        require(walletInfo[msg.sender].balance >= _amount, "Not enough balance.");
-        require(plush.transfer(msg.sender, _amount), "Transaction error.");
+    function withdraw(uint256 amount) external {
+        require(walletInfo[msg.sender].balance >= amount, "Not enough balance");
+        require(plush.transfer(msg.sender, amount), "Transaction error.");
 
-        walletInfo[msg.sender].balance -= _amount;
+        walletInfo[msg.sender].balance -= amount;
     }
 
-    function withdrawByController(uint256 _amount, address _address) external
-    {
-        require(walletInfo[msg.sender].balance >= _amount, "Not enough balance.");
-        require(plush.transfer(_address, _amount), "Transaction error.");
+    function withdrawByController(address account, uint256 amount) external {
+        require(walletInfo[msg.sender].balance >= amount, "Not enough balance.");
+        require(plush.transfer(account, amount), "Transaction error.");
 
-        walletInfo[msg.sender].balance -= _amount;
+        walletInfo[msg.sender].balance -= amount;
     }
 
-    function increaseWalletAmount(address _wallet, uint256 _amount) private
-    {
-        require(_amount >= minimumDeposit, "Less than minimum deposit.");
+    function increaseWalletAmount(address account, uint256 amount) private {
+        require(amount >= minimumDeposit, "Less than minimum deposit");
 
-        walletInfo[_wallet].balance += _amount;
+        walletInfo[account].balance += amount;
     }
 
-    function internalTransfer(address _wallet, uint256 _amount) public
-    {
-        require(walletInfo[msg.sender].balance >= _amount, "Not enough balance(Sender).");
+    function internalTransfer(address account, uint256 amount) public {
+        require(walletInfo[msg.sender].balance >= amount, "Not enough balance(Sender).");
 
-        walletInfo[msg.sender].balance -= _amount;
-        walletInfo[_wallet].balance += _amount;
+        walletInfo[msg.sender].balance -= amount;
+        walletInfo[account].balance += amount;
     }
 
-    function decreaseWalletAmount(address _wallet, uint256 _amount) public
-    {
-        require(walletInfo[_wallet].balance >= _amount, "Not enough balance.");
+    function decreaseWalletAmount(address account, uint256 amount) public {
+        require(walletInfo[account].balance >= amount, "Not enough balance.");
         require(plushApps.getAppStatus(msg.sender) == true, "You have no rights.");
 
-        uint256 percent = _amount * plushApps.getFeeApp(msg.sender) / 100000;
+        uint256 percent = amount * plushApps.getFeeApp(msg.sender) / 100000;
 
-        walletInfo[_wallet].balance -= _amount;
-        walletInfo[msg.sender].balance += _amount - percent;
+        walletInfo[account].balance -= amount;
+        walletInfo[msg.sender].balance += amount - percent;
         walletInfo[plushFeeWallet].balance += percent;
     }
 
-    function getPlushFeeWalletAmount() external onlyRole(OPERATOR_ROLE) view returns(uint256)
-    {
+    function getPlushFeeWalletAmount() external onlyRole(OPERATOR_ROLE) view returns (uint256) {
         return walletInfo[plushFeeWallet].balance;
     }
 
-    function getWalletAmount(address _wallet) external view returns(uint256)
-    {
-        return walletInfo[_wallet].balance;
+    function getWalletAmount(address account) external view returns (uint256) {
+        return walletInfo[account].balance;
     }
 
-    function setMinimumDeposit(uint256 _amount) external onlyRole(OPERATOR_ROLE)
-    {
-        minimumDeposit = _amount;
+    function setMinimumDeposit(uint256 amount) external onlyRole(OPERATOR_ROLE) {
+        minimumDeposit = amount;
     }
 
-    function getMinimumDeposit() external view returns(uint256)
-    {
+    function getMinimumDeposit() external view returns (uint256) {
         return minimumDeposit;
     }
 
-    function setPlushFeeAddress(address _address) external onlyRole(OPERATOR_ROLE)
-    {
-        plushFeeWallet = _address;
+    function setPlushFeeAddress(address account) external onlyRole(OPERATOR_ROLE) {
+        plushFeeWallet = account;
     }
 
-    function getPlushFeeAddress() external onlyRole(OPERATOR_ROLE) view returns(address)
-    {
+    function getPlushFeeAddress() external onlyRole(OPERATOR_ROLE) view returns (address) {
         return plushFeeWallet;
     }
 
