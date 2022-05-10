@@ -53,4 +53,36 @@ interface IPlushController {
      */
     function increaseAccountBalance(address account, uint256 amount) external;
 
+    /// @notice Emitted when was the new app added
+    event AppAdded(
+        address indexed appAddress,
+        address indexed operator
+    );
+
+    /// @notice Emitted when the app was deleted
+    event AppDeleted(
+        address indexed appAddress,
+        address indexed operator
+    );
+
+    /// @notice Emitted when were the funds withdrawn from the controller account
+    event Withdrawn(
+        address indexed recipient,
+        uint256 amount
+    );
+
+    /// @notice Emitted when were the funds debited from the user's account
+    event BalanceDecreased(
+        address indexed app,
+        address indexed account,
+        uint256 amount
+    );
+
+    /// @notice Emitted when were the funds transferred to the user's account
+    event BalanceIncreased(
+        address indexed app,
+        address indexed account,
+        uint256 amount
+    );
+
 }

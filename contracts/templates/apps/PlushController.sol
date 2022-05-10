@@ -71,6 +71,8 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         appAddresses.push(appAddress);
 
         _grantRole(APP_ROLE, appAddress);
+
+        emit AppAdded(appAddress, msg.sender);
     }
 
     /**
@@ -84,6 +86,8 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         delete indexApps[appAddress];
 
         _revokeRole(APP_ROLE, appAddress);
+
+        emit AppDeleted(appAddress, msg.sender);
     }
 
     /**
@@ -102,6 +106,8 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         require(getBalance() >= amount, "Insufficient funds");
 
         plushAccounts.withdrawByController(msg.sender, amount);
+
+        emit Withdrawn(msg.sender, amount);
     }
 
     /**
@@ -119,6 +125,8 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
      */
     function decreaseAccountBalance(address account, uint256 amount) external onlyRole(APP_ROLE) {
         plushAccounts.decreaseAccountBalance(account, amount);
+
+        emit BalanceDecreased(msg.sender, account, amount);
     }
 
     /**
@@ -128,6 +136,8 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
      */
     function increaseAccountBalance(address account, uint256 amount) external onlyRole(APP_ROLE) {
         plushAccounts.internalTransfer(account, amount);
+
+        emit BalanceIncreased(msg.sender, account, amount);
     }
 
     function _authorizeUpgrade(address newImplementation)
