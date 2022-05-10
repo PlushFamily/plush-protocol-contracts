@@ -64,6 +64,10 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      * @param amount the amount to be deposited in tokens
      */
     function deposit(address account, uint256 amount) public {
+        if (plushApps.getAppExists(account) == true){
+            require(plushApps.getAppStatus(account), "The wallet is not a active controller");
+        }
+
         require(amount >= minimumDeposit, "Less than minimum deposit");
         require(plush.balanceOf(msg.sender) >= amount, "Insufficient funds");
         require(plush.allowance(msg.sender, address(this)) >= amount, "Not enough allowance");
