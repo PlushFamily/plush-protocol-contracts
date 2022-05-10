@@ -27,6 +27,7 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
      * @dev Roles definitions
      */
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant APP_ROLE = keccak256("APP_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant BANKER_ROLE = keccak256("BANKER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
@@ -59,39 +60,73 @@ contract PlushController is Initializable, PausableUpgradeable, AccessControlUpg
         _unpause();
     }
 
+    /**
+     * @notice Adding a new application address
+     * @param appAddress contract address
+     */
     function addNewAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
         require(indexApps[appAddress] > 0 == false, "Application doesn't exist");
 
         indexApps[appAddress] = appAddresses.length + 1;
         appAddresses.push(appAddress);
+
+        _grantRole(APP_ROLE, appAddress);
     }
 
+    /**
+     * @notice Removing an application from the controller's application database
+     * @param appAddress contract address
+     */
     function deleteAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
         require(indexApps[appAddress] > 0, "Application doesn't exist");
 
         delete appAddresses[indexApps[appAddress] - 1];
         delete indexApps[appAddress];
+
+        _revokeRole(APP_ROLE, appAddress);
     }
 
+    /**
+     * @notice Getting the balance of the controller (related to all its applications)
+     * @return ERC-20 token balance in wei
+     */
     function getBalance() public view returns (uint256) {
         return plushAccounts.getAccountBalance(address(this));
     }
 
+    /**
+     * @notice Withdrawal of tokens from the controller's balance
+     * @param amount number of tokens to be withdrawn in wei
+     */
     function withdraw(uint256 amount) external onlyRole(BANKER_ROLE)  {
         require(getBalance() >= amount, "Insufficient funds");
 
         plushAccounts.withdrawByController(msg.sender, amount);
     }
 
+    /**
+     * @notice Get a list of all current application addresses
+     * @return list of all application addresses
+     */
     function getAppAddresses() public view returns (address[] memory) {
         return appAddresses;
     }
 
-    function decreaseAccountBalance(address account, uint256 amount) external {
+    /**
+     * @notice Debiting user tokens by the controller
+     * @param account user account
+     * @param amount amount of tokens debited
+     */
+    function decreaseAccountBalance(address account, uint256 amount) external onlyRole(APP_ROLE) {
         plushAccounts.decreaseAccountBalance(account, amount);
     }
 
-    function increaseAccountBalance(address account, uint256 amount) external {
+    /**
+     * @notice Transfer tokens to the user account from the controller's balance
+     * @param account receiver address
+     * @param amount transfer amount
+     */
+    function increaseAccountBalance(address account, uint256 amount) external onlyRole(APP_ROLE) {
         plushAccounts.internalTransfer(account, amount);
     }
 
