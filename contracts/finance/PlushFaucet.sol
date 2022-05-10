@@ -77,7 +77,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         require(alreadyReceived[msg.sender] < maxReceiveAmount, "Quantity limit");
 
         if (tokenNFTCheck) {
-            require(lifeSpan.balanceOf(msg.sender) > 0, "You don't have LifeSpan Token");
+            require(lifeSpan.balanceOf(msg.sender) > 0, "Required to have LifeSpan NFT");
         }
 
         // Next request from the address can be made only after faucetTime
@@ -86,7 +86,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
 
         plush.approve(address(plushAccounts), faucetDripAmount);
 
-        require(plush.allowance(address(this), address(plushAccounts)) >= faucetDripAmount);
+        require(plush.allowance(address(this), address(plushAccounts)) >= faucetDripAmount, "Not enough allowance");
 
         plushAccounts.deposit(msg.sender, faucetDripAmount);
 
@@ -127,13 +127,13 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
 
     /// @notice Enable the LifeSpan NFT check for using the faucet
     function setEnableNFTCheck() external onlyRole(OPERATOR_ROLE) {
-        require(tokenNFTCheck == false, "NFT verification is already enabled");
+        require(tokenNFTCheck == false, "Already active");
         tokenNFTCheck = true;
     }
 
     /// @notice Disable the LifeSpan NFT check for using the faucet
     function setDisableNFTCheck() external onlyRole(OPERATOR_ROLE) {
-        require(tokenNFTCheck == true, "NFT verification is already disabled");
+        require(tokenNFTCheck == true, "Already disabled");
         tokenNFTCheck = false;
     }
 
@@ -211,7 +211,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         require(alreadyReceived[receiver] < maxReceiveAmount, "Quantity limit");
 
         if (tokenNFTCheck) {
-            require(lifeSpan.balanceOf(receiver) > 0, "Receiver don't have LifeSpan Token");
+            require(lifeSpan.balanceOf(receiver) > 0, "Required to have LifeSpan NFT");
         }
 
         return true;

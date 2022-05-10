@@ -65,14 +65,14 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
 
     /// @notice Prohibit a user from minting multiple tokens
     function setDenyMultipleMinting() external onlyRole(OPERATOR_ROLE) {
-        require(denyMultipleMinting == false, "Multiple minting is already prohibited");
+        require(denyMultipleMinting == false, "Already prohibited");
 
         denyMultipleMinting = true;
     }
 
     /// @notice Allow a user to mint multiple tokens
     function setAllowMultipleMinting() external onlyRole(OPERATOR_ROLE) {
-        require(denyMultipleMinting == true, "Multiple minting is already allowed");
+        require(denyMultipleMinting == true, "Already allowed");
 
         denyMultipleMinting = false;
     }
@@ -139,7 +139,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
         require(msg.value == mintPrice, "Incorrect amount");
 
         if (denyMultipleMinting) {
-            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "The specified address already has a LifeSpan token");
+            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "Already has a LifeSpan token");
         }
 
         lifeSpan.safeMint(mintAddress);
@@ -154,7 +154,7 @@ contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUp
      */
     function freeMint(address mintAddress) public onlyRole(STAFF_ROLE) {
         if (denyMultipleMinting) {
-            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "The specified address already has a LifeSpan token");
+            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "Already has a LifeSpan token");
         }
 
         lifeSpan.safeMint(mintAddress);

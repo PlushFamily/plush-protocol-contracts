@@ -65,7 +65,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      */
     function deposit(address account, uint256 amount) public {
         if (plushApps.getAppExists(account) == true){
-            require(plushApps.getAppStatus(account), "The wallet is not a active controller");
+            require(plushApps.getAppStatus(account), "The controller isn't active");
         }
 
         require(amount >= minimumDeposit, "Less than minimum deposit");
@@ -85,9 +85,10 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
     function withdraw(uint256 amount) external {
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
         require(plushApps.getAppExists(msg.sender) == false, "The wallet is a controller");
-        require(plush.transfer(msg.sender, amount), "Transaction error");
 
         accounts[msg.sender].balance -= amount;
+
+        require(plush.transfer(msg.sender, amount), "Transaction error");
 
         emit Withdrawn(msg.sender, amount);
     }
@@ -99,10 +100,11 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      */
     function withdrawByController(address account, uint256 amount) external {
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
-        require(plushApps.getAppStatus(msg.sender), "The wallet is not a active controller");
-        require(plush.transfer(account, amount), "Transaction error");
+        require(plushApps.getAppStatus(msg.sender), "The controller isn't active");
 
         accounts[msg.sender].balance -= amount;
+
+        require(plush.transfer(account, amount), "Transaction error");
 
         emit ControllerWithdrawn(msg.sender, account, amount);
     }
@@ -114,7 +116,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      */
     function internalTransfer(address account, uint256 amount) external {
         if (plushApps.getAppExists(msg.sender) == true){
-            require(plushApps.getAppStatus(msg.sender), "The wallet is not a active controller");
+            require(plushApps.getAppStatus(msg.sender), "The controller isn't active");
         }
 
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
@@ -132,7 +134,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      */
     function decreaseAccountBalance(address account, uint256 amount) public {
         require(accounts[account].balance >= amount, "Insufficient funds");
-        require(plushApps.getAppStatus(msg.sender), "The wallet is not a active controller");
+        require(plushApps.getAppStatus(msg.sender), "The controller isn't active");
 
         uint256 percent = amount * plushApps.getFeeApp(msg.sender) / 100000; // Plush fee
 
