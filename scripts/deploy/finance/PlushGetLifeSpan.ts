@@ -3,6 +3,10 @@ import { constants } from 'ethers';
 
 import { DevContractsAddresses } from '../../../arguments/development/consts';
 
+const BANKER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('BANKER_ROLE'),
+);
+
 const STAFF_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('STAFF_ROLE'),
 );
@@ -28,8 +32,8 @@ async function main() {
     PlushGetLifeSpan,
     [
       DevContractsAddresses.LIFESPAN_ADDRESS,
-      DevContractsAddresses.PLUSH_FEE_COLLECTOR_ADDRESS,
       DevContractsAddresses.PLUSH_NFT_CASHBACK_POOL_ADDRESS,
+      DevContractsAddresses.PLUSH_FEE_COLLECTOR_ADDRESS,
     ],
     {
       kind: 'uups',
@@ -48,6 +52,15 @@ async function main() {
     constants.HashZero,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
   ); // ADMIN role
+
+  await grantAdminRole.wait();
+
+  const grantBankerRole = await plushGetLifeSpan.grantRole(
+    BANKER_ROLE,
+    DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
+  );
+
+  await grantBankerRole.wait();
 
   await grantAdminRole.wait();
 
@@ -80,6 +93,13 @@ async function main() {
   await grantUpgraderRole.wait();
 
   console.log('Revoke all roles from existing account...\n');
+
+  const revokeBankerRole = await plushGetLifeSpan.revokeRole(
+    BANKER_ROLE,
+    await signers[0].getAddress(),
+  );
+
+  await revokeBankerRole.wait();
 
   const revokeStaffRole = await plushGetLifeSpan.revokeRole(
     STAFF_ROLE,

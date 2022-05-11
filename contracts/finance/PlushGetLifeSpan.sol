@@ -6,141 +6,172 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
+import "../interfaces/IPlushGetLifeSpan.sol";
+
 import "../token/ERC721/LifeSpan.sol";
 import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";
 
 /// @custom:security-contact security@plush.family
-contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushGetLifeSpan {
+    LifeSpan public lifeSpan;
+    PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
+
+    address payable private feeAddress;  // Address for fee transfer
+
+    uint256 public mintPrice;
+    bool public denyMultipleMinting;
+
+    /**
+     * @dev Roles definitions
+     */
     bytes32 public constant STAFF_ROLE = keccak256("STAFF_ROLE");
+    bytes32 public constant BANKER_ROLE = keccak256("BANKER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    event lifeSpanTokenTokenChecked
-    (
-        address _holder,
-        uint _bal,
-        bool _result
-    );
-
-    PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
-    LifeSpan public lifeSpan;
-    address payable private safeAddress;
-    uint256 public mintPrice;
-    bool public tokenNFTCheck;
-
-    event TokenMinted(address indexed purchaser, address indexed recipient, uint256 amount);
-    event TokenFreeMinted(address indexed staffer, address indexed recipient);
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(LifeSpan _lifeSpan, address payable _safeAddress, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool) initializer public
-    {
+    function initialize(LifeSpan _lifeSpan, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool, address payable _feeAddress) initializer public {
         plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         lifeSpan = _lifeSpan;
-        safeAddress = _safeAddress;
+        feeAddress = _feeAddress;
+
         mintPrice = 0.001 ether;
-        tokenNFTCheck = true;
+        denyMultipleMinting = true;
 
         __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(BANKER_ROLE, msg.sender);
         _grantRole(STAFF_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE)
-    {
+    /// @notice Pause contract
+    function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE)
-    {
+    /// @notice Unpause contract
+    function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
-    function checkUserLifeSpanToken(address _address) private returns (bool)
-    {
-        bool result = false;
+    /// @notice Prohibit a user from minting multiple tokens
+    function setDenyMultipleMinting() external onlyRole(OPERATOR_ROLE) {
+        require(denyMultipleMinting == false, "Already prohibited");
 
-        if (lifeSpan.balanceOf(_address) > 0) {
-            result = true;
-        }
-
-        emit lifeSpanTokenTokenChecked(_address, lifeSpan.balanceOf(_address), result);
-
-        return result;
+        denyMultipleMinting = true;
     }
 
-    function changeTokenCheckStatus() public onlyRole(OPERATOR_ROLE)
-    {
-        tokenNFTCheck = !tokenNFTCheck;
+    /// @notice Allow a user to mint multiple tokens
+    function setAllowMultipleMinting() external onlyRole(OPERATOR_ROLE) {
+        require(denyMultipleMinting == true, "Already allowed");
+
+        denyMultipleMinting = false;
     }
 
-    function changeMintPrice(uint256 _price) public onlyRole(OPERATOR_ROLE)
-    {
-        mintPrice = _price;
+    /**
+     * @notice Change mint price
+     * @param newPrice new LifeSpan token mint price
+     */
+    function changeMintPrice(uint256 newPrice) external onlyRole(OPERATOR_ROLE) {
+        mintPrice = newPrice;
+
+        emit MintPriceChanged(newPrice);
     }
 
-    function getMintPrice() external view returns (uint256)
-    {
+    /**
+     * @notice Get current mint price
+     * @return mint price in wei
+     */
+    function getMintPrice() public view returns (uint256) {
         return mintPrice;
     }
 
-    function setSafeAddress(address _address) external onlyRole(OPERATOR_ROLE)
-    {
-        safeAddress = payable(_address);
+    /**
+     * @notice Set new fee address
+     * @param _address new fee address
+     */
+    function setFeeAddress(address _address) external onlyRole(BANKER_ROLE) {
+        feeAddress = payable(_address);
+
+        emit FeeAddressChanged(_address);
     }
 
-    function setLifeSpanAddress(address _address) external onlyRole(OPERATOR_ROLE)
-    {
+    /**
+     * @notice Set new LifeSpan contract address
+     * @param _address new LifeSpan contract address
+     */
+    function setLifeSpanAddress(address _address) external onlyRole(OPERATOR_ROLE) {
         lifeSpan = LifeSpan(_address);
+
+        emit LifeSpanAddressChanged(_address);
     }
 
-    function getSafeAddress() public view returns (address payable)
-    {
-        return safeAddress;
+    /**
+     * @notice Get current fee address
+     * @return fee address
+     */
+    function getFeeAddress() public view returns (address payable) {
+        return feeAddress;
     }
 
-    function getLifeSpanTokenAddress() public view returns (address)
-    {
+    /**
+     * @notice Get current LifeSpan address
+     * @return LifeSpan address
+     */
+    function getLifeSpanTokenAddress() public view returns (address) {
         return address(lifeSpan);
     }
 
-    function mint(address _mintAddress) public payable
-    {
+    /**
+     * @notice Mint LifeSpan token
+     * @param mintAddress where to enroll the LifeSpan token after minting
+     */
+    function mint(address mintAddress) public payable {
         require(msg.value == mintPrice, "Incorrect amount");
 
-        if (tokenNFTCheck) {
-            require(checkUserLifeSpanToken(_mintAddress) == false, "The specified address already has a LifeSpan token");
+        if (denyMultipleMinting) {
+            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "Already has a LifeSpan token");
         }
 
-        lifeSpan.safeMint(_mintAddress);
-        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(_mintAddress);
+        lifeSpan.safeMint(mintAddress);
+        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(mintAddress);
 
-        emit TokenMinted(_msgSender(), _mintAddress, msg.value);
+        emit TokenMinted(msg.sender, mintAddress, msg.value);
     }
 
-    function freeMint(address _mintAddress) public onlyRole(STAFF_ROLE)
-    {
-        if (tokenNFTCheck) {
-            require(checkUserLifeSpanToken(_mintAddress) == false, "The specified address already has a LifeSpan token");
+    /**
+     * @notice Free mint LifeSpan token for staffers
+     * @param mintAddress where to enroll the LifeSpan token after minting
+     */
+    function freeMint(address mintAddress) public onlyRole(STAFF_ROLE) {
+        if (denyMultipleMinting) {
+            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "Already has a LifeSpan token");
         }
 
-        lifeSpan.safeMint(_mintAddress);
+        lifeSpan.safeMint(mintAddress);
 
-        emit TokenFreeMinted(_msgSender(), _mintAddress);
+        emit TokenFreeMinted(msg.sender, mintAddress);
     }
 
-    function withdraw(uint256 _amount) external onlyRole(OPERATOR_ROLE)
-    {
-        (bool success, ) = safeAddress.call{value: _amount}("");
+    /**
+     * @notice Withdraw mint fee on feeAddress
+     * @param amount withdraw amount
+     */
+    function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
+        require(amount <= address(this).balance, "The withdrawal amount exceeds the contract balance");
+        (bool success,) = feeAddress.call{value : amount}("");
         require(success, "Withdrawal Error");
+
+        emit FeeWithdrawn(amount, feeAddress);
     }
 
     function _authorizeUpgrade(address newImplementation)

@@ -6,27 +6,23 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
+import "./interfaces/IPlushApps.sol";
+
 /// @custom:security-contact security@plush.family
-contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushApps {
+    mapping(address => Apps) public appsList;
+
+    /**
+     * @dev Roles definitions
+     */
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    struct Apps
-    {
-        string name;
-        bool active;
-        bool created;
-        uint256 fee;
-    }
-
-    mapping(address => Apps) public appsInfo;
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize() initializer public
-    {
+    function initialize() initializer public {
         __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -37,75 +33,129 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE)
-    {
+    /// @notice Pause contract
+    function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE)
-    {
+    /// @notice Unpause contract
+    function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
-    function deleteApp(address _controllerAddress) public onlyRole(OPERATOR_ROLE)
-    {
-        require(isInStruct(_controllerAddress), "There is no such application.");
+    /**
+     * @notice Add new app to PlushApps
+     * @param name App name in bytes32
+     * @param controllerAddress App controller address
+     * @param fee App ecosystem fee in wei
+     */
+    function addNewApp(bytes32 name, address controllerAddress, uint256 fee) external onlyRole(OPERATOR_ROLE) {
+        require(!appsList[controllerAddress].exists, "Application already exists");
 
-        delete appsInfo[_controllerAddress];
+        appsList[controllerAddress] = Apps(name, fee, true, true);
+
+        emit AppAdded(name, controllerAddress, fee);
     }
 
-    function addNewApp(string memory _name, address _controllerAddress, uint256 _fee) external onlyRole(OPERATOR_ROLE)
-    {
-        require(isInStruct(_controllerAddress) == false, "Application already exists.");
-
-        appsInfo[_controllerAddress].name = _name;
-        appsInfo[_controllerAddress].active = true;
-        appsInfo[_controllerAddress].created = true;
-        appsInfo[_controllerAddress].fee = _fee;
-    }
-
-    function getFeeApp(address _controllerAddress) public view returns(uint256)
-    {
-        require(isInStruct(_controllerAddress), "There is no such application.");
-
-        return appsInfo[_controllerAddress].fee;
-    }
-
-    function setFeeApp(address _controllerAddress, uint256 _fee) external onlyRole(OPERATOR_ROLE)
-    {
-        require(isInStruct(_controllerAddress), "There is no such application.");
-        appsInfo[_controllerAddress].fee = _fee;
-    }
-
-    function setIsActive(bool _isActive, address _controllerAddress ) external onlyRole(OPERATOR_ROLE)
-    {
-        require(isInStruct(_controllerAddress), "There is no such application.");
-
-        appsInfo[_controllerAddress].active = _isActive;
-    }
-
-    function setNewController(address _oldControllerAddress, address _newControllerAddress) external onlyRole(OPERATOR_ROLE)
-    {
-        require(isInStruct(_oldControllerAddress), "There is no such application.");
-
-        appsInfo[_newControllerAddress] = appsInfo[_oldControllerAddress];
-        deleteApp(_oldControllerAddress);
-    }
-
-    function isInStruct(address _controllerAddress) private view returns(bool)
-    {
-        if(appsInfo[_controllerAddress].created){
+    /**
+     * @notice Check if the application exists
+     * @param controllerAddress App controller address
+     * @return boolean exists status
+     */
+    function getAppExists(address controllerAddress) public view returns (bool) {
+        if (appsList[controllerAddress].exists) {
             return true;
         }
 
         return false;
     }
 
-    function getIsAddressActive(address _controllerAddress) public view returns(bool)
-    {
-        require(isInStruct(_controllerAddress), "There is no such application.");
+    /**
+     * @notice Delete app from PlushApps
+     * @param controllerAddress App controller address
+     */
+    function deleteApp(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
+        require(appsList[controllerAddress].exists, "Application doesn't exist");
 
-        return appsInfo[_controllerAddress].active;
+        delete appsList[controllerAddress];
+
+        emit AppDeleted(controllerAddress);
+    }
+
+    /**
+     * @notice Get app fee
+     * @param controllerAddress controller address
+     * @return App fee
+     */
+    function getFeeApp(address controllerAddress) public view returns (uint256) {
+        require(appsList[controllerAddress].exists, "Application doesn't exist");
+
+        return appsList[controllerAddress].fee;
+    }
+
+    /**
+     * @notice Change fee app
+     * @param controllerAddress App controller address
+     * @param fee App ecosystem fee in wei
+     */
+    function setFeeApp(address controllerAddress, uint256 fee) external onlyRole(OPERATOR_ROLE) {
+        require(appsList[controllerAddress].exists, "Application doesn't exist");
+
+        appsList[controllerAddress].fee = fee;
+
+        emit AppFeeChanged(controllerAddress, fee);
+    }
+
+    /**
+     * @notice Activating the application
+     * @param controllerAddress App controller address
+     */
+    function setAppEnable(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
+        require(appsList[controllerAddress].exists, "Application doesn't exist");
+        require(!appsList[controllerAddress].active, "Application already enable");
+
+        appsList[controllerAddress].active = true;
+
+        emit AppEnabled(controllerAddress);
+    }
+
+    /**
+     * @notice Disabling the application
+     * @param controllerAddress App controller address
+     */
+    function setAppDisable(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
+        require(appsList[controllerAddress].exists, "Application doesn't exist");
+        require(appsList[controllerAddress].active, "Application already disable");
+
+        appsList[controllerAddress].active = false;
+
+        emit AppDisabled(controllerAddress);
+    }
+
+    /**
+     * @notice Update application controller address
+     * @param oldControllerAddress exist controller application address
+     * @param newControllerAddress new controller application address
+     */
+    function setNewController(address oldControllerAddress, address newControllerAddress) external onlyRole(OPERATOR_ROLE) {
+        require(appsList[oldControllerAddress].exists, "Application doesn't exist");
+        require(!appsList[newControllerAddress].exists, "New controller address is already in use");
+
+        appsList[newControllerAddress] = appsList[oldControllerAddress];
+        delete appsList[oldControllerAddress];
+
+        emit AppControllerAddressUpdated(oldControllerAddress, newControllerAddress);
+    }
+
+    /**
+     * @notice Get app status (enable/disable)
+     * @param controllerAddress app controller address
+     * @return app enable status in boolean
+     */
+    function getAppStatus(address controllerAddress) public view returns (bool) {
+        require(appsList[controllerAddress].exists, "Application doesn't exist");
+
+        return appsList[controllerAddress].active;
     }
 
     function _authorizeUpgrade(address newImplementation)

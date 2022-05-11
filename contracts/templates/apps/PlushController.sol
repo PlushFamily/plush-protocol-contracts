@@ -5,140 +5,139 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-import "../../token/ERC20/Plush.sol";
-import "../../finance/PlushAccounts.sol";
+import "../../interfaces/IPlushController.sol";
+import "../../interfaces/IPlushAccounts.sol";
 
+contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushController {
 
-contract PlushController is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+    uint256 public constant version = 3;
 
-    uint256 public constant version = 2;
-    Plush public plush;
-    PlushAccounts public plushAccounts;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
-    mapping (address => uint) public indexWithdrawal;
-    address[] public withdrawalAddresses;
+    IERC20Upgradeable public plush;
+    IPlushAccounts public plushAccounts;
 
-    mapping (address => uint) public indexApps;
+    mapping(address => uint) public indexApps;
     address[] public appAddresses;
+
+    /**
+     * @dev Roles definitions
+     */
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant APP_ROLE = keccak256("APP_ROLE");
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant BANKER_ROLE = keccak256("BANKER_ROLE");
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(Plush _plush, PlushAccounts _plushAccounts) initializer public
-    {
-        plush = _plush;
-        plushAccounts = _plushAccounts;
+    function initialize(IERC20Upgradeable plushAddress, IPlushAccounts plushAccountsAddress) initializer public {
+        plush = plushAddress;
+        plushAccounts = plushAccountsAddress;
 
         __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(BANKER_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE)
-    {
+    /// @notice Pause contract
+    function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE)
-    {
+    /// @notice Unpause contract
+    function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
-    function addNewWithdrawalAddress(address _withdrawalAddress) external onlyRole(OPERATOR_ROLE)
-    {
-        require(!withdrawalAddressExist(_withdrawalAddress), "This address already exists.");
+    /**
+     * @notice Adding a new application address
+     * @param appAddress contract address
+     */
+    function addNewAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
+        require(indexApps[appAddress] > 0 == false, "Application doesn't exist");
 
-        indexWithdrawal[_withdrawalAddress] = withdrawalAddresses.length + 1;
-        withdrawalAddresses.push(_withdrawalAddress);
+        indexApps[appAddress] = appAddresses.length + 1;
+        appAddresses.push(appAddress);
+
+        _grantRole(APP_ROLE, appAddress);
+
+        emit AppAdded(appAddress, msg.sender);
     }
 
-    function deleteWithdrawalAddress(address _withdrawalAddress) external onlyRole(OPERATOR_ROLE)
-    {
-        require(withdrawalAddressExist(_withdrawalAddress), "There is no such address.");
+    /**
+     * @notice Removing an application from the controller's application database
+     * @param appAddress contract address
+     */
+    function deleteAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
+        require(indexApps[appAddress] > 0, "Application doesn't exist");
 
-        delete withdrawalAddresses[indexWithdrawal[_withdrawalAddress] - 1];
-        delete indexWithdrawal[_withdrawalAddress];
+        delete appAddresses[indexApps[appAddress] - 1];
+        delete indexApps[appAddress];
+
+        _revokeRole(APP_ROLE, appAddress);
+
+        emit AppDeleted(appAddress, msg.sender);
     }
 
-    function addNewAppAddress(address _appAddress) external onlyRole(OPERATOR_ROLE)
-    {
-        require(!appAddressExist(_appAddress), "This app already exists.");
-
-        indexApps[_appAddress] = appAddresses.length + 1;
-        appAddresses.push(_appAddress);
+    /**
+     * @notice Getting the balance of the controller (related to all its applications)
+     * @return ERC-20 token balance in wei
+     */
+    function getBalance() public view returns (uint256) {
+        return plushAccounts.getAccountBalance(address(this));
     }
 
-    function deleteAppAddress(address _appAddress) external onlyRole(OPERATOR_ROLE)
-    {
-        require(appAddressExist(_appAddress), "There is no such app.");
+    /**
+     * @notice Withdrawal of tokens from the controller's balance
+     * @param amount number of tokens to be withdrawn in wei
+     */
+    function withdraw(uint256 amount) external onlyRole(BANKER_ROLE)  {
+        require(getBalance() >= amount, "Insufficient funds");
 
-        delete appAddresses[indexApps[_appAddress] - 1];
-        delete indexApps[_appAddress];
+        plushAccounts.withdrawByController(msg.sender, amount);
+
+        emit Withdrawn(msg.sender, amount);
     }
 
-    function withdrawalAddressExist(address _address) public view returns (bool)
-    {
-        if (indexWithdrawal[_address] > 0) {
-            return true;
-        }
-
-        return false;
-    }
-
-    function appAddressExist(address _address) public view returns (bool)
-    {
-        if (indexApps[_address] > 0) {
-            return true;
-        }
-
-        return false;
-    }
-
-    function getAvailableBalanceForWithdrawal() public view returns (uint256)
-    {
-        return plushAccounts.getWalletAmount(address(this));
-    }
-
-    function withdraw(uint256 _amount) external
-    {
-        require(withdrawalAddressExist(msg.sender), "Withdrawal is not available.");
-        require(getAvailableBalanceForWithdrawal() >= _amount, "Not enough balance.");
-
-        plushAccounts.withdrawByController(_amount, msg.sender);
-    }
-
-    function getAllWithdrawalAddresses() public view returns (address[] memory)
-    {
-        return withdrawalAddresses;
-    }
-
-    function getAllAppAddresses() public view returns (address[] memory)
-    {
+    /**
+     * @notice Get a list of all current application addresses
+     * @return list of all application addresses
+     */
+    function getAppAddresses() public view returns (address[] memory) {
         return appAddresses;
     }
 
-    function decreaseWalletAmountTrans(address _address, uint256 _amount) external
-    {
-        plushAccounts.decreaseWalletAmount(_address, _amount);
+    /**
+     * @notice Debiting user tokens by the controller
+     * @param account user account
+     * @param amount amount of tokens debited
+     */
+    function decreaseAccountBalance(address account, uint256 amount) external onlyRole(APP_ROLE) {
+        plushAccounts.decreaseAccountBalance(account, amount);
+
+        emit BalanceDecreased(msg.sender, account, amount);
     }
 
-    function increaseWalletAmountTrans(address _address, uint256 _amount) external
-    {
-        plushAccounts.internalTransfer(_address, _amount);
-    }
+    /**
+     * @notice Transfer tokens to the user account from the controller's balance
+     * @param account receiver address
+     * @param amount transfer amount
+     */
+    function increaseAccountBalance(address account, uint256 amount) external onlyRole(APP_ROLE) {
+        plushAccounts.internalTransfer(account, amount);
 
-    function getVersion() public pure returns (uint256)
-    {
-        return version;
+        emit BalanceIncreased(msg.sender, account, amount);
     }
 
     function _authorizeUpgrade(address newImplementation)

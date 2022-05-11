@@ -6,6 +6,9 @@ import { DevContractsAddresses } from '../../../arguments/development/consts';
 const OPERATOR_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
 );
+const BANKER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('BANKER_ROLE'),
+);
 const PAUSER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('PAUSER_ROLE'),
 );
@@ -45,21 +48,28 @@ async function main() {
   const grantOperatorRole = await plushFaucet.grantRole(
     OPERATOR_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
-  ); // OPERATOR role
+  );
 
   await grantOperatorRole.wait();
+
+  const grantBankerRole = await plushFaucet.grantRole(
+    BANKER_ROLE,
+    DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
+  );
+
+  await grantBankerRole.wait();
 
   const grantPauserRole = await plushFaucet.grantRole(
     PAUSER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
-  ); // PAUSER role
+  );
 
   await grantPauserRole.wait();
 
   const grantUpgraderRole = await plushFaucet.grantRole(
     UPGRADER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
-  ); // UPGRADER role
+  );
 
   await grantUpgraderRole.wait();
 
@@ -68,21 +78,28 @@ async function main() {
   const revokeOperatorRole = await plushFaucet.revokeRole(
     OPERATOR_ROLE,
     await signers[0].getAddress(),
-  ); // OPERATOR role
+  );
 
   await revokeOperatorRole.wait();
+
+  const revokeBankerRole = await plushFaucet.revokeRole(
+    BANKER_ROLE,
+    await signers[0].getAddress(),
+  );
+
+  await revokeBankerRole.wait();
 
   const revokeUpgraderRole = await plushFaucet.revokeRole(
     UPGRADER_ROLE,
     await signers[0].getAddress(),
-  ); // UPGRADER role
+  );
 
   await revokeUpgraderRole.wait();
 
   const revokePauserRole = await plushFaucet.revokeRole(
     PAUSER_ROLE,
     await signers[0].getAddress(),
-  ); // PAUSER role
+  );
 
   await revokePauserRole.wait();
 
