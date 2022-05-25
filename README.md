@@ -7,7 +7,7 @@
 <a href="https://www.npmjs.com/package/@plushfamily/plush-protocol-contracts" target="_blank"><img src="https://img.shields.io/npm/v/@plushfamily/plush-protocol-contracts.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/package/@plushfamily/plush-protocol-contracts"><img src="https://img.shields.io/npm/l/@plushfamily/plush-protocol-contracts.svg" alt="Package License" /></a>
 <a href="https://www.npmjs.com/package/@plushfamily/plush-protocol-contracts"><img src="https://img.shields.io/npm/dm/@plushfamily/plush-protocol-contracts.svg" alt="NPM Downloads" /></a>
-<a href="https://twitter.com/newbly" target="_blank"><img src="https://img.shields.io/twitter/follow/newbly.svg?style=social&label=Follow" alt="twitter"></a>
+<a href="https://twitter.com/plush_family_" target="_blank"><img src="https://img.shields.io/twitter/follow/plush_family_.svg?style=social&label=Follow" alt="twitter"></a>
 
 ## Description
 
