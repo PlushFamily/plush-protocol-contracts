@@ -51,14 +51,21 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         _grantRole(REMUNERATION_ROLE, msg.sender);
     }
 
+    /// @notice Pause contract
     function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
+    /// @notice Unpause contract
     function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
+    /**
+     * @notice Add remuneration to account manually
+     * @param account address to add remuneration
+     * @param amount of tokens in wei
+     */
     function addRemunerationToAccountManually(address account, uint256 amount) public onlyRole(OPERATOR_ROLE) {
         require(getFreeTokensInContract() >= amount, "Not enough funds");
 
@@ -68,8 +75,14 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         idsBalances[account].push(id);
 
         balanceInfo[id] = Balance(amount, 0);
+
+        emit RemunerationManually(msg.sender, account, amount);
     }
 
+    /**
+     * @notice Add remuneration to account
+     * @param account address to add remuneration
+     */
     function addRemunerationToAccount(address account) public onlyRole(REMUNERATION_ROLE) {
         if (getFreeTokensInContract() >= remuneration) {
             uint256 id = idsBalances[account].length;
@@ -85,26 +98,48 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         }
     }
 
+    /**
+     * @notice Withdrawal tokens to address
+     * @param amount of tokens in wei
+     */
     function withdraw(uint256 amount) external {
         require(plush.balanceOf(address(this)) >= amount, "Pool is empty.");
         require(getAvailableBalanceInAccount(msg.sender) >= amount, "Not enough balance.");
         require(plush.transfer(msg.sender, amount), "Transaction error.");
 
         decreaseWalletAmount(msg.sender, amount);
+
+        emit WithdrawalTokens(msg.sender, amount);
     }
 
+    /**
+     * @notice Set remuneration
+     * @param amount of tokens in wei
+     */
     function setRemuneration(uint256 amount) public onlyRole(OPERATOR_ROLE) {
         remuneration = amount;
     }
 
+    /**
+     * @notice Set time lock
+     * @param amount time in sec
+     */
     function setTimeUnlock(uint256 amount) public onlyRole(OPERATOR_ROLE) {
         timeUnlock = amount;
     }
 
+    /**
+     * @notice Switch to unlock all tokens
+     */
     function unlockAllTokensSwitch() public onlyRole(OPERATOR_ROLE) {
         unlockAllTokens = !unlockAllTokens;
     }
 
+    /**
+     * @notice Get wallet amount in wei
+     * @param account address
+     * @return array of lock and unlock tokens
+     */
     function getWalletAmount(address account) external view returns (uint256[] memory, uint256[] memory, uint256[] memory, uint256[] memory) {
         uint256[] memory availableBalance = new uint256[](idsBalances[account].length);
         uint256[] memory availableTimeIsActive = new uint256[](idsBalances[account].length);
@@ -129,14 +164,26 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         return (availableBalance, availableTimeIsActive, unavailableBalance, unavailableTimeIsActive);
     }
 
+    /**
+     * @notice Get remuneration
+     * @return amount of tokens in wei
+     */
     function getRemuneration() external view returns (uint256) {
         return remuneration;
     }
 
+    /**
+     * @notice Get time unlock
+     * @return amount time in sec
+     */
     function getTimeUnlock() external view returns (uint256) {
         return timeUnlock;
     }
 
+    /**
+     * @notice Get available tokens in the contract
+     * @return amount of tokens in wei
+     */
     function getFreeTokensInContract() private view returns (uint256) {
         uint256 unavailableTokens = 0;
 
@@ -147,6 +194,10 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         return plush.balanceOf(address(this)) - unavailableTokens;
     }
 
+    /**
+     * @notice Get available tokens in the account
+     * @return amount of tokens in wei
+     */
     function getAvailableBalanceInAccount(address account) private view returns (uint256) {
         uint256 availableBalance = 0;
 
@@ -161,6 +212,11 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         return availableBalance;
     }
 
+    /**
+     * @notice Decrease in the user's balance when withdrawing funds
+     * @param account address
+     * @param amount tokens in wei
+     */
     function decreaseWalletAmount(address account, uint256 amount) private {
         uint256 summary = amount;
 
@@ -182,6 +238,11 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
         }
     }
 
+    /**
+     * @notice Deleting information about the reward when withdrawing
+     * @param account address
+     * @param id remuneration id
+     */
     function deleteIdAndInfo(address account, uint256 id) private {
         delete balanceInfo[id];
         delete allIds[id];
