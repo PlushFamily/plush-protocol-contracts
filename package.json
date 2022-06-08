@@ -29,7 +29,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.5",
-    "hardhat": "2.9.3",
+    "hardhat": "^2.9.7",
     "hardhat-contract-sizer": "^2.5.1",
     "prettier": "^2.6.2",
     "solc": "^0.8.14-fixed",
