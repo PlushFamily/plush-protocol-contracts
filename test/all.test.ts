@@ -182,7 +182,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('Plush -> Check total supply', async () => {
-    expect(await plushToken.totalSupply()).to.eql(
+    expect(await plushToken.totalSupply()).to.deep.equal(
       ethers.utils.parseUnits('10000000000', 18),
     ); // Checking that 10 billion tokens were minted
   });
@@ -199,17 +199,17 @@ describe('Launching the testing of the Plush Protocol', () => {
       ethers.utils.parseUnits('1', 18),
     );
     await transferTokens.wait();
-    expect(await plushToken.balanceOf(await signers[1].getAddress())).to.eql(
-      ethers.utils.parseUnits('1', 18),
-    ); // Checking the sending of tokens
+    expect(
+      await plushToken.balanceOf(await signers[1].getAddress()),
+    ).to.deep.equal(ethers.utils.parseUnits('1', 18)); // Checking the sending of tokens
   });
 
   it('Plush -> Check burning tokens', async () => {
     const burnTokens = await plushToken.burn(ethers.utils.parseUnits('1', 18));
     await burnTokens.wait();
-    expect(await plushToken.balanceOf(await signers[0].getAddress())).to.eql(
-      ethers.utils.parseUnits('9999999998', 18),
-    ); // Checking the burning of a single token
+    expect(
+      await plushToken.balanceOf(await signers[0].getAddress()),
+    ).to.deep.equal(ethers.utils.parseUnits('9999999998', 18)); // Checking the burning of a single token
   });
 
   it('Plush -> Check setting approve', async () => {
@@ -223,7 +223,7 @@ describe('Launching the testing of the Plush Protocol', () => {
         await signers[0].getAddress(),
         await signers[1].getAddress(),
       ),
-    ).to.eql(ethers.utils.parseUnits('1', 18)); // Checking the setting of the permission to spend tokens for another address
+    ).to.deep.equal(ethers.utils.parseUnits('1', 18)); // Checking the setting of the permission to spend tokens for another address
   });
 
   it('Plush -> Check transfer from other wallet with set approve', async () => {
@@ -235,9 +235,9 @@ describe('Launching the testing of the Plush Protocol', () => {
         ethers.utils.parseUnits('1', 18),
       );
     await transferTokens.wait();
-    expect(await plushToken.balanceOf(await signers[0].getAddress())).to.eql(
-      ethers.utils.parseUnits('9999999997', 18),
-    ); // Checking the spending of tokens after setting the permission to spend funds
+    expect(
+      await plushToken.balanceOf(await signers[0].getAddress()),
+    ).to.deep.equal(ethers.utils.parseUnits('9999999997', 18)); // Checking the spending of tokens after setting the permission to spend funds
   });
 
   it('WrappedPlush -> Check Plush address', async () => {
@@ -246,7 +246,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('WrappedPlush -> Check total supply', async () => {
-    expect(await wrappedPlush.totalSupply()).to.eql(
+    expect(await wrappedPlush.totalSupply()).to.deep.equal(
       ethers.utils.parseUnits('0', 18),
     ); // Checking that zero tokens were minted
   });
@@ -264,13 +264,13 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await wrappingTokens.wait();
 
-    expect(await wrappedPlush.balanceOf(await signers[0].getAddress())).to.eql(
-      ethers.utils.parseUnits('3', 18),
-    ); // Checking that user has 3 wrapped tokens.
+    expect(
+      await wrappedPlush.balanceOf(await signers[0].getAddress()),
+    ).to.deep.equal(ethers.utils.parseUnits('3', 18)); // Checking that user has 3 wrapped tokens.
 
-    expect(await plushToken.balanceOf(await signers[0].getAddress())).to.eql(
-      ethers.utils.parseUnits('9999999994', 18),
-    ); // Checking that the number of Plush tokens has decreased
+    expect(
+      await plushToken.balanceOf(await signers[0].getAddress()),
+    ).to.deep.equal(ethers.utils.parseUnits('9999999994', 18)); // Checking that the number of Plush tokens has decreased
   });
 
   it('WrappedPlush -> Check unwrapping', async () => {
@@ -280,12 +280,12 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await unwrappingTokens.wait();
 
-    expect(await plushToken.balanceOf(await signers[0].getAddress())).to.eql(
-      ethers.utils.parseUnits('9999999995', 18),
-    );
-    expect(await wrappedPlush.balanceOf(await signers[0].getAddress())).to.eql(
-      ethers.utils.parseUnits('2', 18),
-    );
+    expect(
+      await plushToken.balanceOf(await signers[0].getAddress()),
+    ).to.deep.equal(ethers.utils.parseUnits('9999999995', 18));
+    expect(
+      await wrappedPlush.balanceOf(await signers[0].getAddress()),
+    ).to.deep.equal(ethers.utils.parseUnits('2', 18));
   });
 
   it('WrappedPlush -> Check burning', async () => {
@@ -294,9 +294,9 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await burningTokens.wait();
 
-    expect(await wrappedPlush.balanceOf(await signers[0].getAddress())).to.eql(
-      ethers.utils.parseUnits('1', 18),
-    );
+    expect(
+      await wrappedPlush.balanceOf(await signers[0].getAddress()),
+    ).to.deep.equal(ethers.utils.parseUnits('1', 18));
   });
 
   it('WrappedPlush -> Check delegate', async () => {
@@ -309,13 +309,13 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('LifeSpan -> Check total supply', async () => {
-    expect(await lifeSpan.totalSupply()).to.eql(ethers.constants.Zero); // ADMIN role
+    expect(await lifeSpan.totalSupply()).to.deep.equal(ethers.constants.Zero); // ADMIN role
   });
 
   it('LifeSpan -> Checking role assignments', async () => {
     expect(
       await lifeSpan.hasRole(constants.HashZero, await signers[0].getAddress()),
-    ).to.eql(true); // ADMIN role
+    ).to.deep.equal(true); // ADMIN role
     expect(
       await lifeSpan.hasRole(MINTER_ROLE, await signers[0].getAddress()),
     ).to.eql(true);
@@ -346,9 +346,9 @@ describe('Launching the testing of the Plush Protocol', () => {
       .connect(signers[1])
       .safeMint(await signers[1].getAddress());
     await mintToken.wait();
-    expect(await lifeSpan.balanceOf(await signers[1].getAddress())).to.eql(
-      constants.One,
-    );
+    expect(
+      await lifeSpan.balanceOf(await signers[1].getAddress()),
+    ).to.deep.equal(constants.One);
   });
 
   it('LifeSpan -> revoke role', async () => {
@@ -378,7 +378,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     )) as LifeSpan;
     await lifeSpanNEW.deployed();
     expect(lifeSpanNEW.address).to.eq(lifeSpan.address);
-    expect(await lifeSpan.totalSupply()).to.eql(constants.One);
+    expect(await lifeSpan.totalSupply()).to.deep.equal(constants.One);
   });
 
   it('PlushGetLifeSpan -> Checking role assignments', async () => {
@@ -469,7 +469,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushGetLifeSpan -> Check mint price', async () => {
-    expect(await plushGetLifeSpan.getMintPrice()).to.eql(
+    expect(await plushGetLifeSpan.getMintPrice()).to.deep.equal(
       ethers.utils.parseUnits('0.001', 18),
     );
   });
@@ -480,7 +480,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await changeMintPrice.wait();
 
-    expect(await plushGetLifeSpan.getMintPrice()).to.eql(
+    expect(await plushGetLifeSpan.getMintPrice()).to.deep.equal(
       ethers.utils.parseUnits('0.0001', 18),
     );
   });
@@ -503,9 +503,9 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await mintToken.wait();
 
-    expect(await lifeSpan.balanceOf(await signers[0].getAddress())).to.eql(
-      constants.One,
-    );
+    expect(
+      await lifeSpan.balanceOf(await signers[0].getAddress()),
+    ).to.deep.equal(constants.One);
 
     const provider = waffle.provider;
 
@@ -547,7 +547,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       .freeMint(randomAddress.address);
     await mintToken.wait();
 
-    expect(await lifeSpan.balanceOf(randomAddress.address)).to.eql(
+    expect(await lifeSpan.balanceOf(randomAddress.address)).to.deep.equal(
       constants.One,
     );
   });
@@ -568,7 +568,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     )) as PlushGetLifeSpan;
     await plushGetLifeSpanNEW.deployed();
     expect(plushGetLifeSpanNEW.address).to.eq(plushGetLifeSpan.address);
-    expect(await lifeSpan.totalSupply()).to.eql(BigNumber.from('3'));
+    expect(await lifeSpan.totalSupply()).to.deep.equal(BigNumber.from('3'));
   });
 
   it('PlushApps -> Checking role assignments', async () => {
@@ -599,7 +599,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await addApp.wait();
 
-    expect(await plushApps.getFeeApp(plushController.address)).to.eql(
+    expect(await plushApps.getFeeApp(plushController.address)).to.deep.equal(
       BigNumber.from('50'),
     );
   });
@@ -611,7 +611,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await changingFee.wait();
 
-    expect(await plushApps.getFeeApp(plushController.address)).to.eql(
+    expect(await plushApps.getFeeApp(plushController.address)).to.deep.equal(
       BigNumber.from('100'),
     );
   });
@@ -668,19 +668,23 @@ describe('Launching the testing of the Plush Protocol', () => {
   });
 
   it('PlushFaucet -> Checking initial values', async () => {
-    expect(await plushFaucet.getTimeLimit()).to.eql(BigNumber.from('86400')); // 24 hours
+    expect(await plushFaucet.getTimeLimit()).to.deep.equal(
+      BigNumber.from('86400'),
+    ); // 24 hours
 
-    expect(await plushFaucet.getFaucetDripAmount()).to.eql(
+    expect(await plushFaucet.getFaucetDripAmount()).to.deep.equal(
       ethers.utils.parseUnits('1', 18),
     ); // 1 Plush
 
-    expect(await plushFaucet.getMaxReceiveAmount()).to.eql(
+    expect(await plushFaucet.getMaxReceiveAmount()).to.deep.equal(
       ethers.utils.parseUnits('100', 18),
     ); // Max Plush user balance
 
     expect(await plushFaucet.getIsTokenNFTCheck()).to.eql(true); // NFT check
 
-    expect(await plushFaucet.getFaucetBalance()).to.eql(ethers.constants.Zero); // Check Faucet balance
+    expect(await plushFaucet.getFaucetBalance()).to.deep.equal(
+      ethers.constants.Zero,
+    ); // Check Faucet balance
   });
 
   it('PlushFaucet -> Add tokens to faucet', async () => {
@@ -696,7 +700,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await transferTokens.wait();
 
-    expect(await plushFaucet.getFaucetBalance()).to.eql(
+    expect(await plushFaucet.getFaucetBalance()).to.deep.equal(
       ethers.utils.parseUnits('3', 18),
     );
   });
@@ -711,12 +715,12 @@ describe('Launching the testing of the Plush Protocol', () => {
     const getTokens = await plushFaucet.send();
     await getTokens.wait();
 
-    expect(await plushFaucet.getFaucetBalance()).to.eql(
+    expect(await plushFaucet.getFaucetBalance()).to.deep.equal(
       ethers.utils.parseUnits('2', 18),
     );
     expect(
       await plushAccounts.getAccountBalance(await signers[0].getAddress()),
-    ).to.eql(ethers.utils.parseUnits('1', 18)); // Check that we to get one token on Safe contract
+    ).to.deep.equal(ethers.utils.parseUnits('1', 18)); // Check that we to get one token on Safe contract
   });
 
   it("PlushFaucet -> Check that we can't to get tokens twice", async () => {
@@ -736,7 +740,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     await getTokens.wait();
     expect(
       await plushAccounts.getAccountBalance(await signers[1].getAddress()),
-    ).to.eql(ethers.utils.parseUnits('1', 18));
+    ).to.deep.equal(ethers.utils.parseUnits('1', 18));
     await expect(
       plushFaucet.getCanTheAddressReceiveReward(await signers[1].getAddress()),
     ).to.be.reverted;
@@ -751,8 +755,8 @@ describe('Launching the testing of the Plush Protocol', () => {
 
     expect(
       await plushToken.balanceOf(plushFaucetRandomReceiverAddress.address),
-    ).to.eql(ethers.utils.parseUnits('1', 18));
-    expect(await plushFaucet.getFaucetBalance()).to.eql(
+    ).to.deep.equal(ethers.utils.parseUnits('1', 18));
+    expect(await plushFaucet.getFaucetBalance()).to.deep.equal(
       ethers.utils.parseUnits('0', 18),
     );
   });
@@ -797,7 +801,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   it('PlushAccounts -> Checking initial values', async () => {
     expect(await plushAccounts.plushApps()).to.eql(plushApps.address);
     expect(await plushAccounts.plush()).to.eql(plushToken.address);
-    expect(await plushAccounts.minimumDeposit()).to.eql(
+    expect(await plushAccounts.minimumDeposit()).to.deep.equal(
       ethers.utils.parseUnits('1', 18),
     );
     expect(await plushAccounts.getPlushFeeAddress()).to.eql(
@@ -808,7 +812,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   it('PlushAccounts -> Check user balances', async () => {
     expect(
       await plushAccounts.getAccountBalance(await signers[0].getAddress()),
-    ).to.eql(ethers.utils.parseUnits('1', 18));
+    ).to.deep.equal(ethers.utils.parseUnits('1', 18));
   });
 
   it('PlushAccounts -> Check transfer tokens inside safe', async () => {
@@ -819,10 +823,10 @@ describe('Launching the testing of the Plush Protocol', () => {
     await transferTokens.wait();
     expect(
       await plushAccounts.getAccountBalance(await signers[0].getAddress()),
-    ).to.eql(ethers.utils.parseUnits('0', 18));
+    ).to.deep.equal(ethers.utils.parseUnits('0', 18));
     expect(
       await plushAccounts.getAccountBalance(await signers[1].getAddress()),
-    ).to.eql(ethers.utils.parseUnits('2', 18));
+    ).to.deep.equal(ethers.utils.parseUnits('2', 18));
   });
 
   it('PlushAccounts -> Check pause contract', async () => {
@@ -844,6 +848,6 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(plushAccountsNEW.address).to.eq(plushAccounts.address);
     expect(
       await plushAccounts.getAccountBalance(await signers[1].getAddress()),
-    ).to.eql(ethers.utils.parseUnits('2', 18));
+    ).to.deep.equal(ethers.utils.parseUnits('2', 18));
   });
 });
