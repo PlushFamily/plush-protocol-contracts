@@ -168,6 +168,7 @@ contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeab
      */
     function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
         require(amount <= address(this).balance, "The withdrawal amount exceeds the contract balance");
+
         (bool success,) = feeAddress.call{value : amount}("");
         require(success, "Withdrawal Error");
 

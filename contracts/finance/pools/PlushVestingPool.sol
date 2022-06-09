@@ -116,7 +116,6 @@ contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeab
         uint256 unlockBalanceTemp = getUnLockBalance();
 
         require(getUnLockBalance() > 0, "Insufficient funds");
-        require(plush.transfer(msg.sender, unlockBalanceTemp), "Funds transfer error");
 
         unlockBalance = 0;
 
@@ -127,6 +126,8 @@ contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeab
         }
 
         timeStart = block.timestamp - timePast;
+
+        plush.safeTransfer(msg.sender, unlockBalanceTemp);
 
         emit WithdrawalTokens(msg.sender, unlockBalanceTemp);
     }

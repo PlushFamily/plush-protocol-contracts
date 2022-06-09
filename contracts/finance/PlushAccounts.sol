@@ -17,7 +17,6 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
     IERC20Upgradeable public plush;
     IPlushApps public plushApps;
 
-    uint256 public minimumDeposit;
     address public plushFeeAddress;
 
     mapping(address => Account) public accounts;
@@ -35,7 +34,6 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
     function initialize(IERC20Upgradeable _plush, IPlushApps _plushApps, address _plushFeeAddress) initializer public {
         plushApps = _plushApps;
         plush = _plush;
-        minimumDeposit = 1 * 10 ** 18;
         plushFeeAddress = _plushFeeAddress;
 
         __Pausable_init();
@@ -68,7 +66,7 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
             require(plushApps.getAppStatus(account), "The controller isn't active");
         }
 
-        require(amount >= minimumDeposit, "Less than minimum deposit");
+        require(amount > 0, "The deposit amount cannot be zero");
 
         accounts[account].balance += amount;
 
@@ -114,7 +112,7 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      * @param amount transfer amount
      */
     function internalTransfer(address account, uint256 amount) external {
-        if (plushApps.getAppExists(msg.sender) == true){
+        if (plushApps.getAppExists(msg.sender) == true) {
             require(plushApps.getAppStatus(msg.sender), "The controller isn't active");
         }
 
@@ -159,22 +157,6 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      */
     function getAccountBalance(address account) external view returns (uint256) {
         return accounts[account].balance;
-    }
-
-    /**
-     * @notice Set minimum account deposit amount
-     * @param amount minimum deposit amount in wei
-     */
-    function setMinimumDeposit(uint256 amount) external onlyRole(OPERATOR_ROLE) {
-        minimumDeposit = amount;
-    }
-
-    /**
-     * @notice Get minimum account deposit amount
-     * @return minimum deposit amount in wei
-     */
-    function getMinimumDeposit() external view returns (uint256) {
-        return minimumDeposit;
     }
 
     /**
