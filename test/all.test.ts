@@ -801,9 +801,6 @@ describe('Launching the testing of the Plush Protocol', () => {
   it('PlushAccounts -> Checking initial values', async () => {
     expect(await plushAccounts.plushApps()).to.eql(plushApps.address);
     expect(await plushAccounts.plush()).to.eql(plushToken.address);
-    expect(await plushAccounts.minimumDeposit()).to.deep.equal(
-      ethers.utils.parseUnits('1', 18),
-    );
     expect(await plushAccounts.getPlushFeeAddress()).to.eql(
       plushAccountsRandomSafeAddress.address,
     );

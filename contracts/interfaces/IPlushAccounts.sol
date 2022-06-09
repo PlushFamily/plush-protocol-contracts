@@ -62,18 +62,6 @@ interface IPlushAccounts {
     function getAccountBalance(address account) external view returns (uint256);
 
     /**
-     * @notice Set minimum account deposit amount
-     * @param amount minimum deposit amount in wei
-     */
-    function setMinimumDeposit(uint256 amount) external;
-
-    /**
-     * @notice Get minimum account deposit amount
-     * @return minimum deposit amount in wei
-     */
-    function getMinimumDeposit() external view returns (uint256);
-
-    /**
      * @notice Set Plush fee address
      * @param account fee address
      */
