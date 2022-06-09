@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 contract PlushController is IPlushController, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
 
-    uint256 public constant version = 3;
+    uint256 public constant version = 4;
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
 

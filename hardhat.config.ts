@@ -138,7 +138,7 @@ export default {
         },
       },
       'contracts/token/ERC20/WrappedPlush.sol': {
-        version: '0.8.13',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
@@ -147,7 +147,7 @@ export default {
         },
       },
       'contracts/token/ERC721/PlushCoreToken.sol': {
-        version: '0.8.9',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
@@ -156,7 +156,7 @@ export default {
         },
       },
       'contracts/finance/PlushCoinWallets.sol': {
-        version: '0.8.13',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
@@ -165,7 +165,7 @@ export default {
         },
       },
       'contracts/finance/PlushGetCoreToken.sol': {
-        version: '0.8.13',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
@@ -174,7 +174,7 @@ export default {
         },
       },
       'contracts/finance/PlushFaucet.sol': {
-        version: '0.8.13',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
@@ -183,7 +183,7 @@ export default {
         },
       },
       'contracts/PlushApps.sol': {
-        version: '0.8.13',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
@@ -192,7 +192,7 @@ export default {
         },
       },
       'contracts/templates/apps/PlushController.sol': {
-        version: '0.8.13',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
@@ -201,7 +201,7 @@ export default {
         },
       },
       'contracts/governance/PlushOperationsDAO.sol': {
-        version: '0.8.4',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
