@@ -77,8 +77,8 @@ interface IPlushLifeSpanNFTCashbackPool {
 
     /// @notice Emitted when added remuneration to account manually
     event RemunerationManually(
+        address indexed sender,
         address indexed receiver,
-        address indexed user,
         uint256 amount
     );
 }
