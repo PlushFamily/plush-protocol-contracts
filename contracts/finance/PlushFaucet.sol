@@ -45,8 +45,8 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
         plushAccounts = _plushAccounts;
 
         faucetTimeLimit = 24 hours;
-        faucetDripAmount = 1 ether;
-        maxReceiveAmount = 100 ether;
+        faucetDripAmount = 1 * 10 ** 18;
+        maxReceiveAmount = 100 * 10 ** 18;
         tokenNFTCheck = true;
 
         __Pausable_init();
