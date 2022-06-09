@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "../../interfaces/IPlushLifeSpanNFTCashbackPool.sol";
+
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -8,9 +10,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-import "../../interfaces/IPlushLifeSpanNFTCashbackPool.sol";
-
-contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushLifeSpanNFTCashbackPool {
+contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
@@ -105,7 +105,8 @@ contract PlushLifeSpanNFTCashbackPool is Initializable, PausableUpgradeable, Acc
     function withdraw(uint256 amount) external {
         require(plush.balanceOf(address(this)) >= amount, "Pool is empty.");
         require(getAvailableBalanceInAccount(msg.sender) >= amount, "Not enough balance.");
-        require(plush.transfer(msg.sender, amount), "Transaction error.");
+
+        plush.safeTransfer(msg.sender, amount);
 
         decreaseWalletAmount(msg.sender, amount);
 

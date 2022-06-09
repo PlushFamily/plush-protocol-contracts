@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "./interfaces/IPlushApps.sol";
+
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-import "./interfaces/IPlushApps.sol";
-
 /// @custom:security-contact security@plush.family
-contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushApps {
+contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     mapping(address => Apps) public appsList;
 
     /**
@@ -68,6 +68,18 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         }
 
         return false;
+    }
+
+
+    /**
+     * @notice Get app status (enable/disable)
+     * @param controllerAddress app controller address
+     * @return app enable status in boolean
+     */
+    function getAppStatus(address controllerAddress) public view returns (bool) {
+        require(appsList[controllerAddress].exists, "Application doesn't exist");
+
+        return appsList[controllerAddress].active;
     }
 
     /**
@@ -145,17 +157,6 @@ contract PlushApps is Initializable, PausableUpgradeable, AccessControlUpgradeab
         delete appsList[oldControllerAddress];
 
         emit AppControllerAddressUpdated(oldControllerAddress, newControllerAddress);
-    }
-
-    /**
-     * @notice Get app status (enable/disable)
-     * @param controllerAddress app controller address
-     * @return app enable status in boolean
-     */
-    function getAppStatus(address controllerAddress) public view returns (bool) {
-        require(appsList[controllerAddress].exists, "Application doesn't exist");
-
-        return appsList[controllerAddress].active;
     }
 
     function _authorizeUpgrade(address newImplementation)

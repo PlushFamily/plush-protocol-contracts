@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "../interfaces/IPlushGetLifeSpan.sol";
+
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-import "../interfaces/IPlushGetLifeSpan.sol";
-
 import "../token/ERC721/LifeSpan.sol";
 import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";
 
 /// @custom:security-contact security@plush.family
-contract PlushGetLifeSpan is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushGetLifeSpan {
+contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     LifeSpan public lifeSpan;
     PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
 

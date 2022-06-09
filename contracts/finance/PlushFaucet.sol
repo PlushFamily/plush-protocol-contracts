@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.3;
 
+import "../interfaces/IPlushFaucet.sol";
+import "../interfaces/IPlushAccounts.sol";
+
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -8,12 +11,9 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-import "../interfaces/IPlushFaucet.sol";
-import "../interfaces/IPlushAccounts.sol";
-
 import "../token/ERC721/LifeSpan.sol";
 
-contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushFaucet {
+contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
@@ -84,9 +84,7 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
         nextRequestAt[msg.sender] = block.timestamp + faucetTimeLimit;
         alreadyReceived[msg.sender] += faucetDripAmount;
 
-        plush.approve(address(plushAccounts), faucetDripAmount);
-
-        require(plush.allowance(address(this), address(plushAccounts)) >= faucetDripAmount, "Not enough allowance");
+        plush.safeApprove(address(plushAccounts), faucetDripAmount);
 
         plushAccounts.deposit(msg.sender, faucetDripAmount);
 
@@ -144,7 +142,8 @@ contract PlushFaucet is Initializable, PausableUpgradeable, AccessControlUpgrade
      */
     function withdraw(uint256 amount, address receiver) external onlyRole(BANKER_ROLE) {
         require(plush.balanceOf(address(this)) >= amount, "The faucet is empty");
-        require(plush.transfer(receiver, amount), "Transaction error");
+
+        plush.safeTransfer(receiver, amount);
 
         emit TokensWithdrawn(msg.sender, receiver, amount);
     }

@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "../interfaces/IPlushAccounts.sol";
+import "../interfaces/IPlushApps.sol";
+
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -8,10 +11,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-import "../interfaces/IPlushAccounts.sol";
-import "../interfaces/IPlushApps.sol";
-
-contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, IPlushAccounts {
+contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
@@ -64,16 +64,15 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
      * @param amount the amount to be deposited in tokens
      */
     function deposit(address account, uint256 amount) public {
-        if (plushApps.getAppExists(account) == true){
+        if (plushApps.getAppExists(account) == true) {
             require(plushApps.getAppStatus(account), "The controller isn't active");
         }
 
         require(amount >= minimumDeposit, "Less than minimum deposit");
-        require(plush.balanceOf(msg.sender) >= amount, "Insufficient funds");
-        require(plush.allowance(msg.sender, address(this)) >= amount, "Not enough allowance");
-        require(plush.transferFrom(msg.sender, address(this), amount), "Transaction error");
 
         accounts[account].balance += amount;
+
+        plush.safeTransferFrom(msg.sender, address(this), amount);
 
         emit Deposited(msg.sender, account, amount);
     }
@@ -88,7 +87,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
 
         accounts[msg.sender].balance -= amount;
 
-        require(plush.transfer(msg.sender, amount), "Transaction error");
+        plush.safeTransfer(msg.sender, amount);
 
         emit Withdrawn(msg.sender, amount);
     }
@@ -104,7 +103,7 @@ contract PlushAccounts is Initializable, PausableUpgradeable, AccessControlUpgra
 
         accounts[msg.sender].balance -= amount;
 
-        require(plush.transfer(account, amount), "Transaction error");
+        plush.safeTransfer(account, amount);
 
         emit ControllerWithdrawn(msg.sender, account, amount);
     }
