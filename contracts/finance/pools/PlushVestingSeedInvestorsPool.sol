@@ -61,7 +61,7 @@ contract PlushVestingSeedInvestorsPool is IPlushVestingSeedInvestorsPool, Initia
         isIDO = false;
         isSold = false;
         isReserved = false;
-        timeRemuneration = 50;
+        timeRemuneration = 1 days;
 
         __Pausable_init();
         __AccessControl_init();
