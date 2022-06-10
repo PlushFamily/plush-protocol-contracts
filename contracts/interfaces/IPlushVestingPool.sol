@@ -38,7 +38,7 @@ interface IPlushVestingPool {
 
     /// @notice Emitted when release at IDO
     event ReleaseIDO(
-        address indexed receiver,
+        address indexed sender,
         uint256 time
     );
 }
