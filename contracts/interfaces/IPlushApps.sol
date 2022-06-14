@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 interface IPlushApps {
-
     struct Apps {
         bytes32 name;
         uint256 fee;
@@ -22,14 +21,21 @@ interface IPlushApps {
      * @param controllerAddress App controller address
      * @param fee App ecosystem fee in wei
      */
-    function addNewApp(bytes32 name, address controllerAddress, uint256 fee) external;
+    function addNewApp(
+        bytes32 name,
+        address controllerAddress,
+        uint256 fee
+    ) external;
 
     /**
      * @notice Check if the application exists
      * @param controllerAddress App controller address
      * @return boolean exists status
      */
-    function getAppExists(address controllerAddress) external view returns (bool);
+    function getAppExists(address controllerAddress)
+        external
+        view
+        returns (bool);
 
     /**
      * @notice Delete app from PlushApps
@@ -42,7 +48,10 @@ interface IPlushApps {
      * @param controllerAddress controller address
      * @return App fee
      */
-    function getFeeApp(address controllerAddress) external view returns (uint256);
+    function getFeeApp(address controllerAddress)
+        external
+        view
+        returns (uint256);
 
     /**
      * @notice Change fee app
@@ -68,14 +77,20 @@ interface IPlushApps {
      * @param oldControllerAddress exist controller application address
      * @param newControllerAddress new controller application address
      */
-    function setNewController(address oldControllerAddress, address newControllerAddress) external;
+    function setNewController(
+        address oldControllerAddress,
+        address newControllerAddress
+    ) external;
 
     /**
      * @notice Get app status (enable/disable)
      * @param controllerAddress app controller address
      * @return app enable status in boolean
      */
-    function getAppStatus(address controllerAddress) external view returns (bool);
+    function getAppStatus(address controllerAddress)
+        external
+        view
+        returns (bool);
 
     /// @notice Emitted when app is added
     event AppAdded(
@@ -85,25 +100,16 @@ interface IPlushApps {
     );
 
     /// @notice Emitted when app has been deleted
-    event AppDeleted(
-        address indexed controllerAddress
-    );
+    event AppDeleted(address indexed controllerAddress);
 
     /// @notice Emitted when app fee was changed
-    event AppFeeChanged(
-        address indexed controllerAddress,
-        uint256 fee
-    );
+    event AppFeeChanged(address indexed controllerAddress, uint256 fee);
 
     /// @notice Emitted when enable app
-    event AppEnabled(
-        address indexed controllerAddress
-    );
+    event AppEnabled(address indexed controllerAddress);
 
     /// @notice Emitted when disable app
-    event AppDisabled(
-        address indexed controllerAddress
-    );
+    event AppDisabled(address indexed controllerAddress);
 
     /// @notice Emitted changed controlled address
     event AppControllerAddressUpdated(

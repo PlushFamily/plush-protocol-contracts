@@ -10,7 +10,13 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushVestingPool is
+    IPlushVestingPool,
+    Initializable,
+    PausableUpgradeable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
+{
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
@@ -37,7 +43,11 @@ contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeab
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(IERC20Upgradeable _plush, uint256 _mainPercent, uint256 _daysUnlock) initializer public {
+    function initialize(
+        IERC20Upgradeable _plush,
+        uint256 _mainPercent,
+        uint256 _daysUnlock
+    ) public initializer {
         plush = _plush;
         mainPercent = _mainPercent;
         daysUnlock = _daysUnlock;
@@ -69,20 +79,29 @@ contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeab
      * @notice Returns how many tokens are locked
      * @return Number of tokens in wei
      */
-    function getLockBalance() public view returns(uint256) {
-        if(isIDO){
+    function getLockBalance() public view returns (uint256) {
+        if (isIDO) {
             uint256 amountUnlockRemuneration = 0;
 
-            for(uint256 i = 0; i < (block.timestamp - timeStart) / timeRemuneration; i++){
+            for (
+                uint256 i = 0;
+                i < (block.timestamp - timeStart) / timeRemuneration;
+                i++
+            ) {
                 amountUnlockRemuneration += amountDaily;
             }
 
-            if(unlockBalance + amountUnlockRemuneration > plush.balanceOf(address(this))){
+            if (
+                unlockBalance + amountUnlockRemuneration >
+                plush.balanceOf(address(this))
+            ) {
                 return 0;
-            }else{
-                return plush.balanceOf(address(this)) - (unlockBalance + amountUnlockRemuneration);
+            } else {
+                return
+                    plush.balanceOf(address(this)) -
+                    (unlockBalance + amountUnlockRemuneration);
             }
-        }else{
+        } else {
             return plush.balanceOf(address(this));
         }
     }
@@ -91,20 +110,27 @@ contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeab
      * @notice Returns how many tokens are unlock
      * @return Number of tokens in wei
      */
-    function getUnLockBalance() public view returns(uint256) {
-        if(isIDO){
+    function getUnLockBalance() public view returns (uint256) {
+        if (isIDO) {
             uint256 amountUnlockRemuneration = 0;
 
-            for(uint256 i = 0; i < (block.timestamp - timeStart) / timeRemuneration; i++){
+            for (
+                uint256 i = 0;
+                i < (block.timestamp - timeStart) / timeRemuneration;
+                i++
+            ) {
                 amountUnlockRemuneration += amountDaily;
             }
 
-            if(unlockBalance + amountUnlockRemuneration > plush.balanceOf(address(this))){
+            if (
+                unlockBalance + amountUnlockRemuneration >
+                plush.balanceOf(address(this))
+            ) {
                 return plush.balanceOf(address(this));
-            }else{
+            } else {
                 return unlockBalance + amountUnlockRemuneration;
             }
-        }else{
+        } else {
             return 0;
         }
     }
@@ -121,7 +147,7 @@ contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeab
 
         uint256 timePast = block.timestamp - timeStart;
 
-        while(timePast > timeRemuneration){
+        while (timePast > timeRemuneration) {
             timePast -= timeRemuneration;
         }
 
@@ -138,8 +164,10 @@ contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeab
     function releaseAtIDO() external onlyRole(OPERATOR_ROLE) {
         require(!isIDO, "Already complete");
 
-        unlockBalance = plush.balanceOf(address(this)) * mainPercent / 100000;
-        amountDaily = (plush.balanceOf(address(this)) - unlockBalance) / daysUnlock;
+        unlockBalance = (plush.balanceOf(address(this)) * mainPercent) / 100000;
+        amountDaily =
+            (plush.balanceOf(address(this)) - unlockBalance) /
+            daysUnlock;
         timeStart = block.timestamp;
         isIDO = true;
 
@@ -147,8 +175,8 @@ contract PlushVestingPool is IPlushVestingPool, Initializable, PausableUpgradeab
     }
 
     function _authorizeUpgrade(address newImplementation)
-    internal
-    onlyRole(UPGRADER_ROLE)
-    override
+        internal
+        override
+        onlyRole(UPGRADER_ROLE)
     {}
 }

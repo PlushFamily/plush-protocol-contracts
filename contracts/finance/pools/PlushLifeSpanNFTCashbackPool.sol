@@ -10,7 +10,13 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushLifeSpanNFTCashbackPool is
+    IPlushLifeSpanNFTCashbackPool,
+    Initializable,
+    PausableUpgradeable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
+{
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
@@ -34,7 +40,11 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(IERC20Upgradeable _plush, uint256 _remuneration, uint256 _timeUnlock) initializer public {
+    function initialize(
+        IERC20Upgradeable _plush,
+        uint256 _remuneration,
+        uint256 _timeUnlock
+    ) public initializer {
         plush = _plush;
         remuneration = _remuneration;
         timeUnlock = _timeUnlock;
@@ -66,7 +76,10 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
      * @param account address to add remuneration
      * @param amount of tokens in wei
      */
-    function addRemunerationToAccountManually(address account, uint256 amount) public onlyRole(OPERATOR_ROLE) {
+    function addRemunerationToAccountManually(address account, uint256 amount)
+        public
+        onlyRole(OPERATOR_ROLE)
+    {
         require(getFreeTokensInContract() >= amount, "Not enough funds");
 
         uint256 id = idsBalances[account].length;
@@ -83,7 +96,10 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
      * @notice Add remuneration to account
      * @param account address to add remuneration
      */
-    function addRemunerationToAccount(address account) public onlyRole(REMUNERATION_ROLE) {
+    function addRemunerationToAccount(address account)
+        public
+        onlyRole(REMUNERATION_ROLE)
+    {
         if (getFreeTokensInContract() >= remuneration) {
             uint256 id = idsBalances[account].length;
 
@@ -91,7 +107,10 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
             idsBalances[account].push(id);
 
             if (unlockAllTokens) {
-                balanceInfo[id] = Balance(remuneration, block.timestamp + timeUnlock);
+                balanceInfo[id] = Balance(
+                    remuneration,
+                    block.timestamp + timeUnlock
+                );
             } else {
                 balanceInfo[id] = Balance(remuneration, 0);
             }
@@ -104,7 +123,10 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
      */
     function withdraw(uint256 amount) external {
         require(plush.balanceOf(address(this)) >= amount, "Pool is empty.");
-        require(getAvailableBalanceInAccount(msg.sender) >= amount, "Not enough balance.");
+        require(
+            getAvailableBalanceInAccount(msg.sender) >= amount,
+            "Not enough balance."
+        );
 
         plush.safeTransfer(msg.sender, amount);
 
@@ -141,11 +163,28 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
      * @param account address
      * @return array of lock and unlock tokens
      */
-    function getWalletAmount(address account) external view returns (uint256[] memory, uint256[] memory, uint256[] memory, uint256[] memory) {
-        uint256[] memory availableBalance = new uint256[](idsBalances[account].length);
-        uint256[] memory availableTimeIsActive = new uint256[](idsBalances[account].length);
-        uint256[] memory unavailableBalance = new uint256[](idsBalances[account].length);
-        uint256[] memory unavailableTimeIsActive = new uint256[](idsBalances[account].length);
+    function getWalletAmount(address account)
+        external
+        view
+        returns (
+            uint256[] memory,
+            uint256[] memory,
+            uint256[] memory,
+            uint256[] memory
+        )
+    {
+        uint256[] memory availableBalance = new uint256[](
+            idsBalances[account].length
+        );
+        uint256[] memory availableTimeIsActive = new uint256[](
+            idsBalances[account].length
+        );
+        uint256[] memory unavailableBalance = new uint256[](
+            idsBalances[account].length
+        );
+        uint256[] memory unavailableTimeIsActive = new uint256[](
+            idsBalances[account].length
+        );
 
         for (uint256 i = 0; i < idsBalances[account].length; i++) {
             if (unlockAllTokens || balanceInfo[i].timeIsActive != 0) {
@@ -162,7 +201,12 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
             }
         }
 
-        return (availableBalance, availableTimeIsActive, unavailableBalance, unavailableTimeIsActive);
+        return (
+            availableBalance,
+            availableTimeIsActive,
+            unavailableBalance,
+            unavailableTimeIsActive
+        );
     }
 
     /**
@@ -199,7 +243,11 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
      * @notice Get available tokens in the account
      * @return amount of tokens in wei
      */
-    function getAvailableBalanceInAccount(address account) private view returns (uint256) {
+    function getAvailableBalanceInAccount(address account)
+        private
+        view
+        returns (uint256)
+    {
         uint256 availableBalance = 0;
 
         for (uint256 i = 0; i < idsBalances[account].length; i++) {
@@ -256,8 +304,8 @@ contract PlushLifeSpanNFTCashbackPool is IPlushLifeSpanNFTCashbackPool, Initiali
     }
 
     function _authorizeUpgrade(address newImplementation)
-    internal
-    onlyRole(UPGRADER_ROLE)
-    override
+        internal
+        override
+        onlyRole(UPGRADER_ROLE)
     {}
 }

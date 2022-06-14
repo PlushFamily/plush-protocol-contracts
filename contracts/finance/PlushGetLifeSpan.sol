@@ -12,11 +12,17 @@ import "../token/ERC721/LifeSpan.sol";
 import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";
 
 /// @custom:security-contact security@plush.family
-contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushGetLifeSpan is
+    IPlushGetLifeSpan,
+    Initializable,
+    PausableUpgradeable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
+{
     LifeSpan public lifeSpan;
     PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
 
-    address payable private feeAddress;  // Address for fee transfer
+    address payable private feeAddress; // Address for fee transfer
 
     uint256 public mintPrice;
     bool public denyMultipleMinting;
@@ -33,7 +39,11 @@ contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeab
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(LifeSpan _lifeSpan, PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool, address payable _feeAddress) initializer public {
+    function initialize(
+        LifeSpan _lifeSpan,
+        PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool,
+        address payable _feeAddress
+    ) public initializer {
         plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         lifeSpan = _lifeSpan;
         feeAddress = _feeAddress;
@@ -81,7 +91,10 @@ contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeab
      * @notice Change mint price
      * @param newPrice new LifeSpan token mint price
      */
-    function changeMintPrice(uint256 newPrice) external onlyRole(OPERATOR_ROLE) {
+    function changeMintPrice(uint256 newPrice)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
         mintPrice = newPrice;
 
         emit MintPriceChanged(newPrice);
@@ -109,7 +122,10 @@ contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeab
      * @notice Set new LifeSpan contract address
      * @param _address new LifeSpan contract address
      */
-    function setLifeSpanAddress(address _address) external onlyRole(OPERATOR_ROLE) {
+    function setLifeSpanAddress(address _address)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
         lifeSpan = LifeSpan(_address);
 
         emit LifeSpanAddressChanged(_address);
@@ -139,7 +155,10 @@ contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeab
         require(msg.value == mintPrice, "Incorrect amount");
 
         if (denyMultipleMinting) {
-            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "Already has a LifeSpan token");
+            require(
+                lifeSpan.balanceOf(mintAddress) > 0 == false,
+                "Already has a LifeSpan token"
+            );
         }
 
         lifeSpan.safeMint(mintAddress);
@@ -154,7 +173,10 @@ contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeab
      */
     function freeMint(address mintAddress) public onlyRole(STAFF_ROLE) {
         if (denyMultipleMinting) {
-            require(lifeSpan.balanceOf(mintAddress) > 0 == false, "Already has a LifeSpan token");
+            require(
+                lifeSpan.balanceOf(mintAddress) > 0 == false,
+                "Already has a LifeSpan token"
+            );
         }
 
         lifeSpan.safeMint(mintAddress);
@@ -167,17 +189,20 @@ contract PlushGetLifeSpan is IPlushGetLifeSpan, Initializable, PausableUpgradeab
      * @param amount withdraw amount
      */
     function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
-        require(amount <= address(this).balance, "The withdrawal amount exceeds the contract balance");
+        require(
+            amount <= address(this).balance,
+            "The withdrawal amount exceeds the contract balance"
+        );
 
-        (bool success,) = feeAddress.call{value : amount}("");
+        (bool success, ) = feeAddress.call{value: amount}("");
         require(success, "Withdrawal Error");
 
         emit FeeWithdrawn(amount, feeAddress);
     }
 
     function _authorizeUpgrade(address newImplementation)
-    internal
-    onlyRole(UPGRADER_ROLE)
-    override
+        internal
+        override
+        onlyRole(UPGRADER_ROLE)
     {}
 }

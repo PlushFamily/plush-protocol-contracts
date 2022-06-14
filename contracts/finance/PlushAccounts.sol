@@ -11,7 +11,13 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushAccounts is
+    IPlushAccounts,
+    Initializable,
+    PausableUpgradeable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
+{
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
@@ -31,7 +37,11 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(IERC20Upgradeable _plush, IPlushApps _plushApps, address _plushFeeAddress) initializer public {
+    function initialize(
+        IERC20Upgradeable _plush,
+        IPlushApps _plushApps,
+        address _plushFeeAddress
+    ) public initializer {
         plushApps = _plushApps;
         plush = _plush;
         plushFeeAddress = _plushFeeAddress;
@@ -63,7 +73,10 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      */
     function deposit(address account, uint256 amount) public {
         if (plushApps.getAppExists(account) == true) {
-            require(plushApps.getAppStatus(account), "The controller isn't active");
+            require(
+                plushApps.getAppStatus(account),
+                "The controller isn't active"
+            );
         }
 
         require(amount > 0, "The deposit amount cannot be zero");
@@ -81,7 +94,10 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      */
     function withdraw(uint256 amount) external {
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
-        require(plushApps.getAppExists(msg.sender) == false, "The wallet is a controller");
+        require(
+            plushApps.getAppExists(msg.sender) == false,
+            "The wallet is a controller"
+        );
 
         accounts[msg.sender].balance -= amount;
 
@@ -97,7 +113,10 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      */
     function withdrawByController(address account, uint256 amount) external {
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
-        require(plushApps.getAppStatus(msg.sender), "The controller isn't active");
+        require(
+            plushApps.getAppStatus(msg.sender),
+            "The controller isn't active"
+        );
 
         accounts[msg.sender].balance -= amount;
 
@@ -113,7 +132,10 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      */
     function internalTransfer(address account, uint256 amount) external {
         if (plushApps.getAppExists(msg.sender) == true) {
-            require(plushApps.getAppStatus(msg.sender), "The controller isn't active");
+            require(
+                plushApps.getAppStatus(msg.sender),
+                "The controller isn't active"
+            );
         }
 
         require(accounts[msg.sender].balance >= amount, "Insufficient funds");
@@ -131,9 +153,12 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      */
     function decreaseAccountBalance(address account, uint256 amount) public {
         require(accounts[account].balance >= amount, "Insufficient funds");
-        require(plushApps.getAppStatus(msg.sender), "The controller isn't active");
+        require(
+            plushApps.getAppStatus(msg.sender),
+            "The controller isn't active"
+        );
 
-        uint256 percent = amount * plushApps.getFeeApp(msg.sender) / 100000; // Plush fee
+        uint256 percent = (amount * plushApps.getFeeApp(msg.sender)) / 100000; // Plush fee
 
         accounts[account].balance -= amount;
         accounts[msg.sender].balance += amount - percent;
@@ -155,7 +180,11 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      * @param account requesting account
      * @return account balance in wei
      */
-    function getAccountBalance(address account) external view returns (uint256) {
+    function getAccountBalance(address account)
+        external
+        view
+        returns (uint256)
+    {
         return accounts[account].balance;
     }
 
@@ -163,7 +192,10 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
      * @notice Set Plush fee address
      * @param account fee address
      */
-    function setPlushFeeAddress(address account) external onlyRole(OPERATOR_ROLE) {
+    function setPlushFeeAddress(address account)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
         plushFeeAddress = account;
     }
 
@@ -176,8 +208,8 @@ contract PlushAccounts is IPlushAccounts, Initializable, PausableUpgradeable, Ac
     }
 
     function _authorizeUpgrade(address newImplementation)
-    internal
-    onlyRole(UPGRADER_ROLE)
-    override
+        internal
+        override
+        onlyRole(UPGRADER_ROLE)
     {}
 }

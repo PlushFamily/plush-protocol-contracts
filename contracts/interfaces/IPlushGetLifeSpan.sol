@@ -76,30 +76,17 @@ interface IPlushGetLifeSpan {
     );
 
     /// @notice Emitted when LifeSpan token has been minted by user with STAFF role
-    event TokenFreeMinted(
-        address indexed staffer,
-        address indexed recipient
-    );
+    event TokenFreeMinted(address indexed staffer, address indexed recipient);
 
     /// @notice Emitted when LifeSpan token mint price has been changed
-    event MintPriceChanged(
-        uint256 newPrice
-    );
+    event MintPriceChanged(uint256 newPrice);
 
     /// @notice Emitted when feee address has been changed
-    event FeeAddressChanged(
-        address indexed feeAddress
-    );
+    event FeeAddressChanged(address indexed feeAddress);
 
     /// @notice Emitted when LifeSpan contract address has been changed
-    event LifeSpanAddressChanged(
-        address indexed lifeSpanAddress
-    );
+    event LifeSpanAddressChanged(address indexed lifeSpanAddress);
 
     /// @notice Emitted when was the fee withdrawn
-    event FeeWithdrawn(
-        uint256 amount,
-        address indexed feeAddress
-    );
-
+    event FeeWithdrawn(uint256 amount, address indexed feeAddress);
 }

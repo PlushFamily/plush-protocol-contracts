@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 interface IPlushLifeSpanNFTCashbackPool {
-
     struct Balance {
         uint256 balance;
         uint256 timeIsActive;
@@ -19,10 +18,11 @@ interface IPlushLifeSpanNFTCashbackPool {
      * @param account address to add remuneration
      * @param amount of tokens in wei
      */
-    function addRemunerationToAccountManually(address account, uint256 amount) external;
+    function addRemunerationToAccountManually(address account, uint256 amount)
+        external;
 
     /**
-    * @notice Add remuneration to account
+     * @notice Add remuneration to account
      * @param account address to add remuneration
      */
     function addRemunerationToAccount(address account) external;
@@ -55,7 +55,15 @@ interface IPlushLifeSpanNFTCashbackPool {
      * @param account address
      * @return array of lock and unlock tokens
      */
-    function getWalletAmount(address account) external view returns (uint256[] memory, uint256[] memory, uint256[] memory, uint256[] memory);
+    function getWalletAmount(address account)
+        external
+        view
+        returns (
+            uint256[] memory,
+            uint256[] memory,
+            uint256[] memory,
+            uint256[] memory
+        );
 
     /**
      * @notice Get remuneration
@@ -70,10 +78,7 @@ interface IPlushLifeSpanNFTCashbackPool {
     function getTimeUnlock() external view returns (uint256);
 
     /// @notice Emitted when user withdrawal unlocked tokens
-    event WithdrawalTokens(
-        address indexed receiver,
-        uint256 amount
-    );
+    event WithdrawalTokens(address indexed receiver, uint256 amount);
 
     /// @notice Emitted when added remuneration to account manually
     event RemunerationManually(

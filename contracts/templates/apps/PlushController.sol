@@ -11,8 +11,13 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-contract PlushController is IPlushController, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-
+contract PlushController is
+    IPlushController,
+    Initializable,
+    PausableUpgradeable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
+{
     uint256 public constant version = 4;
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -20,7 +25,7 @@ contract PlushController is IPlushController, Initializable, PausableUpgradeable
     IERC20Upgradeable public plush;
     IPlushAccounts public plushAccounts;
 
-    mapping(address => uint) public indexApps;
+    mapping(address => uint256) public indexApps;
     address[] public appAddresses;
 
     /**
@@ -35,7 +40,10 @@ contract PlushController is IPlushController, Initializable, PausableUpgradeable
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(IERC20Upgradeable plushAddress, IPlushAccounts plushAccountsAddress) initializer public {
+    function initialize(
+        IERC20Upgradeable plushAddress,
+        IPlushAccounts plushAccountsAddress
+    ) public initializer {
         plush = plushAddress;
         plushAccounts = plushAccountsAddress;
 
@@ -64,8 +72,14 @@ contract PlushController is IPlushController, Initializable, PausableUpgradeable
      * @notice Adding a new application address
      * @param appAddress contract address
      */
-    function addNewAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
-        require(indexApps[appAddress] > 0 == false, "Application doesn't exist");
+    function addNewAppAddress(address appAddress)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        require(
+            indexApps[appAddress] > 0 == false,
+            "Application doesn't exist"
+        );
 
         indexApps[appAddress] = appAddresses.length + 1;
         appAddresses.push(appAddress);
@@ -79,7 +93,10 @@ contract PlushController is IPlushController, Initializable, PausableUpgradeable
      * @notice Removing an application from the controller's application database
      * @param appAddress contract address
      */
-    function deleteAppAddress(address appAddress) external onlyRole(OPERATOR_ROLE) {
+    function deleteAppAddress(address appAddress)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
         require(indexApps[appAddress] > 0, "Application doesn't exist");
 
         delete appAddresses[indexApps[appAddress] - 1];
@@ -102,7 +119,7 @@ contract PlushController is IPlushController, Initializable, PausableUpgradeable
      * @notice Withdrawal of tokens from the controller's balance
      * @param amount number of tokens to be withdrawn in wei
      */
-    function withdraw(uint256 amount) external onlyRole(BANKER_ROLE)  {
+    function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
         require(getBalance() >= amount, "Insufficient funds");
 
         plushAccounts.withdrawByController(msg.sender, amount);
@@ -123,7 +140,10 @@ contract PlushController is IPlushController, Initializable, PausableUpgradeable
      * @param account user account
      * @param amount amount of tokens debited
      */
-    function decreaseAccountBalance(address account, uint256 amount) external onlyRole(APP_ROLE) {
+    function decreaseAccountBalance(address account, uint256 amount)
+        external
+        onlyRole(APP_ROLE)
+    {
         plushAccounts.decreaseAccountBalance(account, amount);
 
         emit BalanceDecreased(msg.sender, account, amount);
@@ -134,15 +154,18 @@ contract PlushController is IPlushController, Initializable, PausableUpgradeable
      * @param account receiver address
      * @param amount transfer amount
      */
-    function increaseAccountBalance(address account, uint256 amount) external onlyRole(APP_ROLE) {
+    function increaseAccountBalance(address account, uint256 amount)
+        external
+        onlyRole(APP_ROLE)
+    {
         plushAccounts.internalTransfer(account, amount);
 
         emit BalanceIncreased(msg.sender, account, amount);
     }
 
     function _authorizeUpgrade(address newImplementation)
-    internal
-    onlyRole(UPGRADER_ROLE)
-    override
+        internal
+        override
+        onlyRole(UPGRADER_ROLE)
     {}
 }

@@ -12,13 +12,13 @@ interface IPlushVestingPool {
      * @notice Returns how many tokens are locked
      * @return Number of tokens in wei
      */
-    function getLockBalance() external view returns(uint256);
+    function getLockBalance() external view returns (uint256);
 
     /**
-    * @notice Returns how many tokens are unlock
+     * @notice Returns how many tokens are unlock
      * @return Number of tokens in wei
      */
-    function getUnLockBalance() external view returns(uint256);
+    function getUnLockBalance() external view returns (uint256);
 
     /**
      * @notice Withdrawal of unlocked tokens
@@ -31,14 +31,8 @@ interface IPlushVestingPool {
     function releaseAtIDO() external;
 
     /// @notice Emitted when user withdrawal unlocked tokens
-    event WithdrawalTokens(
-        address indexed receiver,
-        uint256 amount
-    );
+    event WithdrawalTokens(address indexed receiver, uint256 amount);
 
     /// @notice Emitted when release at IDO
-    event ReleaseIDO(
-        address indexed receiver,
-        uint256 time
-    );
+    event ReleaseIDO(address indexed receiver, uint256 time);
 }

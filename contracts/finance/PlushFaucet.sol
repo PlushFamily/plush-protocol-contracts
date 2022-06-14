@@ -13,7 +13,13 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 import "../token/ERC721/LifeSpan.sol";
 
-contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushFaucet is
+    IPlushFaucet,
+    Initializable,
+    PausableUpgradeable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
+{
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
@@ -39,14 +45,18 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(IERC20Upgradeable _plush, LifeSpan _lifeSpan, IPlushAccounts _plushAccounts) initializer public {
+    function initialize(
+        IERC20Upgradeable _plush,
+        LifeSpan _lifeSpan,
+        IPlushAccounts _plushAccounts
+    ) public initializer {
         plush = _plush;
         lifeSpan = _lifeSpan;
         plushAccounts = _plushAccounts;
 
         faucetTimeLimit = 24 hours;
-        faucetDripAmount = 1 * 10 ** 18;
-        maxReceiveAmount = 100 * 10 ** 18;
+        faucetDripAmount = 1 * 10**18;
+        maxReceiveAmount = 100 * 10**18;
         tokenNFTCheck = true;
 
         __Pausable_init();
@@ -72,12 +82,21 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
 
     /// @notice Get tokens from faucet
     function send() external {
-        require(plush.balanceOf(address(this)) >= faucetDripAmount, "The faucet is empty");
+        require(
+            plush.balanceOf(address(this)) >= faucetDripAmount,
+            "The faucet is empty"
+        );
         require(nextRequestAt[msg.sender] < block.timestamp, "Try again later");
-        require(alreadyReceived[msg.sender] < maxReceiveAmount, "Quantity limit");
+        require(
+            alreadyReceived[msg.sender] < maxReceiveAmount,
+            "Quantity limit"
+        );
 
         if (tokenNFTCheck) {
-            require(lifeSpan.balanceOf(msg.sender) > 0, "Required to have LifeSpan NFT");
+            require(
+                lifeSpan.balanceOf(msg.sender) > 0,
+                "Required to have LifeSpan NFT"
+            );
         }
 
         // Next request from the address can be made only after faucetTime
@@ -95,7 +114,10 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
      * @notice Set ERC-20 faucet token
      * @param newAddress contract address of new token
      */
-    function setTokenAddress(address newAddress) external onlyRole(OPERATOR_ROLE) {
+    function setTokenAddress(address newAddress)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
         plush = IERC20Upgradeable(newAddress);
     }
 
@@ -103,7 +125,10 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
      * @notice Set faucet drip amount
      * @param amount new faucet drip amount
      */
-    function setFaucetDripAmount(uint256 amount) external onlyRole(OPERATOR_ROLE) {
+    function setFaucetDripAmount(uint256 amount)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
         faucetDripAmount = amount;
     }
 
@@ -111,7 +136,10 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
      * @notice Set the maximum amount of tokens that a user can receive for the entire time
      * @param amount new maximum amount
      */
-    function setMaxReceiveAmount(uint256 amount) external onlyRole(OPERATOR_ROLE) {
+    function setMaxReceiveAmount(uint256 amount)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
         maxReceiveAmount = amount;
     }
 
@@ -140,8 +168,14 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
      * @param amount required token amount (ERC-20)
      * @param receiver address of the tokens recipient
      */
-    function withdraw(uint256 amount, address receiver) external onlyRole(BANKER_ROLE) {
-        require(plush.balanceOf(address(this)) >= amount, "The faucet is empty");
+    function withdraw(uint256 amount, address receiver)
+        external
+        onlyRole(BANKER_ROLE)
+    {
+        require(
+            plush.balanceOf(address(this)) >= amount,
+            "The faucet is empty"
+        );
 
         plush.safeTransfer(receiver, amount);
 
@@ -192,8 +226,15 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
      * @notice Return the time how long the user has to wait before using the faucet again
      * @return number of seconds (timestamp)
      */
-    function getUserTimeLimit(address receiver) external view returns (uint256) {
-        if (nextRequestAt[receiver] <= block.timestamp || nextRequestAt[receiver] == 0) {
+    function getUserTimeLimit(address receiver)
+        external
+        view
+        returns (uint256)
+    {
+        if (
+            nextRequestAt[receiver] <= block.timestamp ||
+            nextRequestAt[receiver] == 0
+        ) {
             return 0;
         }
 
@@ -204,21 +245,31 @@ contract PlushFaucet is IPlushFaucet, Initializable, PausableUpgradeable, Access
      * @notice Check whether the user can use the faucet
      * @return boolean
      */
-    function getCanTheAddressReceiveReward(address receiver) external view returns (bool) {
-        require(plush.balanceOf(address(this)) >= faucetDripAmount, "The faucet is empty");
+    function getCanTheAddressReceiveReward(address receiver)
+        external
+        view
+        returns (bool)
+    {
+        require(
+            plush.balanceOf(address(this)) >= faucetDripAmount,
+            "The faucet is empty"
+        );
         require(nextRequestAt[receiver] < block.timestamp, "Try again later");
         require(alreadyReceived[receiver] < maxReceiveAmount, "Quantity limit");
 
         if (tokenNFTCheck) {
-            require(lifeSpan.balanceOf(receiver) > 0, "Required to have LifeSpan NFT");
+            require(
+                lifeSpan.balanceOf(receiver) > 0,
+                "Required to have LifeSpan NFT"
+            );
         }
 
         return true;
     }
 
     function _authorizeUpgrade(address newImplementation)
-    internal
-    onlyRole(UPGRADER_ROLE)
-    override
+        internal
+        override
+        onlyRole(UPGRADER_ROLE)
     {}
 }

@@ -9,7 +9,13 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /// @custom:security-contact security@plush.family
-contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushApps is
+    IPlushApps,
+    Initializable,
+    PausableUpgradeable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
+{
     mapping(address => Apps) public appsList;
 
     /**
@@ -22,7 +28,7 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize() initializer public {
+    function initialize() public initializer {
         __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -49,8 +55,15 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
      * @param controllerAddress App controller address
      * @param fee App ecosystem fee in wei
      */
-    function addNewApp(bytes32 name, address controllerAddress, uint256 fee) external onlyRole(OPERATOR_ROLE) {
-        require(!appsList[controllerAddress].exists, "Application already exists");
+    function addNewApp(
+        bytes32 name,
+        address controllerAddress,
+        uint256 fee
+    ) external onlyRole(OPERATOR_ROLE) {
+        require(
+            !appsList[controllerAddress].exists,
+            "Application already exists"
+        );
 
         appsList[controllerAddress] = Apps(name, fee, true, true);
 
@@ -62,7 +75,11 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
      * @param controllerAddress App controller address
      * @return boolean exists status
      */
-    function getAppExists(address controllerAddress) public view returns (bool) {
+    function getAppExists(address controllerAddress)
+        public
+        view
+        returns (bool)
+    {
         if (appsList[controllerAddress].exists) {
             return true;
         }
@@ -70,14 +87,20 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
         return false;
     }
 
-
     /**
      * @notice Get app status (enable/disable)
      * @param controllerAddress app controller address
      * @return app enable status in boolean
      */
-    function getAppStatus(address controllerAddress) public view returns (bool) {
-        require(appsList[controllerAddress].exists, "Application doesn't exist");
+    function getAppStatus(address controllerAddress)
+        public
+        view
+        returns (bool)
+    {
+        require(
+            appsList[controllerAddress].exists,
+            "Application doesn't exist"
+        );
 
         return appsList[controllerAddress].active;
     }
@@ -86,8 +109,14 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
      * @notice Delete app from PlushApps
      * @param controllerAddress App controller address
      */
-    function deleteApp(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
-        require(appsList[controllerAddress].exists, "Application doesn't exist");
+    function deleteApp(address controllerAddress)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        require(
+            appsList[controllerAddress].exists,
+            "Application doesn't exist"
+        );
 
         delete appsList[controllerAddress];
 
@@ -99,8 +128,15 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
      * @param controllerAddress controller address
      * @return App fee
      */
-    function getFeeApp(address controllerAddress) public view returns (uint256) {
-        require(appsList[controllerAddress].exists, "Application doesn't exist");
+    function getFeeApp(address controllerAddress)
+        public
+        view
+        returns (uint256)
+    {
+        require(
+            appsList[controllerAddress].exists,
+            "Application doesn't exist"
+        );
 
         return appsList[controllerAddress].fee;
     }
@@ -110,8 +146,14 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
      * @param controllerAddress App controller address
      * @param fee App ecosystem fee in wei
      */
-    function setFeeApp(address controllerAddress, uint256 fee) external onlyRole(OPERATOR_ROLE) {
-        require(appsList[controllerAddress].exists, "Application doesn't exist");
+    function setFeeApp(address controllerAddress, uint256 fee)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        require(
+            appsList[controllerAddress].exists,
+            "Application doesn't exist"
+        );
 
         appsList[controllerAddress].fee = fee;
 
@@ -122,9 +164,18 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
      * @notice Activating the application
      * @param controllerAddress App controller address
      */
-    function setAppEnable(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
-        require(appsList[controllerAddress].exists, "Application doesn't exist");
-        require(!appsList[controllerAddress].active, "Application already enable");
+    function setAppEnable(address controllerAddress)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        require(
+            appsList[controllerAddress].exists,
+            "Application doesn't exist"
+        );
+        require(
+            !appsList[controllerAddress].active,
+            "Application already enable"
+        );
 
         appsList[controllerAddress].active = true;
 
@@ -135,9 +186,18 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
      * @notice Disabling the application
      * @param controllerAddress App controller address
      */
-    function setAppDisable(address controllerAddress) external onlyRole(OPERATOR_ROLE) {
-        require(appsList[controllerAddress].exists, "Application doesn't exist");
-        require(appsList[controllerAddress].active, "Application already disable");
+    function setAppDisable(address controllerAddress)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        require(
+            appsList[controllerAddress].exists,
+            "Application doesn't exist"
+        );
+        require(
+            appsList[controllerAddress].active,
+            "Application already disable"
+        );
 
         appsList[controllerAddress].active = false;
 
@@ -149,19 +209,31 @@ contract PlushApps is IPlushApps, Initializable, PausableUpgradeable, AccessCont
      * @param oldControllerAddress exist controller application address
      * @param newControllerAddress new controller application address
      */
-    function setNewController(address oldControllerAddress, address newControllerAddress) external onlyRole(OPERATOR_ROLE) {
-        require(appsList[oldControllerAddress].exists, "Application doesn't exist");
-        require(!appsList[newControllerAddress].exists, "New controller address is already in use");
+    function setNewController(
+        address oldControllerAddress,
+        address newControllerAddress
+    ) external onlyRole(OPERATOR_ROLE) {
+        require(
+            appsList[oldControllerAddress].exists,
+            "Application doesn't exist"
+        );
+        require(
+            !appsList[newControllerAddress].exists,
+            "New controller address is already in use"
+        );
 
         appsList[newControllerAddress] = appsList[oldControllerAddress];
         delete appsList[oldControllerAddress];
 
-        emit AppControllerAddressUpdated(oldControllerAddress, newControllerAddress);
+        emit AppControllerAddressUpdated(
+            oldControllerAddress,
+            newControllerAddress
+        );
     }
 
     function _authorizeUpgrade(address newImplementation)
-    internal
-    onlyRole(UPGRADER_ROLE)
-    override
+        internal
+        override
+        onlyRole(UPGRADER_ROLE)
     {}
 }
