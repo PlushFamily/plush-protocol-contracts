@@ -61,18 +61,12 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     }
 
     /// @notice Pause contract
-    function pause()
-    public
-    onlyRole(PAUSER_ROLE)
-    {
+    function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /// @notice Unpause contract
-    function unpause()
-    public
-    onlyRole(PAUSER_ROLE)
-    {
+    function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
@@ -83,10 +77,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param gender id of LifeSpan token
      * @param birthdayDate time in sec when the token(user) was born
      */
-    function safeMint(address to, string memory name, uint256 gender, uint256 birthdayDate)
-    public
-    onlyRole(MINTER_ROLE)
-    {
+    function safeMint(address to, string memory name, uint256 gender, uint256 birthdayDate) public onlyRole(MINTER_ROLE) {
         require(bytes(genders[gender].name).length != 0, "ERC721Metadata: Gender not exists");
         require(genders[gender].isActive, "ERC721Metadata: Gender not active");
 
@@ -149,10 +140,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param id of new gender
      * @param newGender name of new gender
      */
-    function addGender(uint256 id, string memory newGender)
-    public
-    onlyRole(OPERATOR_ROLE)
-    {
+    function addGender(uint256 id, string memory newGender) public onlyRole(OPERATOR_ROLE) {
         require(bytes(genders[id].name).length == 0, "ERC721Metadata: Gender already exists");
 
         genders[id].name = newGender;
@@ -164,10 +152,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param id of gender
      * @param isActive true or false
      */
-    function setIsActiveGender(uint256 id, bool isActive)
-    public
-    onlyRole(OPERATOR_ROLE)
-    {
+    function setIsActiveGender(uint256 id, bool isActive) public onlyRole(OPERATOR_ROLE) {
         require(bytes(genders[id].name).length != 0, "ERC721Metadata: Gender not exists");
 
         genders[id].isActive = isActive;
@@ -178,9 +163,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param tokenId id LifeSpan token
      * @param newName new name of LifeSpan token
      */
-    function updateName(uint256 tokenId, string memory newName)
-    public
-    {
+    function updateName(uint256 tokenId, string memory newName) public {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         require(ownerOf(tokenId) == msg.sender, "ERC721: you are not the owner of the token");
 
@@ -192,9 +175,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param tokenId id LifeSpan token
      * @param newGender id new gender of LifeSpan token
      */
-    function updateGender(uint256 tokenId, uint256 newGender)
-    public
-    {
+    function updateGender(uint256 tokenId, uint256 newGender) public {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         require(ownerOf(tokenId) == msg.sender, "ERC721: you are not the owner of the token");
         require(bytes(genders[newGender].name).length != 0, "ERC721Metadata: Gender not exists");
@@ -207,10 +188,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @notice Update external url LifeSpan
      * @param newExternalUrl sting of new link
      */
-    function updateExternalUrl(string memory newExternalUrl)
-    public
-    onlyRole(OPERATOR_ROLE)
-    {
+    function updateExternalUrl(string memory newExternalUrl) public onlyRole(OPERATOR_ROLE) {
         externalUrl = newExternalUrl;
     }
 
@@ -218,10 +196,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @notice Update generator images LifeSpan
      * @param newGeneratorIMGUrl sting of new link
      */
-    function updateGeneratorIMGUrl(string memory newGeneratorIMGUrl)
-    public
-    onlyRole(OPERATOR_ROLE)
-    {
+    function updateGeneratorIMGUrl(string memory newGeneratorIMGUrl) public onlyRole(OPERATOR_ROLE) {
         generatorImageUrl = newGeneratorIMGUrl;
     }
 
