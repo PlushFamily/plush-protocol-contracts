@@ -53,14 +53,20 @@ interface IPlushGetLifeSpan {
     /**
      * @notice Mint LifeSpan token
      * @param mintAddress where to enroll the LifeSpan token after minting
+     * @param name of token User (metadata)
+     * @param gender of token User (metadata)
+     * @param birthdayDate in sec of token User (metadata)
      */
-    function mint(address mintAddress) external payable;
+    function mint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) external payable;
 
     /**
      * @notice Free mint LifeSpan token for staffers
      * @param mintAddress where to enroll the LifeSpan token after minting
+     * @param name of token User (metadata)
+     * @param gender of token User (metadata)
+     * @param birthdayDate in sec of token User (metadata)
      */
-    function freeMint(address mintAddress) external;
+    function freeMint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) external;
 
     /**
      * @notice Withdraw mint fee on feeAddress

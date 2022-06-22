@@ -150,8 +150,11 @@ contract PlushGetLifeSpan is
     /**
      * @notice Mint LifeSpan token
      * @param mintAddress where to enroll the LifeSpan token after minting
+     * @param name of token User (metadata)
+     * @param gender of token User (metadata)
+     * @param birthdayDate in sec of token User (metadata)
      */
-    function mint(address mintAddress) public payable {
+    function mint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public payable {
         require(msg.value == mintPrice, "Incorrect amount");
 
         if (denyMultipleMinting) {
@@ -161,7 +164,7 @@ contract PlushGetLifeSpan is
             );
         }
 
-        lifeSpan.safeMint(mintAddress);
+        lifeSpan.safeMint(mintAddress, name, gender, birthdayDate);
         plushLifeSpanNFTCashbackPool.addRemunerationToAccount(mintAddress);
 
         emit TokenMinted(msg.sender, mintAddress, msg.value);
@@ -171,7 +174,7 @@ contract PlushGetLifeSpan is
      * @notice Free mint LifeSpan token for staffers
      * @param mintAddress where to enroll the LifeSpan token after minting
      */
-    function freeMint(address mintAddress) public onlyRole(STAFF_ROLE) {
+    function freeMint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public onlyRole(STAFF_ROLE) {
         if (denyMultipleMinting) {
             require(
                 lifeSpan.balanceOf(mintAddress) > 0 == false,
@@ -179,7 +182,7 @@ contract PlushGetLifeSpan is
             );
         }
 
-        lifeSpan.safeMint(mintAddress);
+        lifeSpan.safeMint(mintAddress, name, gender, birthdayDate);
 
         emit TokenFreeMinted(msg.sender, mintAddress);
     }

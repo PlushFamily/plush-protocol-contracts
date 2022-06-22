@@ -146,7 +146,7 @@ export default {
           },
         },
       },
-      'contracts/token/ERC721/PlushCoreToken.sol': {
+      'contracts/token/ERC721/LifeSpan.sol': {
         version: '0.8.14',
         settings: {
           optimizer: {
@@ -155,7 +155,7 @@ export default {
           },
         },
       },
-      'contracts/finance/PlushCoinWallets.sol': {
+      'contracts/finance/PlushAccounts.sol': {
         version: '0.8.14',
         settings: {
           optimizer: {
@@ -164,7 +164,7 @@ export default {
           },
         },
       },
-      'contracts/finance/PlushGetCoreToken.sol': {
+      'contracts/finance/PlushGetLifeSpan.sol': {
         version: '0.8.14',
         settings: {
           optimizer: {

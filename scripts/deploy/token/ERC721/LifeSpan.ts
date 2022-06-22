@@ -2,6 +2,7 @@ import { ethers, upgrades, run } from 'hardhat';
 import { constants } from 'ethers';
 
 import { DevContractsAddresses } from '../../../../arguments/development/consts';
+import { DevLinks } from '../../../../arguments/development/consts';
 
 const MINTER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('MINTER_ROLE'),
@@ -15,14 +16,26 @@ const UPGRADER_ROLE = ethers.utils.keccak256(
 
 async function main() {
   const LifeSpan = await ethers.getContractFactory('LifeSpan');
-  const lifeSpan = await upgrades.deployProxy(LifeSpan, {
-    kind: 'uups',
-  });
+  const lifeSpan = await upgrades.deployProxy(
+    LifeSpan,
+    [DevLinks.PLUSH_LIFESPAN_LINK, DevLinks.PLUSH_GENERATOR_IMG_LIFESPAN_LINK],
+    {
+      kind: 'uups',
+    },
+  );
 
   const signers = await ethers.getSigners();
 
   await lifeSpan.deployed();
   console.log('LifeSpan -> deployed to address:', lifeSpan.address);
+
+  console.log('Add genders...\n');
+
+  const male = await lifeSpan.addGender(0, 'MALE'); // MALE gender
+  await male.wait();
+
+  const female = await lifeSpan.addGender(1, 'FEMALE'); // FEMALE gender
+  await female.wait();
 
   console.log('Grant all roles for DAO Protocol...\n');
 
