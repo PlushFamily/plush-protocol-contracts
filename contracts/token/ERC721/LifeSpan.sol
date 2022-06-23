@@ -98,11 +98,11 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     returns (bytes memory)
     {
         bytes memory base = abi.encodePacked(
-            '{',
-            '"description":"Plush ecosystem avatar",',
-            '"external_url": "', externalUrl, tokenId.toString(), '",',
-            '"name": "', metaData[tokenId].name, '",',
-            '"image":"', generatorImageUrl, '",'
+            "{",
+            "'description':'Plush ecosystem avatar',",
+            "'external_url': '", externalUrl, tokenId.toString(), "',",
+            "'name': '", metaData[tokenId].name, "',",
+            "'image':'", generatorImageUrl, "',"
         );
 
         return base;
@@ -119,17 +119,17 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     returns (bytes memory)
     {
         bytes memory atr = abi.encodePacked(
-            '"attributes":',
-            '[{',
-            '"display_type":"date","trait_type":"birthday","value":"', metaData[tokenId].birthdayDate.toString(),
-                '?age=', metaData[tokenId].birthdayDate,
-                '&name=', metaData[tokenId].name,
-                '&gender=', metaData[tokenId].gender,
-            '"',
-            '},{',
-            '"trait_type":"Gender","value":"', genders[metaData[tokenId].gender].name, '"',
-            '}]',
-            '}'
+            "'attributes':",
+            "[{",
+            "'display_type':'date','trait_type':'birthday','value':'", metaData[tokenId].birthdayDate.toString(),
+                "?age=", metaData[tokenId].birthdayDate,
+                "&name=", metaData[tokenId].name,
+                "&gender=", metaData[tokenId].gender,
+            "'",
+            "},{",
+            "'trait_type':'Gender','value':'", genders[metaData[tokenId].gender].name, "'",
+            "}]",
+            "}"
         );
 
         return atr;
