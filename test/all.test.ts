@@ -13,6 +13,7 @@ import {
   PlushLifeSpanNFTCashbackPool,
   WrappedPlush,
 } from '../types';
+import { DevLinks } from '../arguments/development/consts';
 
 const BANKER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('BANKER_ROLE'),
@@ -91,9 +92,16 @@ describe('Launching the testing of the Plush Protocol', () => {
 
   it('[Deploy contract] LifeSpan', async () => {
     LifeSpanFactory = await ethers.getContractFactory('LifeSpan');
-    lifeSpan = (await upgrades.deployProxy(LifeSpanFactory, {
-      kind: 'uups',
-    })) as LifeSpan;
+    lifeSpan = (await upgrades.deployProxy(
+      LifeSpanFactory,
+      [
+        DevLinks.PLUSH_LIFESPAN_LINK,
+        DevLinks.PLUSH_GENERATOR_IMG_LIFESPAN_LINK,
+      ],
+      {
+        kind: 'uups',
+      },
+    )) as LifeSpan;
     await lifeSpan.deployed();
   });
 
@@ -308,6 +316,14 @@ describe('Launching the testing of the Plush Protocol', () => {
     // add checks after delegate
   });
 
+  it('LifeSpan -> Add genders', async () => {
+    const male = await lifeSpan.addGender(0, 'MALE'); // MALE gender
+    await male.wait();
+
+    const female = await lifeSpan.addGender(1, 'FEMALE'); // FEMALE gender
+    await female.wait();
+  });
+
   it('LifeSpan -> Check total supply', async () => {
     expect(await lifeSpan.totalSupply()).to.deep.equal(ethers.constants.Zero); // ADMIN role
   });
@@ -344,7 +360,7 @@ describe('Launching the testing of the Plush Protocol', () => {
   it('LifeSpan -> Check mint with granted role', async () => {
     const mintToken = await lifeSpan
       .connect(signers[1])
-      .safeMint(await signers[1].getAddress());
+      .safeMint(await signers[1].getAddress(), 'Tester', 0, 918606632);
     await mintToken.wait();
     expect(
       await lifeSpan.balanceOf(await signers[1].getAddress()),
@@ -499,7 +515,10 @@ describe('Launching the testing of the Plush Protocol', () => {
   it('PlushGetLifeSpan -> Check minting', async () => {
     const mintToken = await plushGetLifeSpan.mint(
       await signers[0].getAddress(),
-      { value: ethers.utils.parseUnits('0.0001', 18) },
+      'John',
+      0,
+      918606632,
+      { value: ethers.utils.parseEther('0.0001') },
     );
     await mintToken.wait();
 
@@ -528,7 +547,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     await expect(
       plushGetLifeSpan
         .connect(signers[1])
-        .freeMint(await signers[1].getAddress()),
+        .freeMint(await signers[1].getAddress(), 'Olivia', 1, 1079051432),
     ).to.be.reverted;
 
     const grantRole = await plushGetLifeSpan.grantRole(
@@ -544,7 +563,7 @@ describe('Launching the testing of the Plush Protocol', () => {
 
     const mintToken = await plushGetLifeSpan
       .connect(signers[1])
-      .freeMint(randomAddress.address);
+      .freeMint(randomAddress.address, 'Olivia', 1, 1079051432);
     await mintToken.wait();
 
     expect(await lifeSpan.balanceOf(randomAddress.address)).to.deep.equal(

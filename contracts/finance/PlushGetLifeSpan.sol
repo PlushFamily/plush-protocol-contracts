@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "hardhat/console.sol";
 import "../interfaces/IPlushGetLifeSpan.sol";
 
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
@@ -155,6 +156,8 @@ contract PlushGetLifeSpan is
      * @param birthdayDate in sec of token User (metadata)
      */
     function mint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public payable {
+        console.log("testik");
+        console.log(msg.value, mintPrice);
         require(msg.value == mintPrice, "Incorrect amount");
 
         if (denyMultipleMinting) {
