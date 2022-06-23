@@ -25,7 +25,6 @@ contract PlushGetLifeSpan is
     address payable private feeAddress; // Address for fee transfer
 
     uint256 public mintPrice;
-    bool public denyMultipleMinting;
 
     /**
      * @dev Roles definitions
@@ -49,7 +48,6 @@ contract PlushGetLifeSpan is
         feeAddress = _feeAddress;
 
         mintPrice = 0.001 ether;
-        denyMultipleMinting = true;
 
         __Pausable_init();
         __AccessControl_init();
@@ -71,20 +69,6 @@ contract PlushGetLifeSpan is
     /// @notice Unpause contract
     function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
-    }
-
-    /// @notice Prohibit a user from minting multiple tokens
-    function setDenyMultipleMinting() external onlyRole(OPERATOR_ROLE) {
-        require(denyMultipleMinting == false, "Already prohibited");
-
-        denyMultipleMinting = true;
-    }
-
-    /// @notice Allow a user to mint multiple tokens
-    function setAllowMultipleMinting() external onlyRole(OPERATOR_ROLE) {
-        require(denyMultipleMinting == true, "Already allowed");
-
-        denyMultipleMinting = false;
     }
 
     /**
@@ -157,13 +141,6 @@ contract PlushGetLifeSpan is
     function mint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public payable {
         require(msg.value == mintPrice, "Incorrect amount");
 
-        if (denyMultipleMinting) {
-            require(
-                lifeSpan.balanceOf(mintAddress) > 0 == false,
-                "Already has a LifeSpan token"
-            );
-        }
-
         lifeSpan.safeMint(mintAddress, name, gender, birthdayDate);
         plushLifeSpanNFTCashbackPool.addRemunerationToAccount(mintAddress);
 
@@ -175,13 +152,6 @@ contract PlushGetLifeSpan is
      * @param mintAddress where to enroll the LifeSpan token after minting
      */
     function freeMint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public onlyRole(STAFF_ROLE) {
-        if (denyMultipleMinting) {
-            require(
-                lifeSpan.balanceOf(mintAddress) > 0 == false,
-                "Already has a LifeSpan token"
-            );
-        }
-
         lifeSpan.safeMint(mintAddress, name, gender, birthdayDate);
 
         emit TokenFreeMinted(msg.sender, mintAddress);
