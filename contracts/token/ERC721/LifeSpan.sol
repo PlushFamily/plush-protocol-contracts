@@ -80,6 +80,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     function safeMint(address to, string memory name, uint256 gender, uint256 birthdayDate) public onlyRole(MINTER_ROLE) {
         require(bytes(genders[gender].name).length != 0, "ERC721Metadata: Gender not exists");
         require(genders[gender].isActive, "ERC721Metadata: Gender not active");
+        require(birthdayDate < block.timestamp, "ERC721Metadata: Invalid date");
 
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -102,7 +103,10 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
             '"description":"Plush ecosystem avatar",',
             '"external_url": "', externalUrl, tokenId.toString(), '",',
             '"name": "', metaData[tokenId].name, '",',
-            '"image":"', generatorImageUrl, '",'
+            '"image":"', generatorImageUrl,
+                '?birthdayDate=', metaData[tokenId].birthdayDate.toString(),
+                '&name=', metaData[tokenId].name,
+                '&gender=', metaData[tokenId].gender.toString(), '",'
         );
 
         return base;
@@ -121,11 +125,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
         bytes memory atr = abi.encodePacked(
             '"attributes":',
             '[{',
-            '"display_type":"date","trait_type":"birthday","value":"', metaData[tokenId].birthdayDate.toString(),
-                '?birthdayDate=', metaData[tokenId].birthdayDate.toString(),
-                '&name=', metaData[tokenId].name,
-                '&gender=', metaData[tokenId].gender.toString(),
-            '"',
+            '"display_type":"date","trait_type":"birthday","value":"', metaData[tokenId].birthdayDate.toString(), '"',
             '},{',
             '"trait_type":"Gender","value":"', genders[metaData[tokenId].gender].name, '"',
             '}]',

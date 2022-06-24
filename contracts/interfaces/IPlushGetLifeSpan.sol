@@ -8,12 +8,6 @@ interface IPlushGetLifeSpan {
     /// @notice Unpause contract
     function unpause() external;
 
-    /// @notice Prohibit a user from minting multiple tokens
-    function setDenyMultipleMinting() external;
-
-    /// @notice Allow a user to mint multiple tokens
-    function setAllowMultipleMinting() external;
-
     /**
      * @notice Change mint price
      * @param newPrice new price
