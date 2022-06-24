@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 interface IPlushAccounts {
-
     struct Account {
         uint256 balance;
     }
@@ -25,7 +24,6 @@ interface IPlushAccounts {
      * @param amount the amount of tokens being withdrawn
      */
     function withdraw(uint256 amount) external;
-
 
     /**
      * @notice Withdrawal of tokens by the controller from his account to available withdrawal addresses
@@ -81,10 +79,7 @@ interface IPlushAccounts {
     );
 
     /// @notice Emitted when were the tokens withdrawn from the account to the user address
-    event Withdrawn(
-        address indexed account,
-        uint256 amount
-    );
+    event Withdrawn(address indexed account, uint256 amount);
 
     /// @notice Emitted when were the tokens withdrawn from the account to the user address
     event ControllerWithdrawn(
@@ -106,5 +101,4 @@ interface IPlushAccounts {
         address indexed account,
         uint256 amount
     );
-
 }

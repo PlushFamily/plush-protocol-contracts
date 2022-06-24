@@ -2,7 +2,6 @@
 pragma solidity ^0.8.3;
 
 interface IPlushFaucet {
-
     /// @notice Pause contract
     function pause() external;
 
@@ -89,13 +88,13 @@ interface IPlushFaucet {
      * @notice Check whether the user can use the faucet
      * @return boolean
      */
-    function getCanTheAddressReceiveReward(address receiver) external view returns (bool);
+    function getCanTheAddressReceiveReward(address receiver)
+        external
+        view
+        returns (bool);
 
     /// @notice Emitted when user get tokens from faucet
-    event TokensSent(
-        address indexed receiver,
-        uint256 amount
-    );
+    event TokensSent(address indexed receiver, uint256 amount);
 
     /// @notice Emitted when were the tokens withdrawn from the faucet
     event TokensWithdrawn(
