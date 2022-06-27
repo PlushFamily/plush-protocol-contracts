@@ -2,11 +2,11 @@
 pragma solidity ^0.8.4;
 
 interface ILifeSpan {
-    struct MetaData {
+    struct TokenData {
         string name;
         uint256 gender;
         uint256 birthdayDate;
-        uint256 mintDate;
+        uint256 dateOfMint;
     }
 
     struct Gender {
@@ -59,13 +59,13 @@ interface ILifeSpan {
 
     /**
     * @notice Update external url LifeSpan
-     * @param newExternalUrl sting of new link
+     * @param newExternalURL sting of new link
      */
-    function updateExternalUrl(string memory newExternalUrl) external;
+    function updateExternalURL(string memory newExternalURL) external;
 
     /**
      * @notice Update generator images LifeSpan
-     * @param newGeneratorIMGUrl sting of new link
+     * @param newRenderImageURL sting of new link
      */
-    function updateGeneratorIMGUrl(string memory newGeneratorIMGUrl) external;
+    function updateRenderImageURL(string memory newRenderImageURL) external;
 }

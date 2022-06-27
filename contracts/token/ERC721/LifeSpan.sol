@@ -22,11 +22,11 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
 
     CountersUpgradeable.Counter private _tokenIdCounter;
 
-    mapping(uint256 => MetaData) private metaData;
+    mapping(uint256 => TokenData) public tokenData;
     mapping(uint256 => Gender) private genders;
 
-    string externalUrl;
-    string generatorImageUrl;
+    string externalURL;
+    string renderImageURL;
 
     /**
      * @dev Roles definitions
@@ -40,8 +40,8 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     constructor() initializer {}
 
     function initialize(
-        string memory extUrl,
-        string memory genImageUrl
+        string memory _extURL,
+        string memory _renderImageURL
     ) initializer public
     {
         __ERC721_init("LifeSpan", "LIFESPAN");
@@ -51,8 +51,8 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
         __ERC721Burnable_init();
         __UUPSUpgradeable_init();
 
-        externalUrl = extUrl;
-        generatorImageUrl = genImageUrl;
+        externalURL = _extURL;
+        renderImageURL = _renderImageURL;
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
@@ -86,7 +86,53 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
-        metaData[tokenId] = MetaData(name, gender, birthdayDate, block.timestamp);
+        tokenData[tokenId] = TokenData(name, gender, birthdayDate, block.timestamp);
+    }
+
+
+    /**
+     * @notice Get dynamic token URI
+     * @param tokenId id LifeSpan token
+     * @return base64(json) data of LifeSpan
+     */
+    function tokenURI(uint256 tokenId)
+    public
+    view
+    override
+    returns (string memory)
+    {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        bytes memory dataURI = abi.encodePacked(baseSection(tokenId), attributesSection(tokenId));
+
+        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(dataURI)));
+    }
+
+
+    /**
+     * @notice Change name of LifeSpan token
+     * @param tokenId id LifeSpan token
+     * @param newName new name of LifeSpan token
+     */
+    function updateName(uint256 tokenId, string memory newName) public {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(ownerOf(tokenId) == msg.sender, "ERC721: you are not the owner of the token");
+
+        tokenData[tokenId].name = newName;
+    }
+
+    /**
+     * @notice Change gender of LifeSpan token
+     * @param tokenId id LifeSpan token
+     * @param newGender id new gender of LifeSpan token
+     */
+    function updateGender(uint256 tokenId, uint256 newGender) public {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(ownerOf(tokenId) == msg.sender, "ERC721: you are not the owner of the token");
+        require(bytes(genders[newGender].name).length != 0, "ERC721Metadata: Gender not exists");
+        require(genders[newGender].isActive, "ERC721Metadata: Gender not active");
+
+        tokenData[tokenId].gender = newGender;
     }
 
     /**
@@ -113,45 +159,19 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     }
 
     /**
-     * @notice Change name of LifeSpan token
-     * @param tokenId id LifeSpan token
-     * @param newName new name of LifeSpan token
-     */
-    function updateName(uint256 tokenId, string memory newName) public {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-        require(ownerOf(tokenId) == msg.sender, "ERC721: you are not the owner of the token");
-
-        metaData[tokenId].name = newName;
-    }
-
-    /**
-     * @notice Change gender of LifeSpan token
-     * @param tokenId id LifeSpan token
-     * @param newGender id new gender of LifeSpan token
-     */
-    function updateGender(uint256 tokenId, uint256 newGender) public {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-        require(ownerOf(tokenId) == msg.sender, "ERC721: you are not the owner of the token");
-        require(bytes(genders[newGender].name).length != 0, "ERC721Metadata: Gender not exists");
-        require(genders[newGender].isActive, "ERC721Metadata: Gender not active");
-
-        metaData[tokenId].gender = newGender;
-    }
-
-    /**
      * @notice Update external url LifeSpan
-     * @param newExternalUrl sting of new link
+     * @param newExternalURL sting of new link
      */
-    function updateExternalUrl(string memory newExternalUrl) public onlyRole(OPERATOR_ROLE) {
-        externalUrl = newExternalUrl;
+    function updateExternalURL(string memory newExternalURL) public onlyRole(OPERATOR_ROLE) {
+        externalURL = newExternalURL;
     }
 
     /**
      * @notice Update generator images LifeSpan
-     * @param newGeneratorIMGUrl sting of new link
+     * @param newRenderImageURL sting of new link
      */
-    function updateGeneratorIMGUrl(string memory newGeneratorIMGUrl) public onlyRole(OPERATOR_ROLE) {
-        generatorImageUrl = newGeneratorIMGUrl;
+    function updateRenderImageURL(string memory newRenderImageURL) public onlyRole(OPERATOR_ROLE) {
+        renderImageURL = newRenderImageURL;
     }
 
     /**
@@ -167,12 +187,12 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
         return abi.encodePacked(
             '{',
             '"description":"Plush ecosystem avatar",',
-            '"external_url": "', externalUrl, tokenId.toString(), '",',
-            '"name": "', metaData[tokenId].name, "'s Plush Token", '",',
-            '"image":"', generatorImageUrl,
-            '?birthdayDate=', metaData[tokenId].birthdayDate.toString(),
-            '&name=', metaData[tokenId].name,
-            '&gender=', metaData[tokenId].gender.toString(), '",'
+            '"external_url": "', externalURL, tokenId.toString(), '",',
+            '"name": "', tokenData[tokenId].name, "'s Plush Token", '",',
+            '"image":"', renderImageURL,
+            '?birthdayDate=', tokenData[tokenId].birthdayDate.toString(),
+            '&name=', tokenData[tokenId].name,
+            '&gender=', tokenData[tokenId].gender.toString(), '",'
         );
     }
 
@@ -189,32 +209,14 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
         return abi.encodePacked(
             '"attributes":',
             '[{',
-            '"display_type":"date","trait_type":"birthday","value":"', metaData[tokenId].birthdayDate.toString(), '"',
+            '"display_type":"date","trait_type":"Birthday","value":"', tokenData[tokenId].birthdayDate.toString(), '"',
             '},{',
-            '"display_type":"date","trait_type":"mintdate","value":"', metaData[tokenId].mintDate.toString(), '"',
+            '"display_type":"date","trait_type":"Date of Mint","value":"', tokenData[tokenId].dateOfMint.toString(), '"',
             '},{',
-            '"trait_type":"Gender","value":"', genders[metaData[tokenId].gender].name, '"',
+            '"trait_type":"Gender","value":"', genders[tokenData[tokenId].gender].name, '"',
             '}]',
             '}'
         );
-    }
-
-    /**
-     * @notice Get dynamic token URI
-     * @param tokenId id LifeSpan token
-     * @return base64(json) data of LifeSpan
-     */
-    function tokenURI(uint256 tokenId)
-    public
-    view
-    override
-    returns (string memory)
-    {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
-        bytes memory dataURI = abi.encodePacked(baseSection(tokenId), attributesSection(tokenId));
-
-        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(dataURI)));
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
