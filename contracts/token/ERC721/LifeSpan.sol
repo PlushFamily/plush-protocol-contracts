@@ -11,6 +11,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721Burnab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
@@ -21,6 +22,12 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
 
     CountersUpgradeable.Counter private _tokenIdCounter;
 
+    mapping(uint256 => MetaData) private metaData;
+    mapping(uint256 => Gender) private genders;
+
+    string externalUrl;
+    string generatorImageUrl;
+
     /**
      * @dev Roles definitions
      */
@@ -28,12 +35,6 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-
-    mapping(uint256 => MetaData) private metaData;
-    mapping(uint256 => Gender) private genders;
-
-    string externalUrl;
-    string generatorImageUrl;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -85,54 +86,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
-        metaData[tokenId] = MetaData(name, gender, birthdayDate);
-    }
-
-    /**
-     * @notice Get base section of LifeSpan token in json
-     * @param tokenId id LifeSpan token
-     * @return bytes(json) of base section
-     */
-    function baseSection(uint256 tokenId)
-    internal
-    view
-    returns (bytes memory)
-    {
-        bytes memory base = abi.encodePacked(
-            '{',
-            '"description":"Plush ecosystem avatar",',
-            '"external_url": "', externalUrl, tokenId.toString(), '",',
-            '"name": "', metaData[tokenId].name, "'s Plush Token", '",',
-            '"image":"', generatorImageUrl,
-                '?birthdayDate=', metaData[tokenId].birthdayDate.toString(),
-                '&name=', metaData[tokenId].name,
-                '&gender=', metaData[tokenId].gender.toString(), '",'
-        );
-
-        return base;
-    }
-
-    /**
-     * @notice Get attributes of LifeSpan token in json
-     * @param tokenId id LifeSpan token
-     * @return bytes(json) of attributes
-     */
-    function attributesSection(uint256 tokenId)
-    internal
-    view
-    returns (bytes memory)
-    {
-        bytes memory atr = abi.encodePacked(
-            '"attributes":',
-            '[{',
-            '"display_type":"date","trait_type":"birthday","value":"', metaData[tokenId].birthdayDate.toString(), '"',
-            '},{',
-            '"trait_type":"Gender","value":"', genders[metaData[tokenId].gender].name, '"',
-            '}]',
-            '}'
-        );
-
-        return atr;
+        metaData[tokenId] = MetaData(name, gender, birthdayDate, block.timestamp);
     }
 
     /**
@@ -201,6 +155,51 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     }
 
     /**
+     * @notice Get base section of LifeSpan token in json
+     * @param tokenId id LifeSpan token
+     * @return bytes(json) of base section
+     */
+    function baseSection(uint256 tokenId)
+    private
+    view
+    returns (bytes memory)
+    {
+        return abi.encodePacked(
+            '{',
+            '"description":"Plush ecosystem avatar",',
+            '"external_url": "', externalUrl, tokenId.toString(), '",',
+            '"name": "', metaData[tokenId].name, "'s Plush Token", '",',
+            '"image":"', generatorImageUrl,
+            '?birthdayDate=', metaData[tokenId].birthdayDate.toString(),
+            '&name=', metaData[tokenId].name,
+            '&gender=', metaData[tokenId].gender.toString(), '",'
+        );
+    }
+
+    /**
+     * @notice Get attributes of LifeSpan token in json
+     * @param tokenId id LifeSpan token
+     * @return bytes(json) of attributes
+     */
+    function attributesSection(uint256 tokenId)
+    private
+    view
+    returns (bytes memory)
+    {
+        return abi.encodePacked(
+            '"attributes":',
+            '[{',
+            '"display_type":"date","trait_type":"birthday","value":"', metaData[tokenId].birthdayDate.toString(), '"',
+            '},{',
+            '"display_type":"date","trait_type":"mintdate","value":"', metaData[tokenId].mintDate.toString(), '"',
+            '},{',
+            '"trait_type":"Gender","value":"', genders[metaData[tokenId].gender].name, '"',
+            '}]',
+            '}'
+        );
+    }
+
+    /**
      * @notice Get dynamic token URI
      * @param tokenId id LifeSpan token
      * @return base64(json) data of LifeSpan
@@ -213,9 +212,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
-        bytes memory base = baseSection(tokenId);
-        bytes memory atr = attributesSection(tokenId);
-        bytes memory dataURI = abi.encodePacked(base, atr);
+        bytes memory dataURI = abi.encodePacked(baseSection(tokenId), attributesSection(tokenId));
 
         return string(abi.encodePacked("data:application/json;base64,", Base64.encode(dataURI)));
     }

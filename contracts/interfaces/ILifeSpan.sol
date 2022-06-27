@@ -6,6 +6,7 @@ interface ILifeSpan {
         string name;
         uint256 gender;
         uint256 birthdayDate;
+        uint256 mintDate;
     }
 
     struct Gender {

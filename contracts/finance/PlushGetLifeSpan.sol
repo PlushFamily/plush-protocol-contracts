@@ -22,7 +22,7 @@ contract PlushGetLifeSpan is
     LifeSpan public lifeSpan;
     PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
 
-    address payable private feeAddress; // Address for fee transfer
+    address payable private feeAddress; // Plush Fee collector address
 
     uint256 public mintPrice;
 
@@ -43,8 +43,8 @@ contract PlushGetLifeSpan is
         PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool,
         address payable _feeAddress
     ) public initializer {
-        plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         lifeSpan = _lifeSpan;
+        plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         feeAddress = _feeAddress;
 
         mintPrice = 0.001 ether;
@@ -158,7 +158,7 @@ contract PlushGetLifeSpan is
     }
 
     /**
-     * @notice Withdraw mint fee on feeAddress
+     * @notice Withdraw mint fee on Plush Fee collector address
      * @param amount withdraw amount
      */
     function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
