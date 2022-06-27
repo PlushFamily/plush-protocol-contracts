@@ -102,7 +102,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
             '{',
             '"description":"Plush ecosystem avatar",',
             '"external_url": "', externalUrl, tokenId.toString(), '",',
-            '"name": "', metaData[tokenId].name, '",',
+            '"name": "', metaData[tokenId].name, "'s Plush Token", '",',
             '"image":"', generatorImageUrl,
                 '?birthdayDate=', metaData[tokenId].birthdayDate.toString(),
                 '&name=', metaData[tokenId].name,
