@@ -22,7 +22,7 @@ contract PlushGetLifeSpan is
     LifeSpan public lifeSpan;
     PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
 
-    address payable private feeAddress; // Plush Fee collector address
+    address private feeAddress; // Plush Fee collector address
 
     uint256 public mintPrice;
 
@@ -97,7 +97,7 @@ contract PlushGetLifeSpan is
      * @param _address new fee address
      */
     function setFeeAddress(address _address) external onlyRole(BANKER_ROLE) {
-        feeAddress = payable(_address);
+        feeAddress = _address;
 
         emit FeeAddressChanged(_address);
     }
@@ -119,7 +119,7 @@ contract PlushGetLifeSpan is
      * @notice Get current fee address
      * @return fee address
      */
-    function getFeeAddress() public view returns (address payable) {
+    function getFeeAddress() public view returns (address) {
         return feeAddress;
     }
 
@@ -167,8 +167,7 @@ contract PlushGetLifeSpan is
             "The withdrawal amount exceeds the contract balance"
         );
 
-        (bool success, ) = feeAddress.call{value: amount}("");
-        require(success, "Withdrawal Error");
+        payable(feeAddress).transfer(amount);
 
         emit FeeWithdrawn(amount, feeAddress);
     }

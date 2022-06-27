@@ -540,6 +540,13 @@ describe('Launching the testing of the Plush Protocol', () => {
         return ethers.utils.formatEther(balance);
       });
 
+    const getMintContractBalance = await provider
+      .getBalance(plushGetLifeSpan.address)
+      .then((balance) => {
+        return ethers.utils.formatEther(balance);
+      });
+
+    expect(getMintContractBalance).to.eql('0.0');
     expect(getNewSafeBalance).to.eql('0.0001');
   });
 

@@ -36,7 +36,7 @@ interface IPlushGetLifeSpan {
      * @notice Get current fee address
      * @return fee address
      */
-    function getFeeAddress() external view returns (address payable);
+    function getFeeAddress() external view returns (address);
 
     /**
      * @notice Get current LifeSpan address
