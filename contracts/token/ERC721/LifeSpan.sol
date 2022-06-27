@@ -79,8 +79,8 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param birthdayDate time in sec when the token(user) was born
      */
     function safeMint(address to, string memory name, uint256 gender, uint256 birthdayDate) public onlyRole(MINTER_ROLE) {
-        require(bytes(genders[gender].name).length != 0, "ERC721Metadata: Gender not exists");
-        require(genders[gender].isActive, "ERC721Metadata: Gender not active");
+        require(bytes(genders[gender].name).length != 0, "ERC721Metadata: Gender doesn't exist");
+        require(genders[gender].isActive, "ERC721Metadata: Gender isn't active");
         require(birthdayDate < block.timestamp, "ERC721Metadata: Invalid date");
 
         uint256 tokenId = _tokenIdCounter.current();
@@ -101,7 +101,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     override
     returns (string memory)
     {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(_exists(tokenId), "ERC721Metadata: The token doesn't exist");
 
         bytes memory dataURI = abi.encodePacked(baseSection(tokenId), attributesSection(tokenId));
 
@@ -115,8 +115,8 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param newName new name of LifeSpan token
      */
     function updateName(uint256 tokenId, string memory newName) public {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-        require(ownerOf(tokenId) == msg.sender, "ERC721: you are not the owner of the token");
+        require(_exists(tokenId), "ERC721Metadata: The token doesn't exist");
+        require(ownerOf(tokenId) == msg.sender, "ERC721: You aren't the token owner");
 
         tokenData[tokenId].name = newName;
     }
@@ -127,10 +127,10 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param newGender id new gender of LifeSpan token
      */
     function updateGender(uint256 tokenId, uint256 newGender) public {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-        require(ownerOf(tokenId) == msg.sender, "ERC721: you are not the owner of the token");
-        require(bytes(genders[newGender].name).length != 0, "ERC721Metadata: Gender not exists");
-        require(genders[newGender].isActive, "ERC721Metadata: Gender not active");
+        require(_exists(tokenId), "ERC721Metadata: The token doesn't exist");
+        require(ownerOf(tokenId) == msg.sender, "ERC721: You aren't the token owner");
+        require(bytes(genders[newGender].name).length != 0, "ERC721Metadata: Gender doesn't exist");
+        require(genders[newGender].isActive, "ERC721Metadata: Gender isn't active");
 
         tokenData[tokenId].gender = newGender;
     }
@@ -153,7 +153,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
      * @param isActive true or false
      */
     function setIsActiveGender(uint256 id, bool isActive) public onlyRole(OPERATOR_ROLE) {
-        require(bytes(genders[id].name).length != 0, "ERC721Metadata: Gender not exists");
+        require(bytes(genders[id].name).length != 0, "ERC721Metadata: Gender doesn't exist");
 
         genders[id].isActive = isActive;
     }
