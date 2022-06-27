@@ -40,7 +40,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     constructor() initializer {}
 
     function initialize(
-        string memory _extURL,
+        string memory _externalURL,
         string memory _renderImageURL
     ) initializer public
     {
@@ -51,7 +51,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
         __ERC721Burnable_init();
         __UUPSUpgradeable_init();
 
-        externalURL = _extURL;
+        externalURL = _externalURL;
         renderImageURL = _renderImageURL;
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
