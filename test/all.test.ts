@@ -627,6 +627,12 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await mintToken.wait();
 
+    const tokenData = await lifeSpan.tokenData(1);
+
+    expect(tokenData.name).to.deep.equal('John');
+    expect(tokenData.gender).to.deep.equal('0');
+    expect(tokenData.birthdayDate).to.deep.equal('918606632');
+
     expect(
       await lifeSpan.balanceOf(await signers[0].getAddress()),
     ).to.deep.equal(constants.One);
@@ -678,9 +684,15 @@ describe('Launching the testing of the Plush Protocol', () => {
       .freeMint(randomAddress.address, 'Olivia', 1, 1079051432);
     await mintToken.wait();
 
+    const tokenData = await lifeSpan.tokenData(2);
+
     expect(await lifeSpan.balanceOf(randomAddress.address)).to.deep.equal(
       constants.One,
     );
+
+    expect(tokenData.name).to.deep.equal('Olivia');
+    expect(tokenData.gender).to.deep.equal('1');
+    expect(tokenData.birthdayDate).to.deep.equal('1079051432');
   });
 
   it('PlushGetLifeSpan -> Check pause contract', async () => {
