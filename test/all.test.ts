@@ -383,11 +383,11 @@ describe('Launching the testing of the Plush Protocol', () => {
       'Plush ecosystem avatar',
     );
     expect(tokenURIRespDecode.external_url).to.deep.equal(
-      'https://home.plush.family/token/0',
+      'https://home.plush.dev/token/0',
     );
     expect(tokenURIRespDecode.name).to.deep.equal("Tester's Plush Token");
     expect(tokenURIRespDecode.image).to.deep.equal(
-      'https://api.plush.family/user/tokens/render?birthdayDate=918606632&name=Tester&gender=0',
+      'https://api.plush.dev/user/tokens/render?birthdayDate=918606632&name=Tester&gender=0',
     );
     expect(tokenURIRespDecode.attributes[0].display_type).to.deep.equal('date');
     expect(tokenURIRespDecode.attributes[0].trait_type).to.deep.equal(
