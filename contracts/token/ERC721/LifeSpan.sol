@@ -72,7 +72,7 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     }
 
     /**
-     * @notice Safe mint LifeSpan token
+     * @notice Safe mint of LifeSpan token
      * @param to the address of the token recipient
      * @param name of LifeSpan token
      * @param gender id of LifeSpan token

@@ -365,6 +365,111 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(
       await lifeSpan.balanceOf(await signers[1].getAddress()),
     ).to.deep.equal(constants.One);
+
+    const tokenData = await lifeSpan.tokenData(0);
+
+    expect(tokenData.name).to.deep.equal('Tester');
+    expect(tokenData.gender).to.deep.equal('0');
+    expect(tokenData.birthdayDate).to.deep.equal('918606632');
+  });
+
+  it('LifeSpan -> Validate function tokenURI response', async () => {
+    const tokenURIResp = await lifeSpan.tokenURI(0);
+    const tokenURIRespDecode = JSON.parse(
+      Buffer.from(tokenURIResp.split(',')[1], 'base64').toString('utf-8'),
+    );
+
+    expect(tokenURIRespDecode.description).to.deep.equal(
+      'Plush ecosystem avatar',
+    );
+    expect(tokenURIRespDecode.external_url).to.deep.equal(
+      'https://home.plush.family/token/0',
+    );
+    expect(tokenURIRespDecode.name).to.deep.equal("Tester's Plush Token");
+    expect(tokenURIRespDecode.image).to.deep.equal(
+      'ipfs://QmVVsfk8n8KdNeo5wAFCweDsoWMCLhqfYtbgdVXt8y2JhA?birthdayDate=918606632&name=Tester&gender=0',
+    );
+    expect(tokenURIRespDecode.attributes[0].display_type).to.deep.equal('date');
+    expect(tokenURIRespDecode.attributes[0].trait_type).to.deep.equal(
+      'Birthday',
+    );
+    expect(tokenURIRespDecode.attributes[0]).to.deep.equal({
+      display_type: 'date',
+      trait_type: 'Birthday',
+      value: '918606632',
+    });
+
+    expect(tokenURIRespDecode.attributes[1]).to.deep.include({
+      display_type: 'date',
+      trait_type: 'Date of Mint',
+    });
+
+    expect(tokenURIRespDecode.attributes[2]).to.deep.equal({
+      trait_type: 'Gender',
+      value: 'MALE',
+    });
+  });
+
+  it('LifeSpan -> Check changing token name', async () => {
+    await expect(lifeSpan.updateTokenName(0, 'Plush Tester')).to.be.reverted; // don't a token owner
+
+    const changeName = await lifeSpan
+      .connect(signers[1])
+      .updateTokenName(0, 'Plush Tester');
+
+    await changeName.wait();
+
+    const tokenData = await lifeSpan.tokenData(0);
+
+    expect(tokenData.name).to.deep.equal('Plush Tester');
+  });
+
+  it('LifeSpan -> Check changing token gender', async () => {
+    await expect(lifeSpan.updateTokenGender(0, 1)).to.be.reverted; // don't a token owner
+
+    await expect(lifeSpan.connect(signers[1]).updateTokenGender(0, 2)).to.be
+      .reverted; // gender doesn't exists
+
+    const changeGender = await lifeSpan
+      .connect(signers[1])
+      .updateTokenGender(0, 1);
+
+    await changeGender.wait();
+
+    const tokenData = await lifeSpan.tokenData(0);
+
+    expect(tokenData.gender).to.deep.equal('1');
+  });
+
+  it('LifeSpan -> Check adding new gender', async () => {
+    await expect(lifeSpan.addGender(0, 'MALE')).to.be.reverted; // gender already exists
+
+    const addGender = await lifeSpan.addGender(2, 'TEST');
+    await addGender.wait();
+  });
+
+  it('LifeSpan -> Check update external URL', async () => {
+    await expect(
+      lifeSpan.connect(signers[1]).updateExternalURL('https://test.com/token/'),
+    ).to.be.reverted; // don't have rights
+
+    const updateExternalURL = await lifeSpan.updateExternalURL(
+      'https://test.com/token/',
+    );
+    await updateExternalURL.wait();
+  });
+
+  it('LifeSpan -> Check update render URL', async () => {
+    await expect(
+      lifeSpan
+        .connect(signers[1])
+        .updateRenderImageURL('https://test.com/token/'),
+    ).to.be.reverted; // don't have rights
+
+    const updateRenderURL = await lifeSpan.updateRenderImageURL(
+      'https://test.com/token/',
+    );
+    await updateRenderURL.wait();
   });
 
   it('LifeSpan -> revoke role', async () => {
