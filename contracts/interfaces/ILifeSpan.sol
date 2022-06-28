@@ -39,23 +39,23 @@ interface ILifeSpan {
     /**
     * @notice Enable or disable gender
      * @param id of gender
-     * @param isActive true or false
+     * @param status true or false
      */
-    function setIsActiveGender(uint256 id, bool isActive) external;
+    function setIsActiveGender(uint256 id, bool status) external;
 
     /**
     * @notice Change name of LifeSpan token
      * @param tokenId id LifeSpan token
      * @param newName new name of LifeSpan token
      */
-    function updateName(uint256 tokenId, string memory newName) external;
+    function updateTokenName(uint256 tokenId, string memory newName) external;
 
     /**
      * @notice Change gender of LifeSpan token
      * @param tokenId id LifeSpan token
      * @param newGender id new gender of LifeSpan token
      */
-    function updateGender(uint256 tokenId, uint256 newGender) external;
+    function updateTokenGender(uint256 tokenId, uint256 newGender) external;
 
     /**
     * @notice Update external url LifeSpan

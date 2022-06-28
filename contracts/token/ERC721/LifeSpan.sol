@@ -73,10 +73,10 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
 
     /**
      * @notice Safe mint LifeSpan token
-     * @param to wallet address to which the token is mint
+     * @param to the address of the token recipient
      * @param name of LifeSpan token
      * @param gender id of LifeSpan token
-     * @param birthdayDate time in sec when the token(user) was born
+     * @param birthdayDate date of birth of the token owner in the timestamp
      */
     function safeMint(address to, string memory name, uint256 gender, uint256 birthdayDate) public onlyRole(MINTER_ROLE) {
         require(bytes(genders[gender].name).length != 0, "ERC721Metadata: Gender doesn't exist");
@@ -91,9 +91,9 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
 
 
     /**
-     * @notice Get dynamic token URI
+     * @notice Get information about the token in JSON
      * @param tokenId id LifeSpan token
-     * @return base64(json) data of LifeSpan
+     * @return base64(JSON) data of LifeSpan
      */
     function tokenURI(uint256 tokenId)
     public
@@ -102,19 +102,18 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     returns (string memory)
     {
         require(_exists(tokenId), "ERC721Metadata: The token doesn't exist");
+        bytes memory data = abi.encodePacked(baseSection(tokenId), attributesSection(tokenId));
 
-        bytes memory dataURI = abi.encodePacked(baseSection(tokenId), attributesSection(tokenId));
-
-        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(dataURI)));
+        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(data)));
     }
 
 
     /**
-     * @notice Change name of LifeSpan token
+     * @notice Change the name in the token
      * @param tokenId id LifeSpan token
-     * @param newName new name of LifeSpan token
+     * @param newName new name of the token owner
      */
-    function updateName(uint256 tokenId, string memory newName) public {
+    function updateTokenName(uint256 tokenId, string memory newName) external {
         require(_exists(tokenId), "ERC721Metadata: The token doesn't exist");
         require(ownerOf(tokenId) == msg.sender, "ERC721: You aren't the token owner");
 
@@ -122,11 +121,11 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     }
 
     /**
-     * @notice Change gender of LifeSpan token
+     * @notice Change the gender in the token
      * @param tokenId id LifeSpan token
-     * @param newGender id new gender of LifeSpan token
+     * @param newGender id new gender of the token owner
      */
-    function updateGender(uint256 tokenId, uint256 newGender) public {
+    function updateTokenGender(uint256 tokenId, uint256 newGender) external {
         require(_exists(tokenId), "ERC721Metadata: The token doesn't exist");
         require(ownerOf(tokenId) == msg.sender, "ERC721: You aren't the token owner");
         require(bytes(genders[newGender].name).length != 0, "ERC721Metadata: Gender doesn't exist");
@@ -136,11 +135,11 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     }
 
     /**
-     * @notice Add new gender
+     * @notice Add a new gender to the list of available
      * @param id of new gender
      * @param newGender name of new gender
      */
-    function addGender(uint256 id, string memory newGender) public onlyRole(OPERATOR_ROLE) {
+    function addGender(uint256 id, string memory newGender) external onlyRole(OPERATOR_ROLE) {
         require(bytes(genders[id].name).length == 0, "ERC721Metadata: Gender already exists");
 
         genders[id].name = newGender;
@@ -148,36 +147,36 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     }
 
     /**
-     * @notice Enable or disable gender
+     * @notice Enable or disable gender from the list of available to choose
      * @param id of gender
-     * @param isActive true or false
+     * @param status true or false
      */
-    function setIsActiveGender(uint256 id, bool isActive) public onlyRole(OPERATOR_ROLE) {
+    function setIsActiveGender(uint256 id, bool status) external onlyRole(OPERATOR_ROLE) {
         require(bytes(genders[id].name).length != 0, "ERC721Metadata: Gender doesn't exist");
 
-        genders[id].isActive = isActive;
+        genders[id].isActive = status;
     }
 
     /**
-     * @notice Update external url LifeSpan
-     * @param newExternalURL sting of new link
+     * @notice Update external URL of LifeSpan token's
+     * @param newExternalURL string of new URL
      */
-    function updateExternalURL(string memory newExternalURL) public onlyRole(OPERATOR_ROLE) {
+    function updateExternalURL(string memory newExternalURL) external onlyRole(OPERATOR_ROLE) {
         externalURL = newExternalURL;
     }
 
     /**
-     * @notice Update generator images LifeSpan
-     * @param newRenderImageURL sting of new link
+     * @notice Update the URL to the token renderer
+     * @param newRenderImageURL string of new URL
      */
-    function updateRenderImageURL(string memory newRenderImageURL) public onlyRole(OPERATOR_ROLE) {
+    function updateRenderImageURL(string memory newRenderImageURL) external onlyRole(OPERATOR_ROLE) {
         renderImageURL = newRenderImageURL;
     }
 
     /**
-     * @notice Get base section of LifeSpan token in json
+     * @notice Get base section of LifeSpan token in JSON
      * @param tokenId id LifeSpan token
-     * @return bytes(json) of base section
+     * @return bytes(JSON) of base section
      */
     function baseSection(uint256 tokenId)
     private
@@ -197,9 +196,9 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     }
 
     /**
-     * @notice Get attributes of LifeSpan token in json
+     * @notice Get attributes of LifeSpan token in JSON
      * @param tokenId id LifeSpan token
-     * @return bytes(json) of attributes
+     * @return bytes(JSON) of attributes
      */
     function attributesSection(uint256 tokenId)
     private
