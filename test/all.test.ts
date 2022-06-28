@@ -387,7 +387,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     expect(tokenURIRespDecode.name).to.deep.equal("Tester's Plush Token");
     expect(tokenURIRespDecode.image).to.deep.equal(
-      'ipfs://QmVVsfk8n8KdNeo5wAFCweDsoWMCLhqfYtbgdVXt8y2JhA?birthdayDate=918606632&name=Tester&gender=0',
+      'https://api.plush.family/user/tokens/render?birthdayDate=918606632&name=Tester&gender=0',
     );
     expect(tokenURIRespDecode.attributes[0].display_type).to.deep.equal('date');
     expect(tokenURIRespDecode.attributes[0].trait_type).to.deep.equal(

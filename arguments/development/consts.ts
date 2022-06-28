@@ -14,5 +14,5 @@ export enum DevContractsAddresses {
 
 export enum DevLinks {
   PLUSH_LIFESPAN_LINK = 'https://home.plush.family/token/', // Link to page with LifeSpan
-  PLUSH_GENERATOR_IMG_LIFESPAN_LINK = 'ipfs://QmVVsfk8n8KdNeo5wAFCweDsoWMCLhqfYtbgdVXt8y2JhA', // Link to page with generator image LifeSpan
+  PLUSH_GENERATOR_IMG_LIFESPAN_LINK = 'https://api.plush.family/user/tokens/render', // Link to page with generator image LifeSpan
 }
