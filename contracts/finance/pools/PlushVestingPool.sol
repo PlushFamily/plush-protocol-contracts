@@ -79,7 +79,7 @@ contract PlushVestingPool is
      * @notice Returns how many tokens are locked
      * @return Number of tokens in wei
      */
-    function getLockBalance() public whenNotPaused() view returns(uint256) {
+    function getLockBalance() public view returns(uint256) {
         if(isIDO){
             uint256 amountUnlockRemuneration = 0;
 
@@ -110,7 +110,7 @@ contract PlushVestingPool is
      * @notice Returns how many tokens are unlock
      * @return Number of tokens in wei
      */
-    function getUnLockBalance() public whenNotPaused() view returns(uint256) {
+    function getUnLockBalance() public view returns(uint256) {
         if(isIDO){
             uint256 amountUnlockRemuneration = 0;
 
@@ -138,7 +138,7 @@ contract PlushVestingPool is
     /**
      * @notice Withdrawal of unlocked tokens
      */
-    function withdraw() external whenNotPaused() onlyRole(WITHDRAW_ROLE) {
+    function withdraw() external onlyRole(WITHDRAW_ROLE) {
         require(getUnLockBalance() > 0, "Insufficient funds");
 
         uint256 unlockBalanceTemp = getUnLockBalance();
