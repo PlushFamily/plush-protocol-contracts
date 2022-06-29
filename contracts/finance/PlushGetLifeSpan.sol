@@ -22,10 +22,9 @@ contract PlushGetLifeSpan is
     LifeSpan public lifeSpan;
     PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
 
-    address payable private feeAddress; // Address for fee transfer
+    address private feeAddress; // Plush Fee collector address
 
     uint256 public mintPrice;
-    bool public denyMultipleMinting;
 
     /**
      * @dev Roles definitions
@@ -44,12 +43,11 @@ contract PlushGetLifeSpan is
         PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool,
         address payable _feeAddress
     ) public initializer {
-        plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         lifeSpan = _lifeSpan;
+        plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         feeAddress = _feeAddress;
 
         mintPrice = 0.001 ether;
-        denyMultipleMinting = true;
 
         __Pausable_init();
         __AccessControl_init();
@@ -71,20 +69,6 @@ contract PlushGetLifeSpan is
     /// @notice Unpause contract
     function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
-    }
-
-    /// @notice Prohibit a user from minting multiple tokens
-    function setDenyMultipleMinting() external onlyRole(OPERATOR_ROLE) {
-        require(denyMultipleMinting == false, "Already prohibited");
-
-        denyMultipleMinting = true;
-    }
-
-    /// @notice Allow a user to mint multiple tokens
-    function setAllowMultipleMinting() external onlyRole(OPERATOR_ROLE) {
-        require(denyMultipleMinting == true, "Already allowed");
-
-        denyMultipleMinting = false;
     }
 
     /**
@@ -113,7 +97,7 @@ contract PlushGetLifeSpan is
      * @param _address new fee address
      */
     function setFeeAddress(address _address) external onlyRole(BANKER_ROLE) {
-        feeAddress = payable(_address);
+        feeAddress = _address;
 
         emit FeeAddressChanged(_address);
     }
@@ -135,7 +119,7 @@ contract PlushGetLifeSpan is
      * @notice Get current fee address
      * @return fee address
      */
-    function getFeeAddress() public view returns (address payable) {
+    function getFeeAddress() public view returns (address) {
         return feeAddress;
     }
 
@@ -150,18 +134,14 @@ contract PlushGetLifeSpan is
     /**
      * @notice Mint LifeSpan token
      * @param mintAddress where to enroll the LifeSpan token after minting
+     * @param name of token User (metadata)
+     * @param gender of token User (metadata)
+     * @param birthdayDate in sec of token User (metadata)
      */
-    function mint(address mintAddress) public payable {
+    function mint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public payable {
         require(msg.value == mintPrice, "Incorrect amount");
 
-        if (denyMultipleMinting) {
-            require(
-                lifeSpan.balanceOf(mintAddress) > 0 == false,
-                "Already has a LifeSpan token"
-            );
-        }
-
-        lifeSpan.safeMint(mintAddress);
+        lifeSpan.safeMint(mintAddress, name, gender, birthdayDate);
         plushLifeSpanNFTCashbackPool.addRemunerationToAccount(mintAddress);
 
         emit TokenMinted(msg.sender, mintAddress, msg.value);
@@ -171,21 +151,14 @@ contract PlushGetLifeSpan is
      * @notice Free mint LifeSpan token for staffers
      * @param mintAddress where to enroll the LifeSpan token after minting
      */
-    function freeMint(address mintAddress) public onlyRole(STAFF_ROLE) {
-        if (denyMultipleMinting) {
-            require(
-                lifeSpan.balanceOf(mintAddress) > 0 == false,
-                "Already has a LifeSpan token"
-            );
-        }
-
-        lifeSpan.safeMint(mintAddress);
+    function freeMint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public onlyRole(STAFF_ROLE) {
+        lifeSpan.safeMint(mintAddress, name, gender, birthdayDate);
 
         emit TokenFreeMinted(msg.sender, mintAddress);
     }
 
     /**
-     * @notice Withdraw mint fee on feeAddress
+     * @notice Withdraw mint fee on Plush Fee collector address
      * @param amount withdraw amount
      */
     function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
@@ -194,8 +167,7 @@ contract PlushGetLifeSpan is
             "The withdrawal amount exceeds the contract balance"
         );
 
-        (bool success, ) = feeAddress.call{value: amount}("");
-        require(success, "Withdrawal Error");
+        payable(feeAddress).transfer(amount);
 
         emit FeeWithdrawn(amount, feeAddress);
     }
