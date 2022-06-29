@@ -8,12 +8,6 @@ interface IPlushGetLifeSpan {
     /// @notice Unpause contract
     function unpause() external;
 
-    /// @notice Prohibit a user from minting multiple tokens
-    function setDenyMultipleMinting() external;
-
-    /// @notice Allow a user to mint multiple tokens
-    function setAllowMultipleMinting() external;
-
     /**
      * @notice Change mint price
      * @param newPrice new price
@@ -42,7 +36,7 @@ interface IPlushGetLifeSpan {
      * @notice Get current fee address
      * @return fee address
      */
-    function getFeeAddress() external view returns (address payable);
+    function getFeeAddress() external view returns (address);
 
     /**
      * @notice Get current LifeSpan address
@@ -53,14 +47,20 @@ interface IPlushGetLifeSpan {
     /**
      * @notice Mint LifeSpan token
      * @param mintAddress where to enroll the LifeSpan token after minting
+     * @param name of token User (metadata)
+     * @param gender of token User (metadata)
+     * @param birthdayDate in sec of token User (metadata)
      */
-    function mint(address mintAddress) external payable;
+    function mint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) external payable;
 
     /**
      * @notice Free mint LifeSpan token for staffers
      * @param mintAddress where to enroll the LifeSpan token after minting
+     * @param name of token User (metadata)
+     * @param gender of token User (metadata)
+     * @param birthdayDate in sec of token User (metadata)
      */
-    function freeMint(address mintAddress) external;
+    function freeMint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) external;
 
     /**
      * @notice Withdraw mint fee on feeAddress

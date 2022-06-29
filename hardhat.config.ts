@@ -64,7 +64,7 @@ export default {
   solidity: {
     compilers: [
       {
-        version: '0.8.14',
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
@@ -138,7 +138,7 @@ export default {
         },
       },
       'contracts/token/ERC20/WrappedPlush.sol': {
-        version: '0.8.14',
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
@@ -146,8 +146,8 @@ export default {
           },
         },
       },
-      'contracts/token/ERC721/PlushCoreToken.sol': {
-        version: '0.8.14',
+      'contracts/token/ERC721/LifeSpan.sol': {
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
@@ -155,8 +155,8 @@ export default {
           },
         },
       },
-      'contracts/finance/PlushCoinWallets.sol': {
-        version: '0.8.14',
+      'contracts/finance/PlushAccounts.sol': {
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
@@ -164,8 +164,8 @@ export default {
           },
         },
       },
-      'contracts/finance/PlushGetCoreToken.sol': {
-        version: '0.8.14',
+      'contracts/finance/PlushGetLifeSpan.sol': {
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
@@ -174,7 +174,7 @@ export default {
         },
       },
       'contracts/finance/PlushFaucet.sol': {
-        version: '0.8.14',
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
@@ -183,7 +183,7 @@ export default {
         },
       },
       'contracts/PlushApps.sol': {
-        version: '0.8.14',
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
@@ -192,7 +192,7 @@ export default {
         },
       },
       'contracts/templates/apps/PlushController.sol': {
-        version: '0.8.14',
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
@@ -201,7 +201,7 @@ export default {
         },
       },
       'contracts/governance/PlushOperationsDAO.sol': {
-        version: '0.8.14',
+        version: '0.8.15',
         settings: {
           optimizer: {
             enabled: true,
