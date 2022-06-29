@@ -10,6 +10,8 @@ export enum DevContractsAddresses {
   PLUSH_APPS_ADDRESS = '0x0942070631E0A837BA92299A73Ad340c09e9fd9d', // Ecosystem contract
   PLUSH_FEE_COLLECTOR_ADDRESS = '0x108dEc7b37C526B2e2DBf8447573dDCB9265C884', // Plush Fee collector DAO contract (multisig)
   PLUSH_DAO_PROTOCOL_ADDRESS = '0xBB8Fe52cAA5F35Ec1475ac2ac6f1A273D67E2a10', // Plush DAO Protocol contract (multisig)
+  PLUSH_SEED = '0x6e03DC94cCb78645856E06aE461fe3E4Dec98F9a', // ERC-721 PlushSeed contract
+  PLUSH_SEED_TOKENS_KEEPER = '0x07E2383EF2eB15C3C3c6C2b29121FCCcA2AFcb48', // Address where all ERC721 PlushSeed tokens are stored
 }
 
 export enum DevLinks {

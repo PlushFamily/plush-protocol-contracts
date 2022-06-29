@@ -3,8 +3,8 @@ import { constants } from 'ethers';
 
 import { DevContractsAddresses } from '../../../../arguments/development/consts';
 
-const OPERATOR_ROLE = ethers.utils.keccak256(
-  ethers.utils.toUtf8Bytes('OPERATOR_ROLE'),
+const MINTER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('MINTER_ROLE'),
 );
 const PAUSER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('PAUSER_ROLE'),
@@ -14,57 +14,40 @@ const UPGRADER_ROLE = ethers.utils.keccak256(
 );
 
 async function main() {
-  const PlushVestingSeedInvestorsPool = await ethers.getContractFactory(
-    'PlushVestingSeedInvestorsPool',
-  );
-
-  const plushVestingSeedInvestorsPool = await upgrades.deployProxy(
-    PlushVestingSeedInvestorsPool,
-    [
-      DevContractsAddresses.PLUSH_COIN_ADDRESS, //plushCoin
-      DevContractsAddresses.PLUSH_SEED, //PlushSeed ERC721
-      DevContractsAddresses.PLUSH_SEED_TOKENS_KEEPER, //PlushSeed Keeper
-      0, //id PlushSeed ERC721
-      '10000', //Percent release at IDO (1000 = 1%)
-      '450', //How many days will it be unlocked
-    ],
-    {
-      kind: 'uups',
-    },
-  );
+  const PlushSeed = await ethers.getContractFactory('PlushSeed');
+  const plushSeed = await upgrades.deployProxy(PlushSeed, {
+    kind: 'uups',
+  });
 
   const signers = await ethers.getSigners();
-  await plushVestingSeedInvestorsPool.deployed();
 
-  console.log(
-    'PlushVestingSeedInvestorsPool -> deployed to address:',
-    plushVestingSeedInvestorsPool.address,
-  );
+  await plushSeed.deployed();
+  console.log('PlushSeed -> deployed to address:', plushSeed.address);
 
   console.log('Grant all roles for DAO Protocol...\n');
 
-  const grantAdminRole = await plushVestingSeedInvestorsPool.grantRole(
+  const grantAdminRole = await plushSeed.grantRole(
     constants.HashZero,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
   ); // ADMIN role
 
   await grantAdminRole.wait();
 
-  const grantOperatorRole = await plushVestingSeedInvestorsPool.grantRole(
-    OPERATOR_ROLE,
+  const grantMinterRole = await plushSeed.grantRole(
+    MINTER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
   ); // MINTER role
 
-  await grantOperatorRole.wait();
+  await grantMinterRole.wait();
 
-  const grantPauserRole = await plushVestingSeedInvestorsPool.grantRole(
+  const grantPauserRole = await plushSeed.grantRole(
     PAUSER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
   ); // PAUSER role
 
   await grantPauserRole.wait();
 
-  const grantUpgraderRole = await plushVestingSeedInvestorsPool.grantRole(
+  const grantUpgraderRole = await plushSeed.grantRole(
     UPGRADER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
   ); // UPGRADER role
@@ -73,28 +56,28 @@ async function main() {
 
   console.log('Revoke all roles from existing account...\n');
 
-  const revokeOperatorRole = await plushVestingSeedInvestorsPool.revokeRole(
-    OPERATOR_ROLE,
+  const revokeMinterRole = await plushSeed.revokeRole(
+    MINTER_ROLE,
     await signers[0].getAddress(),
   ); // MINTER role
 
-  await revokeOperatorRole.wait();
+  await revokeMinterRole.wait();
 
-  const revokePauserRole = await plushVestingSeedInvestorsPool.revokeRole(
+  const revokePauserRole = await plushSeed.revokeRole(
     PAUSER_ROLE,
     await signers[0].getAddress(),
   ); // PAUSER role
 
   await revokePauserRole.wait();
 
-  const revokeUpgraderRole = await plushVestingSeedInvestorsPool.revokeRole(
+  const revokeUpgraderRole = await plushSeed.revokeRole(
     UPGRADER_ROLE,
     await signers[0].getAddress(),
   ); // UPGRADER role
 
   await revokeUpgraderRole.wait();
 
-  const revokeAdminRole = await plushVestingSeedInvestorsPool.revokeRole(
+  const revokeAdminRole = await plushSeed.revokeRole(
     constants.HashZero,
     await signers[0].getAddress(),
   ); // ADMIN role
@@ -110,7 +93,7 @@ async function main() {
 
     await run('verify:verify', {
       address: await upgrades.erc1967.getImplementationAddress(
-        plushVestingSeedInvestorsPool.address,
+        plushSeed.address,
       ),
     });
   }
