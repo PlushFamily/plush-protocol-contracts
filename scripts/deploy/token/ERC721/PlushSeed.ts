@@ -6,9 +6,6 @@ import { DevContractsAddresses } from '../../../../arguments/development/consts'
 const MINTER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('MINTER_ROLE'),
 );
-const PAUSER_ROLE = ethers.utils.keccak256(
-  ethers.utils.toUtf8Bytes('PAUSER_ROLE'),
-);
 const UPGRADER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('UPGRADER_ROLE'),
 );
@@ -40,13 +37,6 @@ async function main() {
 
   await grantMinterRole.wait();
 
-  const grantPauserRole = await plushSeed.grantRole(
-    PAUSER_ROLE,
-    DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
-  ); // PAUSER role
-
-  await grantPauserRole.wait();
-
   const grantUpgraderRole = await plushSeed.grantRole(
     UPGRADER_ROLE,
     DevContractsAddresses.PLUSH_DAO_PROTOCOL_ADDRESS,
@@ -62,13 +52,6 @@ async function main() {
   ); // MINTER role
 
   await revokeMinterRole.wait();
-
-  const revokePauserRole = await plushSeed.revokeRole(
-    PAUSER_ROLE,
-    await signers[0].getAddress(),
-  ); // PAUSER role
-
-  await revokePauserRole.wait();
 
   const revokeUpgraderRole = await plushSeed.revokeRole(
     UPGRADER_ROLE,
