@@ -35,7 +35,9 @@ contract PlushVestingSeedInvestorsPool is IPlushVestingSeedInvestorsPool, Initia
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    constructor() {
+        _disableInitializers();
+    }
 
     function initialize(IERC20Upgradeable _plush, PlushSeed _plushSeed, address _plushSeedKeeper, uint256 _idPlushSeed, uint256 _mainPercent, uint256 _daysUnlock) initializer public {
         plush = _plush;

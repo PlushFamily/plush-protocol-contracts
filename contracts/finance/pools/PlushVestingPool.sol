@@ -38,7 +38,9 @@ contract PlushVestingPool is
     bytes32 public constant WITHDRAW_ROLE = keccak256("WITHDRAW_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    constructor() {
+        _disableInitializers();
+    }
 
     function initialize(
         IERC20Upgradeable _plush,

@@ -7,7 +7,9 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract PlushTimeLock is Initializable, TimelockControllerUpgradeable, UUPSUpgradeable, OwnableUpgradeable  {
   /// @custom:oz-upgrades-unsafe-allow constructor
-  constructor() initializer {}
+  constructor() {
+    _disableInitializers();
+  }
 
   function initialize (uint256 minDelay, address[] memory proposers, address[] memory executors) initializer public
   {

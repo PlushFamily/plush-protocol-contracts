@@ -37,7 +37,9 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    constructor() {
+        _disableInitializers();
+    }
 
     function initialize(
         string memory _externalURL,
