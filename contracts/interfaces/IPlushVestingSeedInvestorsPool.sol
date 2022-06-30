@@ -2,12 +2,6 @@
 pragma solidity ^0.8.4;
 
 interface IPlushVestingSeedInvestorsPool {
-    /// @notice Pause contract
-    function pause() external;
-
-    /// @notice Unpause contract
-    function unpause() external;
-
     /**
      * @notice Returns how many tokens are locked
      * @return Number of tokens in wei
