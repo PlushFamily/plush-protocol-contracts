@@ -52,7 +52,6 @@ contract PlushVestingSeedInvestorsPool is IPlushVestingSeedInvestorsPool, Initia
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
