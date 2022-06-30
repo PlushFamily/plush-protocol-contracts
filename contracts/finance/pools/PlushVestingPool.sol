@@ -3,7 +3,6 @@ pragma solidity ^0.8.4;
 
 import "../../interfaces/IPlushVestingPool.sol";
 
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -13,7 +12,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 contract PlushVestingPool is
     IPlushVestingPool,
     Initializable,
-    PausableUpgradeable,
     AccessControlUpgradeable,
     UUPSUpgradeable
 {
@@ -35,7 +33,6 @@ contract PlushVestingPool is
     /**
      * @dev Roles definitions
      */
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant WITHDRAW_ROLE = keccak256("WITHDRAW_ROLE");
@@ -54,25 +51,13 @@ contract PlushVestingPool is
         isIDO = false;
         timeRemuneration = 1 days;
 
-        __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
         _grantRole(WITHDRAW_ROLE, msg.sender);
-    }
-
-    /// @notice Pause contract
-    function pause() public onlyRole(PAUSER_ROLE) {
-        _pause();
-    }
-
-    /// @notice Unpause contract
-    function unpause() public onlyRole(PAUSER_ROLE) {
-        _unpause();
     }
 
     /**
@@ -159,7 +144,7 @@ contract PlushVestingPool is
     /**
      * @notice Start release at IDO (unlocking the first part of the tokens and starting the reward every day)
      */
-    function releaseAtIDO() external whenNotPaused() onlyRole(OPERATOR_ROLE) {
+    function releaseAtIDO() external onlyRole(OPERATOR_ROLE) {
         require(!isIDO, "Already complete");
 
         unlockBalance = (plush.balanceOf(address(this)) * mainPercent) / 100000;
