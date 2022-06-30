@@ -3,7 +3,6 @@ pragma solidity ^0.8.4;
 
 import "../../interfaces/IPlushVestingSeedInvestorsPool.sol";
 
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -12,7 +11,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 import "../../token/ERC721/PlushSeed.sol";
 
-contract PlushVestingSeedInvestorsPool is IPlushVestingSeedInvestorsPool, Initializable, PausableUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+contract PlushVestingSeedInvestorsPool is IPlushVestingSeedInvestorsPool, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     IERC20Upgradeable public plush;
@@ -32,7 +31,6 @@ contract PlushVestingSeedInvestorsPool is IPlushVestingSeedInvestorsPool, Initia
     /**
      * @dev Roles definitions
      */
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
@@ -50,7 +48,6 @@ contract PlushVestingSeedInvestorsPool is IPlushVestingSeedInvestorsPool, Initia
         isIDO = false;
         timeRemuneration = 1 days;
 
-        __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
@@ -58,16 +55,6 @@ contract PlushVestingSeedInvestorsPool is IPlushVestingSeedInvestorsPool, Initia
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
-    }
-
-    /// @notice Pause contract
-    function pause() public onlyRole(PAUSER_ROLE) {
-        _pause();
-    }
-
-    /// @notice Unpause contract
-    function unpause() public onlyRole(PAUSER_ROLE) {
-        _unpause();
     }
 
     /**
