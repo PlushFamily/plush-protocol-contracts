@@ -20,7 +20,6 @@ async function main() {
     [
       DevContractsAddresses.PLUSH_COIN_ADDRESS, //plushCoin
       DevContractsAddresses.PLUSH_SEED, //PlushSeed ERC721
-      DevContractsAddresses.PLUSH_SEED_TOKENS_KEEPER, //PlushSeed Keeper
       0, //id PlushSeed ERC721
       '10000', //Percent release at IDO (1000 = 1%)
       '450', //How many days will it be unlocked

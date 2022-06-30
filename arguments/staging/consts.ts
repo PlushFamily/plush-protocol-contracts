@@ -11,7 +11,6 @@ export enum StageContractsAddresses {
   PLUSH_FEE_COLLECTOR_ADDRESS = '0x8E816Acb4E93DFe8f89195169ebDD4E1Ba7d3a20', // Plush Fee collector DAO contract (multisig)
   PLUSH_DAO_PROTOCOL_ADDRESS = '0xca044999dF0c67923f5cCF3DCb8DFDFf72ADA86f', // Plush DAO Protocol contract (multisig)
   PLUSH_SEED = '0x6e03DC94cCb78645856E06aE461fe3E4Dec98F9a', // ERC-721 PlushSeed contract
-  PLUSH_SEED_TOKENS_KEEPER = '0x07E2383EF2eB15C3C3c6C2b29121FCCcA2AFcb48', // Address where all ERC721 PlushSeed tokens are stored
 }
 
 export enum DevLinks {

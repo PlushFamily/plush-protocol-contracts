@@ -26,7 +26,6 @@ contract PlushVestingSeedInvestorsPool is
 
     uint256 private mainPercent; //Percent release at IDO
     uint256 private daysUnlock; //How many days will it be unlocked
-    address private plushSeedKeeper;
     uint256 private amountDaily; //Number of tokens broken into pieces
     uint256 private unlockBalance; //Number of tokens available for withdrawal (release at IDO)
     uint256 private timeStart; //Start counter start after (release at IDO)
@@ -47,14 +46,12 @@ contract PlushVestingSeedInvestorsPool is
     function initialize(
         IERC20Upgradeable _plush,
         PlushSeed _plushSeed,
-        address _plushSeedKeeper,
         uint256 _idPlushSeed,
         uint256 _mainPercent,
         uint256 _daysUnlock
     ) public initializer {
         plush = _plush;
         plushSeed = _plushSeed;
-        plushSeedKeeper = _plushSeedKeeper;
         idPlushSeed = _idPlushSeed;
         mainPercent = _mainPercent;
         daysUnlock = _daysUnlock;
@@ -127,17 +124,6 @@ contract PlushVestingSeedInvestorsPool is
         } else {
             return 0;
         }
-    }
-
-    /**
-     * @notice Returns bool is the lot sold
-     */
-    function getIsSold() public view returns (bool) {
-        if (plushSeed.ownerOf(idPlushSeed) != plushSeedKeeper) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
