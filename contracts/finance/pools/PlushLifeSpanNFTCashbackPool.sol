@@ -38,7 +38,9 @@ contract PlushLifeSpanNFTCashbackPool is
     bytes32 public constant REMUNERATION_ROLE = keccak256("REMUNERATION_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    constructor() {
+        _disableInitializers();
+    }
 
     function initialize(
         IERC20Upgradeable _plush,

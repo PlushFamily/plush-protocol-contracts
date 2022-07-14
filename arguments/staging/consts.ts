@@ -10,9 +10,10 @@ export enum StageContractsAddresses {
   PLUSH_APPS_ADDRESS = '0x9e953f56C94C25622E483a14341A0799ea1ee967', // Ecosystem contract
   PLUSH_FEE_COLLECTOR_ADDRESS = '0x8E816Acb4E93DFe8f89195169ebDD4E1Ba7d3a20', // Plush Fee collector DAO contract (multisig)
   PLUSH_DAO_PROTOCOL_ADDRESS = '0xca044999dF0c67923f5cCF3DCb8DFDFf72ADA86f', // Plush DAO Protocol contract (multisig)
+  PLUSH_SEED = '0x6e03DC94cCb78645856E06aE461fe3E4Dec98F9a', // ERC-721 PlushSeed contract
 }
 
 export enum DevLinks {
-  PLUSH_LIFESPAN_LINK = 'https://home.plush.family/token/', // Link to page with LifeSpan
-  PLUSH_GENERATOR_IMG_LIFESPAN_LINK = 'ipfs://QmVVsfk8n8KdNeo5wAFCweDsoWMCLhqfYtbgdVXt8y2JhA', // Link to page with generator image LifeSpan
+  PLUSH_LIFESPAN_LINK = 'https://home.plush.network/token/', // Link to page with LifeSpan
+  PLUSH_GENERATOR_IMG_LIFESPAN_LINK = 'https://api.plush.network/user/tokens/render', // Link to page with generator image LifeSpan
 }
