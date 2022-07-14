@@ -396,7 +396,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(tokenURIRespDecode.attributes[0]).to.deep.equal({
       display_type: 'date',
       trait_type: 'Birthday',
-      value: '918606632',
+      value: 918606632,
     });
 
     expect(tokenURIRespDecode.attributes[1]).to.deep.include({
