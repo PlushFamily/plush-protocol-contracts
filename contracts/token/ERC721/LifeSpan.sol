@@ -210,9 +210,9 @@ contract LifeSpan is ILifeSpan, Initializable, ERC721Upgradeable, ERC721Enumerab
         return abi.encodePacked(
             '"attributes":',
             '[{',
-            '"display_type":"date","trait_type":"Birthday","value":"', tokenData[tokenId].birthdayDate.toString(), '"',
+            '"display_type":"date","trait_type":"Birthday","value":', tokenData[tokenId].birthdayDate.toString(), '',
             '},{',
-            '"display_type":"date","trait_type":"Date of Mint","value":"', tokenData[tokenId].dateOfMint.toString(), '"',
+            '"display_type":"date","trait_type":"Date of Mint","value":', tokenData[tokenId].dateOfMint.toString(), '',
             '},{',
             '"trait_type":"Gender","value":"', genders[tokenData[tokenId].gender].name, '"',
             '}]',
