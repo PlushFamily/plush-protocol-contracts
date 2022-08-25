@@ -155,7 +155,16 @@ export default {
           },
         },
       },
-      'contracts/token/ERC1155/Ambassador.sol': {
+      'contracts/token/ERC1155/PlushAmbassador.sol': {
+        version: '0.8.16',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      'contracts/finance/PlushGetAmbassador.sol': {
         version: '0.8.16',
         settings: {
           optimizer: {
