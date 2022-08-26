@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 interface IPlushAmbassador {
-
     /**
      * @notice Set new token URI link
      * @param newuri URI
@@ -16,7 +15,12 @@ interface IPlushAmbassador {
      * @param amount token mint amount
      * @param data token data
      */
-    function mint(address account, uint256 id, uint256 amount, bytes memory data) external;
+    function mint(
+        address account,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) external;
 
     /**
      * @notice Mint a batch of Ambassador NFT
@@ -25,8 +29,12 @@ interface IPlushAmbassador {
      * @param amounts token mint amount
      * @param data token data
      */
-    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) external;
-
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) external;
 
     /**
      * @notice Set new contract URI

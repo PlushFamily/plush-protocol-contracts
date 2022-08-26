@@ -11,10 +11,10 @@ import "../token/ERC1155/PlushAmbassador.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetAmbassador is
-IPlushGetAmbassador,
-Initializable,
-AccessControlUpgradeable,
-UUPSUpgradeable
+    IPlushGetAmbassador,
+    Initializable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
 {
     PlushAmbassador public plushAmbassador;
 
@@ -31,9 +31,7 @@ UUPSUpgradeable
         _disableInitializers();
     }
 
-    function initialize(
-        PlushAmbassador _plushAmbassador
-    ) public initializer {
+    function initialize(PlushAmbassador _plushAmbassador) public initializer {
         plushAmbassador = _plushAmbassador;
 
         __AccessControl_init();
@@ -45,8 +43,8 @@ UUPSUpgradeable
     }
 
     function _authorizeUpgrade(address newImplementation)
-    internal
-    override
-    onlyRole(UPGRADER_ROLE)
+        internal
+        override
+        onlyRole(UPGRADER_ROLE)
     {}
 }
