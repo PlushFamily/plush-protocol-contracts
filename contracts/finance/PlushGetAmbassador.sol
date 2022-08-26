@@ -42,6 +42,63 @@ contract PlushGetAmbassador is
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
+    /**
+     * @notice Mint PlushAmbassador token
+     * @param token tokenId for minting
+     */
+    function mint(uint256 token) public {
+        require(tokens[token].exists, "Token doesn't exist");
+        require(tokens[token].active, "Token doesn't active");
+
+        plushAmbassador.mint(msg.sender, token, 1, "");
+
+        emit TokenMinted(msg.sender, token);
+    }
+
+    /**
+     * @notice Add new token
+     * @param token tokenId for minting
+     */
+    function addNewToken(uint256 token) external onlyRole(OPERATOR_ROLE) {
+        require(!tokens[token].exists, "Token already exists");
+
+        tokens[token] = Token(token, true, true);
+
+        emit TokenAdded(token);
+    }
+
+    /**
+     * @notice Enable token minting
+     * @param token tokenId for minting
+     */
+    function enableTokenMinting(uint256 token)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        require(tokens[token].exists, "Token doesn't exist");
+        require(!tokens[token].active, "Token minting already active");
+
+        tokens[token].active = true;
+
+        emit TokenMintingEnable(token);
+    }
+
+    /**
+     * @notice Disable token minting
+     * @param token tokenId for minting
+     */
+    function disableTokenMinting(uint256 token)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        require(tokens[token].exists, "Token doesn't exist");
+        require(tokens[token].active, "Token minting already disable");
+
+        tokens[token].active = false;
+
+        emit TokenMintingDisable(token);
+    }
+
     function _authorizeUpgrade(address newImplementation)
         internal
         override
