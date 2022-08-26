@@ -15,6 +15,15 @@ interface IPlushGetAmbassador {
     function mint(uint256 token) external;
 
     /**
+     * @notice Check the possibility of minting a token for a specific address
+     * @param applicant recipient's address
+     */
+    function checkMintPossibility(address applicant)
+        external
+        view
+        returns (bool);
+
+    /**
      * @notice Add new token
      * @param token tokenId for minting
      */

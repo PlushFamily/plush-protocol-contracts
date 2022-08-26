@@ -19,6 +19,7 @@ contract PlushGetAmbassador is
     PlushAmbassador public plushAmbassador;
 
     mapping(uint256 => Token) public tokens;
+    mapping(address => bool) public applicants;
 
     /**
      * @dev Roles definitions
@@ -50,9 +51,29 @@ contract PlushGetAmbassador is
         require(tokens[token].exists, "Token doesn't exist");
         require(tokens[token].active, "Token doesn't active");
 
+        require(!applicants[msg.sender], "You can't mint twice");
+
+        applicants[msg.sender] = true;
+
         plushAmbassador.mint(msg.sender, token, 1, "");
 
         emit TokenMinted(msg.sender, token);
+    }
+
+    /**
+     * @notice Check the possibility of minting a token for a specific address
+     * @param applicant recipient's address
+     */
+    function checkMintPossibility(address applicant)
+        public
+        view
+        returns (bool)
+    {
+        if (applicants[applicant]) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
