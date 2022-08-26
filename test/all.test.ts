@@ -6,9 +6,11 @@ import {
   LifeSpan,
   Plush,
   PlushAccounts,
+  PlushAmbassador,
   PlushApps,
   PlushController,
   PlushFaucet,
+  PlushGetAmbassador,
   PlushGetLifeSpan,
   PlushLifeSpanNFTCashbackPool,
   WrappedPlush,
@@ -29,6 +31,9 @@ const REMUNERATION_ROLE = ethers.utils.keccak256(
 );
 const MINTER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('MINTER_ROLE'),
+);
+const URI_SETTER_ROLE = ethers.utils.keccak256(
+  ethers.utils.toUtf8Bytes('URI_SETTER_ROLE'),
 );
 const PAUSER_ROLE = ethers.utils.keccak256(
   ethers.utils.toUtf8Bytes('PAUSER_ROLE'),
@@ -75,6 +80,12 @@ describe('Launching the testing of the Plush Protocol', () => {
   let PlushFaucetFactory: ContractFactory;
   let plushFaucet: PlushFaucet;
   const plushFaucetRandomReceiverAddress = ethers.Wallet.createRandom();
+
+  let PlushAmbassadorFactory: ContractFactory;
+  let plushAmbassador: PlushAmbassador;
+
+  let PlushGetAmbassadorFactory: ContractFactory;
+  let plushGetAmbassador: PlushGetAmbassador;
 
   it('[Deploy contract] Plush', async () => {
     PlushFactory = await ethers.getContractFactory('Plush');
@@ -187,6 +198,37 @@ describe('Launching the testing of the Plush Protocol', () => {
       },
     )) as PlushFaucet;
     await plushFaucet.deployed();
+  });
+
+  it('[Deploy contract] PlushAmbassador', async () => {
+    PlushAmbassadorFactory = await ethers.getContractFactory('PlushAmbassador');
+    plushAmbassador = (await upgrades.deployProxy(
+      PlushAmbassadorFactory,
+      [
+        'Plush Ambassador',
+        'PLAM',
+        'ipfs://QmYBiofrRjAKGxZg4518osmkzrQS24aQgZ4CKC6RyV9DDi/{id}',
+        'ipfs://QmXTTH1CTkNTJe6T7NiFfQRSaUwMiKHxcbeLKJyp9WdHgz',
+      ],
+      {
+        kind: 'uups',
+      },
+    )) as PlushAmbassador;
+    await plushAmbassador.deployed();
+  });
+
+  it('[Deploy contract] PlushGetAmbassador', async () => {
+    PlushGetAmbassadorFactory = await ethers.getContractFactory(
+      'PlushGetAmbassador',
+    );
+    plushGetAmbassador = (await upgrades.deployProxy(
+      PlushGetAmbassadorFactory,
+      [plushAmbassador.address],
+      {
+        kind: 'uups',
+      },
+    )) as PlushGetAmbassador;
+    await plushGetAmbassador.deployed();
   });
 
   it('Plush -> Check total supply', async () => {
@@ -989,5 +1031,111 @@ describe('Launching the testing of the Plush Protocol', () => {
     expect(
       await plushAccounts.getAccountBalance(await signers[1].getAddress()),
     ).to.deep.equal(ethers.utils.parseUnits('2', 18));
+  });
+
+  it('PlushAmbassador -> Checking role assignments', async () => {
+    expect(
+      await plushAmbassador.hasRole(
+        constants.HashZero,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // ADMIN role
+    expect(
+      await plushAmbassador.hasRole(
+        URI_SETTER_ROLE,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true);
+    expect(
+      await plushAmbassador.hasRole(
+        UPGRADER_ROLE,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true);
+  });
+
+  it('PlushAmbassador -> Check init supply', async () => {
+    expect(await plushAmbassador.exists(constants.Zero)).to.eql(false);
+  });
+
+  it('PlushAmbassador -> Check name, ticker and URI', async () => {
+    expect(await plushAmbassador.name()).to.eql('Plush Ambassador');
+    expect(await plushAmbassador.symbol()).to.eql('PLAM');
+    expect(await plushAmbassador.uri(constants.Zero)).to.eql(
+      'ipfs://QmYBiofrRjAKGxZg4518osmkzrQS24aQgZ4CKC6RyV9DDi/{id}',
+    );
+    expect(await plushAmbassador.contractURI()).to.eql(
+      'ipfs://QmXTTH1CTkNTJe6T7NiFfQRSaUwMiKHxcbeLKJyp9WdHgz',
+    );
+  });
+
+  it('PlushAmbassador -> Grant OPERATOR_ROLE in PlushGetAmbassador contract', async () => {
+    const grantRole = await plushAmbassador.grantRole(
+      MINTER_ROLE,
+      plushGetAmbassador.address,
+    );
+    await grantRole.wait();
+    expect(
+      await plushAmbassador.hasRole(MINTER_ROLE, plushGetAmbassador.address),
+    ).to.eql(true);
+  });
+
+  it('PlushGetAmbassador -> Checking role assignments', async () => {
+    expect(
+      await plushGetAmbassador.hasRole(
+        constants.HashZero,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true); // ADMIN role
+    expect(
+      await plushGetAmbassador.hasRole(
+        OPERATOR_ROLE,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true);
+    expect(
+      await plushGetAmbassador.hasRole(
+        UPGRADER_ROLE,
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true);
+  });
+
+  it('PlushGetAmbassador -> Add new token', async () => {
+    const addNewToken = await plushGetAmbassador.addNewToken(constants.One);
+    await addNewToken.wait();
+
+    const tokenData = await plushGetAmbassador.tokens(constants.One);
+    expect(tokenData.id).to.deep.equal('1');
+    expect(tokenData.active).to.deep.equal(true);
+    expect(tokenData.exists).to.deep.equal(true);
+  });
+
+  it('PlushGetAmbassador -> Check that we cant mint new token', async () => {
+    expect(
+      await plushGetAmbassador.checkMintPossibility(
+        await signers[0].getAddress(),
+      ),
+    ).to.eql(true);
+  });
+
+  it('PlushGetAmbassador -> Check minting token', async () => {
+    const mintToken = await plushGetAmbassador.mint(constants.One);
+    await mintToken.wait();
+
+    expect(
+      await plushGetAmbassador.applicants(await signers[0].getAddress()),
+    ).to.eql(true);
+
+    expect(
+      await plushAmbassador.balanceOf(
+        await signers[0].getAddress(),
+        constants.One,
+      ),
+    ).to.eql(constants.One);
+  });
+
+  it("PlushGetAmbassador -> Try that we cant't to mint twice", async () => {
+    await expect(plushGetAmbassador.mint(constants.One)).to.be.reverted;
   });
 });
