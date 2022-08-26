@@ -11,7 +11,7 @@ export enum DevContractsAddresses {
   PLUSH_FEE_COLLECTOR_ADDRESS = '0x108dEc7b37C526B2e2DBf8447573dDCB9265C884', // Plush Fee collector DAO contract (multisig)
   PLUSH_DAO_PROTOCOL_ADDRESS = '0xBB8Fe52cAA5F35Ec1475ac2ac6f1A273D67E2a10', // Plush DAO Protocol contract (multisig)
   PLUSH_SEED = '0x6e03DC94cCb78645856E06aE461fe3E4Dec98F9a', // ERC-721 PlushSeed contract
-  PLUSH_AMBASSADOR = '0xbb15954b8A6f1Fd95f8Ab7C3E498646F466d8e51', // ERC-1155 PlushAmbassador contract
+  PLUSH_AMBASSADOR = '0x0BCa3e41579FdCF6bFB9E7e57d4AD63B72b04c53', // ERC-1155 PlushAmbassador contract
 }
 
 export enum DevLinks {
