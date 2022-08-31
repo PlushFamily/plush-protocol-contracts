@@ -38,9 +38,9 @@ contract PlushGetLifeSpan is
     /**
      * @dev Roles definitions
      */
-    bytes32 public constant STAFF_ROLE = keccak256("STAFF_ROLE");
-    bytes32 public constant BANKER_ROLE = keccak256("BANKER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant BANKER_ROLE = keccak256("BANKER_ROLE");
+    bytes32 public constant STAFF_ROLE = keccak256("STAFF_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
@@ -68,9 +68,9 @@ contract PlushGetLifeSpan is
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(BANKER_ROLE, msg.sender);
         _grantRole(STAFF_ROLE, msg.sender);
-        _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
@@ -166,7 +166,7 @@ contract PlushGetLifeSpan is
         string memory _name,
         uint256 _gender,
         uint256 _birthdayDate
-    ) public onlyRole(STAFF_ROLE) whenNotPaused {
+    ) public onlyRole(STAFF_ROLE) whenNotPaused notBlacklisted(_mintAddress) {
         lifeSpan.safeMint(_mintAddress, _name, _gender, _birthdayDate);
 
         emit TokenFreeMinted(msg.sender, _mintAddress);
