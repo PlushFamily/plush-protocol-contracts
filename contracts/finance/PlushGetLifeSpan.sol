@@ -139,7 +139,13 @@ contract PlushGetLifeSpan is
         string memory _name,
         uint256 _gender,
         uint256 _birthdayDate
-    ) public payable whenNotPaused notBlacklisted(msg.sender) notBlacklisted(_mintAddress) {
+    )
+        public
+        payable
+        whenNotPaused
+        notBlacklisted(msg.sender)
+        notBlacklisted(_mintAddress)
+    {
         require(msg.value == mintPrice, "Incorrect amount");
 
         lifeSpan.safeMint(_mintAddress, _name, _gender, _birthdayDate);
