@@ -8,6 +8,7 @@ import {
   PlushAccounts,
   PlushAmbassador,
   PlushApps,
+  PlushBlacklist,
   PlushController,
   PlushFaucet,
   PlushGetAmbassador,
@@ -59,6 +60,9 @@ describe('Launching the testing of the Plush Protocol', () => {
 
   let LifeSpanFactory: ContractFactory;
   let lifeSpan: LifeSpan;
+
+  let PlushBlacklistFactory: ContractFactory;
+  let plushBlacklist: PlushBlacklist;
 
   let PlushGetLifeSpanFactory: ContractFactory;
   let plushGetLifeSpan: PlushGetLifeSpan;
@@ -116,6 +120,14 @@ describe('Launching the testing of the Plush Protocol', () => {
     await lifeSpan.deployed();
   });
 
+  it('[Deploy contract] PlushBlacklist', async () => {
+    PlushBlacklistFactory = await ethers.getContractFactory('PlushBlacklist');
+    plushBlacklist = (await upgrades.deployProxy(PlushBlacklistFactory, {
+      kind: 'uups',
+    })) as PlushBlacklist;
+    await plushBlacklist.deployed();
+  });
+
   it('[Deploy contract] PlushLifeSpanNFTCashbackPool', async () => {
     PlushLifeSpanNFTCashbackPoolFactory = await ethers.getContractFactory(
       'PlushLifeSpanNFTCashbackPool',
@@ -143,7 +155,9 @@ describe('Launching the testing of the Plush Protocol', () => {
       [
         lifeSpan.address,
         plushLifeSpanNFTCashbackPool.address,
+        plushBlacklist.address,
         await signers[1].getAddress(),
+        ethers.utils.parseUnits('0.001', 18),
       ],
       {
         kind: 'uups',
@@ -619,20 +633,14 @@ describe('Launching the testing of the Plush Protocol', () => {
     ).to.eql(true);
   });
 
-  it('PlushGetLifeSpan -> Check LifeSpan token address', async () => {
-    expect(await plushGetLifeSpan.getLifeSpanTokenAddress()).to.eql(
-      lifeSpan.address,
-    );
-  });
-
   it('PlushGetLifeSpan -> Check safe address', async () => {
-    expect(await plushGetLifeSpan.getFeeAddress()).to.eql(
+    expect(await plushGetLifeSpan.feeAddress()).to.eql(
       await signers[1].getAddress(),
     );
   });
 
   it('PlushGetLifeSpan -> Check mint price', async () => {
-    expect(await plushGetLifeSpan.getMintPrice()).to.deep.equal(
+    expect(await plushGetLifeSpan.mintPrice()).to.deep.equal(
       ethers.utils.parseUnits('0.001', 18),
     );
   });
@@ -643,7 +651,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await changeMintPrice.wait();
 
-    expect(await plushGetLifeSpan.getMintPrice()).to.deep.equal(
+    expect(await plushGetLifeSpan.mintPrice()).to.deep.equal(
       ethers.utils.parseUnits('0.0001', 18),
     );
   });
@@ -654,7 +662,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     await changeSafeAddress.wait();
 
-    expect(await plushGetLifeSpan.getFeeAddress()).to.eql(
+    expect(await plushGetLifeSpan.feeAddress()).to.eql(
       plushGetLifeSpanRandomSafeAddress.address,
     );
   });

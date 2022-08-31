@@ -6,6 +6,7 @@ interface ILifeSpan {
         string name;
         uint256 gender;
         uint256 birthdayDate;
+        uint256 deathDate;
         uint256 dateOfMint;
     }
 
@@ -27,7 +28,12 @@ interface ILifeSpan {
      * @param gender id of LifeSpan token
      * @param birthdayDate time in sec when the token(user) was born
      */
-    function safeMint(address to, string memory name, uint256 gender, uint256 birthdayDate) external;
+    function safeMint(
+        address to,
+        string memory name,
+        uint256 gender,
+        uint256 birthdayDate
+    ) external;
 
     /**
      * @notice Add new gender
@@ -37,14 +43,14 @@ interface ILifeSpan {
     function addGender(uint256 id, string memory newGender) external;
 
     /**
-    * @notice Enable or disable gender
+     * @notice Enable or disable gender
      * @param id of gender
      * @param status true or false
      */
     function setIsActiveGender(uint256 id, bool status) external;
 
     /**
-    * @notice Change name of LifeSpan token
+     * @notice Change name of LifeSpan token
      * @param tokenId id LifeSpan token
      * @param newName new name of LifeSpan token
      */
@@ -58,7 +64,7 @@ interface ILifeSpan {
     function updateTokenGender(uint256 tokenId, uint256 newGender) external;
 
     /**
-    * @notice Update external url LifeSpan
+     * @notice Update external url LifeSpan
      * @param newExternalURL sting of new link
      */
     function updateExternalURL(string memory newExternalURL) external;

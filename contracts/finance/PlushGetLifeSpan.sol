@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../token/ERC721/LifeSpan.sol";
 import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";
+import "../governance/PlushBlacklist.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetLifeSpan is
@@ -21,10 +22,18 @@ contract PlushGetLifeSpan is
 {
     LifeSpan public lifeSpan;
     PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
+    PlushBlacklist public plushBlacklist;
 
-    address private feeAddress; // Plush Fee collector address
-
+    address public feeAddress; // Plush Fee collector address
     uint256 public mintPrice;
+
+    modifier notBlacklisted(address _account) {
+        require(
+            !plushBlacklist.isBlacklisted(_account),
+            "Blacklist: account is blacklisted"
+        );
+        _;
+    }
 
     /**
      * @dev Roles definitions
@@ -43,13 +52,16 @@ contract PlushGetLifeSpan is
     function initialize(
         LifeSpan _lifeSpan,
         PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool,
-        address payable _feeAddress
+        PlushBlacklist _plushBlacklist,
+        address payable _feeAddress,
+        uint256 _mintPrice
     ) public initializer {
         lifeSpan = _lifeSpan;
         plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
+        plushBlacklist = _plushBlacklist;
         feeAddress = _feeAddress;
 
-        mintPrice = 0.001 ether;
+        mintPrice = _mintPrice;
 
         __Pausable_init();
         __AccessControl_init();
@@ -75,30 +87,27 @@ contract PlushGetLifeSpan is
 
     /**
      * @notice Change mint price
-     * @param newPrice new LifeSpan token mint price
+     * @param _newPrice new LifeSpan token mint price
      */
-    function changeMintPrice(uint256 newPrice)
+    function changeMintPrice(uint256 _newPrice)
         external
-        onlyRole(OPERATOR_ROLE)
+        onlyRole(BANKER_ROLE)
+        whenNotPaused
     {
-        mintPrice = newPrice;
+        mintPrice = _newPrice;
 
-        emit MintPriceChanged(newPrice);
-    }
-
-    /**
-     * @notice Get current mint price
-     * @return mint price in wei
-     */
-    function getMintPrice() public view returns (uint256) {
-        return mintPrice;
+        emit MintPriceChanged(_newPrice);
     }
 
     /**
      * @notice Set new fee address
      * @param _address new fee address
      */
-    function setFeeAddress(address _address) external onlyRole(BANKER_ROLE) {
+    function setFeeAddress(address _address)
+        external
+        onlyRole(BANKER_ROLE)
+        whenNotPaused
+    {
         feeAddress = _address;
 
         emit FeeAddressChanged(_address);
@@ -111,6 +120,7 @@ contract PlushGetLifeSpan is
     function setLifeSpanAddress(address _address)
         external
         onlyRole(OPERATOR_ROLE)
+        whenNotPaused
     {
         lifeSpan = LifeSpan(_address);
 
@@ -118,60 +128,61 @@ contract PlushGetLifeSpan is
     }
 
     /**
-     * @notice Get current fee address
-     * @return fee address
-     */
-    function getFeeAddress() public view returns (address) {
-        return feeAddress;
-    }
-
-    /**
-     * @notice Get current LifeSpan address
-     * @return LifeSpan address
-     */
-    function getLifeSpanTokenAddress() public view returns (address) {
-        return address(lifeSpan);
-    }
-
-    /**
      * @notice Mint LifeSpan token
-     * @param mintAddress where to enroll the LifeSpan token after minting
-     * @param name of token User (metadata)
-     * @param gender of token User (metadata)
-     * @param birthdayDate in sec of token User (metadata)
+     * @param _mintAddress where to enroll the LifeSpan token after minting
+     * @param _name of token User (metadata)
+     * @param _gender of token User (metadata)
+     * @param _birthdayDate in sec of token User (metadata)
      */
-    function mint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public payable {
+    function mint(
+        address _mintAddress,
+        string memory _name,
+        uint256 _gender,
+        uint256 _birthdayDate
+    ) public payable whenNotPaused notBlacklisted(msg.sender) notBlacklisted(_mintAddress) {
         require(msg.value == mintPrice, "Incorrect amount");
 
-        lifeSpan.safeMint(mintAddress, name, gender, birthdayDate);
-        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(mintAddress);
+        lifeSpan.safeMint(_mintAddress, _name, _gender, _birthdayDate);
+        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(_mintAddress);
 
-        emit TokenMinted(msg.sender, mintAddress, msg.value);
+        emit TokenMinted(msg.sender, _mintAddress, msg.value);
     }
 
     /**
      * @notice Free mint LifeSpan token for staffers
-     * @param mintAddress where to enroll the LifeSpan token after minting
+     * @param _mintAddress where to enroll the LifeSpan token after minting
+     * @param _name of token User (metadata)
+     * @param _gender of token User (metadata)
+     * @param _birthdayDate in sec of token User (metadata)
      */
-    function freeMint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) public onlyRole(STAFF_ROLE) {
-        lifeSpan.safeMint(mintAddress, name, gender, birthdayDate);
+    function freeMint(
+        address _mintAddress,
+        string memory _name,
+        uint256 _gender,
+        uint256 _birthdayDate
+    ) public onlyRole(STAFF_ROLE) whenNotPaused {
+        lifeSpan.safeMint(_mintAddress, _name, _gender, _birthdayDate);
 
-        emit TokenFreeMinted(msg.sender, mintAddress);
+        emit TokenFreeMinted(msg.sender, _mintAddress);
     }
 
     /**
      * @notice Withdraw mint fee on Plush Fee collector address
-     * @param amount withdraw amount
+     * @param _amount withdraw amount
      */
-    function withdraw(uint256 amount) external onlyRole(BANKER_ROLE) {
+    function withdraw(uint256 _amount)
+        external
+        onlyRole(BANKER_ROLE)
+        whenNotPaused
+    {
         require(
-            amount <= address(this).balance,
+            _amount <= address(this).balance,
             "The withdrawal amount exceeds the contract balance"
         );
 
-        payable(feeAddress).transfer(amount);
+        payable(feeAddress).transfer(_amount);
 
-        emit FeeWithdrawn(amount, feeAddress);
+        emit FeeWithdrawn(_amount, feeAddress);
     }
 
     function _authorizeUpgrade(address newImplementation)
