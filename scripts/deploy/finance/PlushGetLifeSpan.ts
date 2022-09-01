@@ -33,6 +33,7 @@ async function main() {
     [
       DevContractsAddresses.LIFESPAN_ADDRESS,
       DevContractsAddresses.PLUSH_NFT_CASHBACK_POOL_ADDRESS,
+      DevContractsAddresses.PLUSH_BLACKLIST,
       DevContractsAddresses.PLUSH_FEE_COLLECTOR_ADDRESS,
       ethers.utils.parseUnits('0.001', 18),
     ],

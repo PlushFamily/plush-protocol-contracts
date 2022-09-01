@@ -59,6 +59,7 @@ contract PlushGetLifeSpan is
         lifeSpan = _lifeSpan;
         plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         plushBlacklist = _plushBlacklist;
+
         feeAddress = _feeAddress;
 
         mintPrice = _mintPrice;

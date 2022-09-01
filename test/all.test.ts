@@ -136,6 +136,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       PlushLifeSpanNFTCashbackPoolFactory,
       [
         plushToken.address,
+        plushBlacklist.address,
         1000000000000, // remuneration amount (in wei!)
         120, // time after which tokens will be unlocked (in sec!)
       ],

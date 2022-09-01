@@ -5,7 +5,8 @@ async function main() {
   const plushBlacklist = await upgrades.deployProxy(PlushBlacklist, {
     kind: 'uups',
   });
-  await plushBlacklist.deploy();
+
+  await plushBlacklist.deployed();
 
   console.log('PlushBlacklist -> deployed to address:', plushBlacklist.address);
 
