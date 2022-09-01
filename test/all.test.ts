@@ -155,7 +155,6 @@ describe('Launching the testing of the Plush Protocol', () => {
       PlushGetLifeSpanFactory,
       [
         lifeSpan.address,
-        plushLifeSpanNFTCashbackPool.address,
         plushBlacklist.address,
         await signers[1].getAddress(),
         ethers.utils.parseUnits('0.001', 18),

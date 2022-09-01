@@ -12,8 +12,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/Base64.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 
 /// @custom:security-contact security@plush.family
 contract LifeSpan is
@@ -27,7 +27,7 @@ contract LifeSpan is
     UUPSUpgradeable
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
-    using Strings for uint256;
+    using StringsUpgradeable for uint256;
 
     CountersUpgradeable.Counter private _tokenIdCounter;
 
@@ -140,7 +140,7 @@ contract LifeSpan is
             string(
                 abi.encodePacked(
                     "data:application/json;base64,",
-                    Base64.encode(data)
+                        Base64Upgradeable.encode(data)
                 )
             );
     }

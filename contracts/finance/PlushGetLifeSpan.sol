@@ -9,7 +9,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../token/ERC721/LifeSpan.sol";
-import "../finance/pools/PlushLifeSpanNFTCashbackPool.sol";
 import "../governance/PlushBlacklist.sol";
 
 /// @custom:security-contact security@plush.family
@@ -21,7 +20,6 @@ contract PlushGetLifeSpan is
     UUPSUpgradeable
 {
     LifeSpan public lifeSpan;
-    PlushLifeSpanNFTCashbackPool public plushLifeSpanNFTCashbackPool;
     PlushBlacklist public plushBlacklist;
 
     address public feeAddress; // Plush Fee collector address
@@ -51,13 +49,11 @@ contract PlushGetLifeSpan is
 
     function initialize(
         LifeSpan _lifeSpan,
-        PlushLifeSpanNFTCashbackPool _plushLifeSpanNFTCashbackPool,
         PlushBlacklist _plushBlacklist,
         address payable _feeAddress,
         uint256 _mintPrice
     ) public initializer {
         lifeSpan = _lifeSpan;
-        plushLifeSpanNFTCashbackPool = _plushLifeSpanNFTCashbackPool;
         plushBlacklist = _plushBlacklist;
 
         feeAddress = _feeAddress;
@@ -150,7 +146,6 @@ contract PlushGetLifeSpan is
         require(msg.value == mintPrice, "Incorrect amount");
 
         lifeSpan.safeMint(_mintAddress, _name, _gender, _birthdayDate);
-        plushLifeSpanNFTCashbackPool.addRemunerationToAccount(_mintAddress);
 
         emit TokenMinted(msg.sender, _mintAddress, msg.value);
     }
