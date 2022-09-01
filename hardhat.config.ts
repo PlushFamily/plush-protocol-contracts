@@ -174,7 +174,7 @@ export default {
         },
       },
       'contracts/token/ERC721/LifeSpan.sol': {
-        version: '0.8.15',
+        version: '0.8.16',
         settings: {
           optimizer: {
             enabled: true,
@@ -192,7 +192,7 @@ export default {
         },
       },
       'contracts/finance/PlushGetLifeSpan.sol': {
-        version: '0.8.15',
+        version: '0.8.16',
         settings: {
           optimizer: {
             enabled: true,

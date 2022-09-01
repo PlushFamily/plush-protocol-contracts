@@ -10,15 +10,9 @@ interface IPlushGetLifeSpan {
 
     /**
      * @notice Change mint price
-     * @param newPrice new price
+     * @param _newPrice new price
      */
-    function changeMintPrice(uint256 newPrice) external;
-
-    /**
-     * @notice Get actual mint price
-     * @return mint price in wei
-     */
-    function getMintPrice() external view returns (uint256);
+    function changeMintPrice(uint256 _newPrice) external;
 
     /**
      * @notice Set new fee address
@@ -33,40 +27,38 @@ interface IPlushGetLifeSpan {
     function setLifeSpanAddress(address _address) external;
 
     /**
-     * @notice Get current fee address
-     * @return fee address
-     */
-    function getFeeAddress() external view returns (address);
-
-    /**
-     * @notice Get current LifeSpan address
-     * @return LifeSpan address
-     */
-    function getLifeSpanTokenAddress() external view returns (address);
-
-    /**
      * @notice Mint LifeSpan token
-     * @param mintAddress where to enroll the LifeSpan token after minting
-     * @param name of token User (metadata)
-     * @param gender of token User (metadata)
-     * @param birthdayDate in sec of token User (metadata)
+     * @param _mintAddress where to enroll the LifeSpan token after minting
+     * @param _name of token User (metadata)
+     * @param _gender of token User (metadata)
+     * @param _birthdayDate in sec of token User (metadata)
      */
-    function mint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) external payable;
+    function mint(
+        address _mintAddress,
+        string memory _name,
+        uint256 _gender,
+        uint256 _birthdayDate
+    ) external payable;
 
     /**
      * @notice Free mint LifeSpan token for staffers
-     * @param mintAddress where to enroll the LifeSpan token after minting
-     * @param name of token User (metadata)
-     * @param gender of token User (metadata)
-     * @param birthdayDate in sec of token User (metadata)
+     * @param _mintAddress where to enroll the LifeSpan token after minting
+     * @param _name of token User (metadata)
+     * @param _gender of token User (metadata)
+     * @param _birthdayDate in sec of token User (metadata)
      */
-    function freeMint(address mintAddress, string memory name, uint256 gender, uint256 birthdayDate) external;
+    function freeMint(
+        address _mintAddress,
+        string memory _name,
+        uint256 _gender,
+        uint256 _birthdayDate
+    ) external;
 
     /**
      * @notice Withdraw mint fee on feeAddress
-     * @param amount withdraw amount
+     * @param _amount withdraw amount
      */
-    function withdraw(uint256 amount) external;
+    function withdraw(uint256 _amount) external;
 
     /// @notice Emitted when LifeSpan token has been minted
     event TokenMinted(

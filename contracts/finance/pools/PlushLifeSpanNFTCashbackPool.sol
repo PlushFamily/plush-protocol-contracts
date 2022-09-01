@@ -7,8 +7,11 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+
+import "../../governance/PlushBlacklist.sol";
 
 contract PlushLifeSpanNFTCashbackPool is
     IPlushLifeSpanNFTCashbackPool,
@@ -21,6 +24,8 @@ contract PlushLifeSpanNFTCashbackPool is
 
     IERC20Upgradeable public plush;
 
+    PlushBlacklist public plushBlacklist;
+
     uint256 private remuneration;
     uint256 private timeUnlock;
     bool private unlockAllTokens;
@@ -29,13 +34,21 @@ contract PlushLifeSpanNFTCashbackPool is
     mapping(address => uint256[]) private idsBalances;
     mapping(uint256 => Balance) private balanceInfo;
 
+    modifier notBlacklisted(address _account) {
+        require(
+            !plushBlacklist.isBlacklisted(_account),
+            "Blacklist: account is blacklisted"
+        );
+        _;
+    }
+
     /**
      * @dev Roles definitions
      */
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant REMUNERATION_ROLE = keccak256("REMUNERATION_ROLE");
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -44,10 +57,13 @@ contract PlushLifeSpanNFTCashbackPool is
 
     function initialize(
         IERC20Upgradeable _plush,
+        PlushBlacklist _plushBlacklist,
         uint256 _remuneration,
         uint256 _timeUnlock
     ) public initializer {
         plush = _plush;
+        plushBlacklist = _plushBlacklist;
+
         remuneration = _remuneration;
         timeUnlock = _timeUnlock;
         unlockAllTokens = false;
@@ -59,8 +75,8 @@ contract PlushLifeSpanNFTCashbackPool is
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
-        _grantRole(UPGRADER_ROLE, msg.sender);
         _grantRole(REMUNERATION_ROLE, msg.sender);
+        _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
     /// @notice Pause contract
@@ -81,6 +97,7 @@ contract PlushLifeSpanNFTCashbackPool is
     function addRemunerationToAccountManually(address account, uint256 amount)
         public
         onlyRole(OPERATOR_ROLE)
+        notBlacklisted(account)
     {
         require(getFreeTokensInContract() >= amount, "Not enough funds");
 
@@ -123,16 +140,16 @@ contract PlushLifeSpanNFTCashbackPool is
      * @notice Withdrawal tokens to address
      * @param amount of tokens in wei
      */
-    function withdraw(uint256 amount) external {
+    function withdraw(uint256 amount) external notBlacklisted(msg.sender) {
         require(plush.balanceOf(address(this)) >= amount, "Pool is empty.");
         require(
             getAvailableBalanceInAccount(msg.sender) >= amount,
             "Not enough balance."
         );
 
-        plush.safeTransfer(msg.sender, amount);
-
         decreaseWalletAmount(msg.sender, amount);
+
+        plush.safeTransfer(msg.sender, amount);
 
         emit WithdrawalTokens(msg.sender, amount);
     }

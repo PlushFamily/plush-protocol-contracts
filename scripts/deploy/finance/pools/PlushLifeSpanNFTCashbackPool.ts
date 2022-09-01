@@ -11,6 +11,7 @@ async function main() {
     PlushLifeSpanNFTCashbackPool,
     [
       DevContractsAddresses.PLUSH_COIN_ADDRESS,
+      DevContractsAddresses.PLUSH_BLACKLIST,
       '34000000000000000000', // remuneration amount (in wei!) default: 34 tokens
       '31556952', // time after which tokens will be unlocked (in sec!) default: 1 year
     ],
