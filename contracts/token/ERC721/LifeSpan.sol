@@ -140,7 +140,7 @@ contract LifeSpan is
             string(
                 abi.encodePacked(
                     "data:application/json;base64,",
-                        Base64Upgradeable.encode(data)
+                    Base64Upgradeable.encode(data)
                 )
             );
     }
