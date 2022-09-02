@@ -18,7 +18,11 @@ async function main() {
   const LifeSpan = await ethers.getContractFactory('LifeSpan');
   const lifeSpan = await upgrades.deployProxy(
     LifeSpan,
-    [DevLinks.PLUSH_LIFESPAN_LINK, DevLinks.PLUSH_GENERATOR_IMG_LIFESPAN_LINK],
+    [
+      DevLinks.PLUSH_LIFESPAN_CONTRACT_URI,
+      DevLinks.PLUSH_LIFESPAN_EXTERNAL_LINK,
+      DevLinks.PLUSH_GENERATOR_IMG_LIFESPAN_LINK,
+    ],
     {
       kind: 'uups',
     },
