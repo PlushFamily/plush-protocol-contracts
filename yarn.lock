@@ -808,7 +808,7 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.7.3.tgz#939534757a81f8d69cc854c7692805684ff3111e"
   integrity sha512-dGRS0agJzu8ybo44pCIf3xBaPQN/65AIXNgK8+4gzKd5kbvlqyxryUYVLJv7fK98Seyd2hDZzVEHSWAh0Bt1Yw==
 
-"@openzeppelin/hardhat-defender@^1.7.1":
+"@openzeppelin/hardhat-defender@^1.8.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/hardhat-defender/-/hardhat-defender-1.8.0.tgz#3c1abc09f1871a76c98c32c5a5dd2a1d0d13f647"
   integrity sha512-BlWpfzPHzEjJYL5rwkLVLlfpr+1R6a1uil24/lLvYZYfsKALQuSvaZRksH1Y/WVBZHeUap5rMAzKLUauTHoCyg==
