@@ -440,7 +440,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       'Plush ecosystem avatar',
     );
     expect(tokenURIRespDecode.external_url).to.deep.equal(
-      DevLinks.PLUSH_LIFESPAN_EXTERNAL_LINK,
+      DevLinks.PLUSH_LIFESPAN_EXTERNAL_LINK + '0',
     );
     expect(tokenURIRespDecode.name).to.deep.equal("Tester's Plush Token");
     expect(tokenURIRespDecode.image).to.deep.equal(
