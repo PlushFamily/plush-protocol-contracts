@@ -251,6 +251,48 @@ contract LifeSpan is
     }
 
     /**
+     * @notice Get information about birthday date user token
+     * @param _tokenId id LifeSpan token
+     * @return uint256 birthday date
+     */
+    function getBirthdayDate(uint256 _tokenId)
+    public
+    view
+    override
+    returns (uint256)
+    {
+        return tokenData[_tokenId].birthdayDate;
+    }
+
+    /**
+     * @notice Get information about date of mint token
+     * @param _tokenId id LifeSpan token
+     * @return uint256 date of mint
+     */
+    function getDateOfMint(uint256 _tokenId)
+    public
+    view
+    override
+    returns (uint256)
+    {
+        return tokenData[_tokenId].dateOfMint;
+    }
+
+    /**
+     * @notice Get information about death date user token
+     * @param _tokenId id LifeSpan token
+     * @return uint256 death date
+     */
+    function getDeathDate(uint256 _tokenId)
+    public
+    view
+    override
+    returns (uint256)
+    {
+        return tokenData[_tokenId].deathDate;
+    }
+
+    /**
      * @notice Get base section of LifeSpan token in JSON
      * @param _tokenId id LifeSpan token
      * @return bytes(JSON) of base section
