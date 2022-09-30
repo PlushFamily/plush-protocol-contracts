@@ -110,7 +110,8 @@ describe('Launching the testing of the Plush Protocol', () => {
     lifeSpan = (await upgrades.deployProxy(
       LifeSpanFactory,
       [
-        DevLinks.PLUSH_LIFESPAN_LINK,
+        DevLinks.PLUSH_LIFESPAN_CONTRACT_URI,
+        DevLinks.PLUSH_LIFESPAN_EXTERNAL_LINK,
         DevLinks.PLUSH_GENERATOR_IMG_LIFESPAN_LINK,
       ],
       {
@@ -439,7 +440,7 @@ describe('Launching the testing of the Plush Protocol', () => {
       'Plush ecosystem avatar',
     );
     expect(tokenURIRespDecode.external_url).to.deep.equal(
-      'https://home.plush.dev/token/0',
+      DevLinks.PLUSH_LIFESPAN_EXTERNAL_LINK + '0',
     );
     expect(tokenURIRespDecode.name).to.deep.equal("Tester's Plush Token");
     expect(tokenURIRespDecode.image).to.deep.equal(

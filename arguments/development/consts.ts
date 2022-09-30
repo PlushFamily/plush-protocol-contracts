@@ -4,18 +4,19 @@ export enum DevContractsAddresses {
   WRAPPED_PLUSH_COIN_ADDRESS = '0x30f0ED21f6659890d498715b74e075E2C0C4A456', // Wrapped Plush Coin (ERC-20) contract
   PLUSH_FAUCET_ADDRESS = '0x3A17f8e4E349c2d604F5a26c07367D4015AC3e6d', // Plush Coin (ERC-20) contract faucet
   PLUSH_NFT_CASHBACK_POOL_ADDRESS = '0xCCD73369Df02bbe807A37B72A2740EE894c920Ce', // Plush NFT cashback pool contract
-  LIFESPAN_ADDRESS = '0xEf5c7517C4c3cc09b6eFC12Aa183AF161A61A247', // ERC-721 LifeSpan contract
-  PLUSH_GET_LIFESPAN_ADDRESS = '0x68F2A8d09393EFD5F2584C384c327DD7682ccB85', // Self-minting of ERC-721 LifeSpan token contract
+  LIFESPAN_ADDRESS = '0x2cbf2F053e4B478D039655b2684DdA1F46bf11F5', // ERC-721 LifeSpan contract
+  PLUSH_GET_LIFESPAN_ADDRESS = '0xd8C625b8f01D28B96cD4dc31150B96Ac92A7fe3F', // Self-minting of ERC-721 LifeSpan token contract
   PLUSH_ACCOUNTS_ADDRESS = '0x8b99563c11653103205843d7CdDE598f8062947C', // Safe contract
   PLUSH_APPS_ADDRESS = '0x73F0829C079E6C369b02d17d51E1e11D53DB55aC', // Ecosystem contract
-  PLUSH_FEE_COLLECTOR_ADDRESS = '0x108dEc7b37C526B2e2DBf8447573dDCB9265C884', // Plush Fee collector DAO contract (multisig)
-  PLUSH_DAO_PROTOCOL_ADDRESS = '0xBB8Fe52cAA5F35Ec1475ac2ac6f1A273D67E2a10', // Plush DAO Protocol contract (multisig)
+  PLUSH_FEE_COLLECTOR_ADDRESS = '0xC54B26C13E09930935d20d537858d706Aa882615', // Plush Fee collector DAO contract (multisig)
+  PLUSH_DAO_PROTOCOL_ADDRESS = '0xD8A160D27d2d4AFE6f70e97E286FB220F72Fb1Dd', // Plush DAO Protocol contract (multisig)
   PLUSH_SEED = '0x6e03DC94cCb78645856E06aE461fe3E4Dec98F9a', // ERC-721 PlushSeed contract
   PLUSH_AMBASSADOR = '0x0BCa3e41579FdCF6bFB9E7e57d4AD63B72b04c53', // ERC-1155 PlushAmbassador contract
-  PLUSH_BLACKLIST = '0x480f2A4EA01b4444dEEB3bCe9d9934202cA5dc47', // Blacklist addresses contract
+  PLUSH_BLACKLIST = '0xc1c0c5D43ea3b034D8Ae91541a5db914394abe80', // Blacklist addresses contract
 }
 
 export enum DevLinks {
-  PLUSH_LIFESPAN_LINK = 'https://home.plush.dev/token/', // Link to page with LifeSpan
+  PLUSH_LIFESPAN_EXTERNAL_LINK = 'https://lifespan.one/token/', // Link to page with LifeSpan
   PLUSH_GENERATOR_IMG_LIFESPAN_LINK = 'https://api.plush.dev/user/tokens/render', // Link to page with generator image LifeSpan
+  PLUSH_LIFESPAN_CONTRACT_URI = 'ipfs://QmbvYczw9ZNt8WTXVor4qQNDZJWu4Sz6WXzaKn1YVC4eP3',
 }

@@ -11,7 +11,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721Burnab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 
@@ -31,11 +30,12 @@ contract LifeSpan is
 
     CountersUpgradeable.Counter private _tokenIdCounter;
 
+    string public contractURI;
+    string private externalURL;
+    string private renderImageURL;
+
     mapping(uint256 => TokenData) public tokenData;
     mapping(uint256 => Gender) private genders;
-
-    string externalURL;
-    string renderImageURL;
 
     /**
      * @dev Roles definitions
@@ -51,6 +51,7 @@ contract LifeSpan is
     }
 
     function initialize(
+        string memory _contractURI,
         string memory _externalURL,
         string memory _renderImageURL
     ) public initializer {
@@ -61,6 +62,7 @@ contract LifeSpan is
         __ERC721Burnable_init();
         __UUPSUpgradeable_init();
 
+        contractURI = _contractURI;
         externalURL = _externalURL;
         renderImageURL = _renderImageURL;
 
@@ -248,6 +250,17 @@ contract LifeSpan is
         whenNotPaused
     {
         renderImageURL = _newRenderImageURL;
+    }
+
+    /**
+     * @notice Update contract URI address
+     * @param _contractURI string of new URI
+     */
+    function setContractURI(string memory _contractURI)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        contractURI = _contractURI;
     }
 
     /**

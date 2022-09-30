@@ -55,7 +55,6 @@ contract PlushGetLifeSpan is
     ) public initializer {
         lifeSpan = _lifeSpan;
         plushBlacklist = _plushBlacklist;
-
         feeAddress = _feeAddress;
 
         mintPrice = _mintPrice;
