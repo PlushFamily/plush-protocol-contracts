@@ -238,7 +238,7 @@ describe('Launching the testing of the Plush Protocol', () => {
     );
     plushGetAmbassador = (await upgrades.deployProxy(
       PlushGetAmbassadorFactory,
-      [plushAmbassador.address],
+      [plushAmbassador.address, plushBlacklist.address],
       {
         kind: 'uups',
       },
