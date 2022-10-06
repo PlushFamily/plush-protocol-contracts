@@ -9,7 +9,10 @@ async function main() {
 
   const plushGetAmbassador = await upgrades.deployProxy(
     PlushGetAmbassador,
-    [DevContractsAddresses.PLUSH_AMBASSADOR],
+    [
+      DevContractsAddresses.PLUSH_AMBASSADOR,
+      DevContractsAddresses.PLUSH_BLACKLIST,
+    ],
     {
       kind: 'uups',
     },

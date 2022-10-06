@@ -64,6 +64,15 @@ export default {
   solidity: {
     compilers: [
       {
+        version: '0.8.17',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
         version: '0.8.16',
         settings: {
           optimizer: {
@@ -156,7 +165,7 @@ export default {
         },
       },
       'contracts/token/ERC1155/PlushAmbassador.sol': {
-        version: '0.8.16',
+        version: '0.8.17',
         settings: {
           optimizer: {
             enabled: true,
@@ -165,7 +174,7 @@ export default {
         },
       },
       'contracts/finance/PlushGetAmbassador.sol': {
-        version: '0.8.16',
+        version: '0.8.17',
         settings: {
           optimizer: {
             enabled: true,

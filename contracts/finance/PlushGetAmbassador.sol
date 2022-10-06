@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "../token/ERC1155/PlushAmbassador.sol";
+import "../governance/PlushBlacklist.sol";
 
 /// @custom:security-contact security@plush.family
 contract PlushGetAmbassador is
@@ -17,9 +18,18 @@ contract PlushGetAmbassador is
     UUPSUpgradeable
 {
     PlushAmbassador public plushAmbassador;
+    PlushBlacklist public plushBlacklist;
 
     mapping(uint256 => Token) public tokens;
     mapping(address => bool) public applicants;
+
+    modifier notBlacklisted(address _account) {
+        require(
+            !plushBlacklist.isBlacklisted(_account),
+            "Blacklist: account is blacklisted"
+        );
+        _;
+    }
 
     /**
      * @dev Roles definitions
@@ -32,8 +42,9 @@ contract PlushGetAmbassador is
         _disableInitializers();
     }
 
-    function initialize(PlushAmbassador _plushAmbassador) public initializer {
+    function initialize(PlushAmbassador _plushAmbassador, PlushBlacklist _plushBlacklist) public initializer {
         plushAmbassador = _plushAmbassador;
+        plushBlacklist = _plushBlacklist;
 
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -47,7 +58,7 @@ contract PlushGetAmbassador is
      * @notice Mint PlushAmbassador token
      * @param token tokenId for minting
      */
-    function mint(uint256 token) public {
+    function mint(uint256 token) public notBlacklisted(msg.sender) {
         require(tokens[token].exists, "Token doesn't exist");
         require(tokens[token].active, "Token doesn't active");
 
@@ -66,6 +77,7 @@ contract PlushGetAmbassador is
      */
     function checkMintPossibility(address applicant)
         public
+        notBlacklisted(msg.sender)
         view
         returns (bool)
     {
