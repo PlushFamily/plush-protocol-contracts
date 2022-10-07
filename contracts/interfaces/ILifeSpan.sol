@@ -74,4 +74,25 @@ interface ILifeSpan {
      * @param newRenderImageURL sting of new link
      */
     function updateRenderImageURL(string memory newRenderImageURL) external;
+
+    /**
+     * @notice Get information about birthday date user token
+     * @param _tokenId id LifeSpan token
+     * @return uint256 birthday date
+     */
+    function getBirthdayDate(uint256 _tokenId) external view returns (uint256);
+
+    /**
+     * @notice Get information about date of mint token
+     * @param _tokenId id LifeSpan token
+     * @return uint256 date of mint
+     */
+    function getDateOfMint(uint256 _tokenId) external view returns (uint256);
+
+    /**
+     * @notice Get information about death date user token
+     * @param _tokenId id LifeSpan token
+     * @return uint256 death date
+     */
+    function getDeathDate(uint256 _tokenId) external view returns (uint256);
 }
